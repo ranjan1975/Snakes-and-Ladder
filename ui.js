@@ -412,7 +412,9 @@ class UIController {
     }
 
     // Draw Snakes (Curved wavy body with scaly overlays, viper head, and flickering tongue)
+    let snakeIdx = 0;
     for (const [startStr, endStr] of Object.entries(GameConfig.snakes)) {
+      snakeIdx++;
       const start = parseInt(startStr);
       const end = parseInt(endStr);
       
@@ -481,6 +483,10 @@ class UIController {
       const neckX = p0.x + 1.2 * bx_dir;
       const neckY = p0.y + 1.2 * by_dir;
 
+      // Angle of head rotation in degrees
+      const angleRad = Math.atan2(fy, fx);
+      const angleDeg = angleRad * (180 / Math.PI);
+
       // 3. Draw Viper Head
       const head = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
       head.setAttribute("points", `${noseX},${noseY} ${leftJawX},${leftJawY} ${neckX},${neckY} ${rightJawX},${rightJawY}`);
@@ -526,6 +532,39 @@ class UIController {
       eye2.setAttribute("r", "0.32");
       eye2.setAttribute("fill", "#ffff00");
       this.dom.boardSvg.appendChild(eye2);
+
+      // 5. Overlay Face Image if face[X].png exists in root
+      const faceUrl = `face${snakeIdx}.png`;
+      const clipPathId = `face-clip-${start}`;
+      
+      const clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
+      clipPath.setAttribute("id", clipPathId);
+      const clipCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      clipCircle.setAttribute("cx", p0.x);
+      clipCircle.setAttribute("cy", p0.y);
+      clipCircle.setAttribute("r", "1.95");
+      clipPath.appendChild(clipCircle);
+      defs.appendChild(clipPath);
+      
+      const faceImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
+      faceImage.setAttribute("href", faceUrl);
+      faceImage.setAttribute("x", p0.x - 2.1);
+      faceImage.setAttribute("y", p0.y - 2.1);
+      faceImage.setAttribute("width", "4.2");
+      faceImage.setAttribute("height", "4.2");
+      faceImage.setAttribute("clip-path", `url(#${clipPathId})`);
+      faceImage.setAttribute("transform", `rotate(${angleDeg + 90}, ${p0.x}, ${p0.y})`);
+      faceImage.setAttribute("style", "opacity: 0; transition: opacity 0.3s;");
+      
+      // If user provided a face photo, show the photo and style the snake head as border
+      faceImage.addEventListener('load', () => {
+        faceImage.setAttribute("style", "opacity: 1;");
+        eye1.setAttribute("style", "display: none;");
+        eye2.setAttribute("style", "display: none;");
+        head.setAttribute("style", "fill: rgba(0,0,0,0.5); stroke: var(--neon-magenta); stroke-width: 0.35;");
+      });
+      
+      this.dom.boardSvg.appendChild(faceImage);
     }
   }
 
