@@ -891,6 +891,11 @@ input:checked + .slider:before {
 
 /* Responsive Rules */
 @media (max-width: 992px) {
+  main {
+    flex-direction: column;
+    padding: 10px;
+  }
+  
   .game-container {
     grid-template-columns: 1fr;
     max-width: 620px;
