@@ -7,6 +7,8 @@ class SoundController {
     this.enabled = true;
     this.moveAudioBuffer = null;
     this.isLoadingMoveSound = false;
+    this.snakeAudioBuffer = null;
+    this.isLoadingSnakeSound = false;
   }
 
   init() {
@@ -19,6 +21,10 @@ class SoundController {
     // Pre-load custom move sound buffer once AudioContext is initialized
     if (!this.moveAudioBuffer && !this.isLoadingMoveSound) {
       this.loadMoveSound();
+    }
+    // Pre-load custom snake bite sound buffer once AudioContext is initialized
+    if (!this.snakeAudioBuffer && !this.isLoadingSnakeSound) {
+      this.loadSnakeSound();
     }
   }
 
@@ -33,6 +39,20 @@ class SoundController {
     } catch (err) {
       console.warn("Failed to load custom footstep audio, using synthesizer fallback:", err);
       this.isLoadingMoveSound = false;
+    }
+  }
+
+  async loadSnakeSound() {
+    this.isLoadingSnakeSound = true;
+    try {
+      const response = await fetch('Maar%20Daala.mp3');
+      if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
+      const arrayBuffer = await response.arrayBuffer();
+      this.snakeAudioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
+      console.log("Custom snake bite sound loaded successfully!");
+    } catch (err) {
+      console.warn("Failed to load custom snake bite audio, using synthesizer fallback:", err);
+      this.isLoadingSnakeSound = false;
     }
   }
 
@@ -204,6 +224,25 @@ class SoundController {
     if (!this.enabled) return;
     this.init();
     
+    // Play custom snake bite audio if loaded
+    if (this.snakeAudioBuffer) {
+      try {
+        const source = this.ctx.createBufferSource();
+        source.buffer = this.snakeAudioBuffer;
+        
+        const gain = this.ctx.createGain();
+        gain.gain.setValueAtTime(0.4, this.ctx.currentTime); // Standard comfortable volume
+        
+        source.connect(gain);
+        gain.connect(this.ctx.destination);
+        source.start(0);
+        return;
+      } catch (e) {
+        console.warn("Error playing custom snake bite buffer, falling back to synth:", e);
+      }
+    }
+    
+    // Fallback: Synthesized rattle hiss
     const duration = 1.2;
     
     // Create a white noise buffer
