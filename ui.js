@@ -50,20 +50,27 @@ class UIController {
     };
 
     // Predefined Avatars and Neon Colors
-    this.avatars = ['🧙‍♂️', '🥷', '🤖', '🦄', '👽', '🐯', '🦖', '👻'];
+    this.avatars = ['🧙‍♂️', '🥷', '🤖', '🦄', '👽', '🐯', '🦖', '👻', 'face1.png', 'face2.png'];
     this.colors = ['#00f2fe', '#ff007f', '#39ff14', '#ffd700', '#7f00ff', '#ff8800', '#00ffcc', '#ff3366'];
     
     this.setupConfig = {
       playerCount: 2,
       players: [
         { name: '🧙‍♂️ Mage', avatar: '🧙‍♂️', color: '#00f2fe', isBot: false },
-        { name: '🥷 Shadow', avatar: '🥷', color: '#ff007f', isBot: true },
+        { name: '🥷 Shadow', avatar: 'face1.png', color: '#ff007f', isBot: true },
         { name: '🤖 Cyber', avatar: '🤖', color: '#39ff14', isBot: true },
         { name: '🦄 Prism', avatar: '🦄', color: '#ffd700', isBot: true }
       ]
     };
 
     this.init();
+  }
+
+  renderAvatarHelper(avatar) {
+    if (avatar && avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+      return `<img src="${avatar}" style="width: 22px; height: 22px; object-fit: cover; border-radius: 50%; vertical-align: middle; border: 1px solid rgba(255,255,255,0.4);">`;
+    }
+    return avatar;
   }
 
   init() {
@@ -191,9 +198,9 @@ class UIController {
           <input type="text" id="setup-name-${i}" class="player-name-input" value="${pConf.name}" placeholder="Name">
           
           <div class="avatar-selector">
-            <button class="select-btn" id="avatar-btn-${i}">${pConf.avatar}</button>
+            <button class="select-btn" id="avatar-btn-${i}">${this.renderAvatarHelper(pConf.avatar)}</button>
             <div class="dropdown-menu" id="avatar-menu-${i}">
-              ${this.avatars.map(a => `<div class="dropdown-item select-avatar-item">${a}</div>`).join('')}
+              ${this.avatars.map(a => `<div class="dropdown-item select-avatar-item" data-avatar="${a}">${this.renderAvatarHelper(a)}</div>`).join('')}
             </div>
           </div>
           
@@ -237,9 +244,9 @@ class UIController {
     // Select Avatar
     avatarMenu.querySelectorAll('.select-avatar-item').forEach(item => {
       item.addEventListener('click', () => {
-        const newAvatar = item.innerText;
+        const newAvatar = item.dataset.avatar;
         this.setupConfig.players[index].avatar = newAvatar;
-        avatarBtn.innerText = newAvatar;
+        avatarBtn.innerHTML = this.renderAvatarHelper(newAvatar);
         
         // Also update name if unchanged
         const nameInput = document.getElementById(`setup-name-${index}`);
@@ -608,7 +615,13 @@ class UIController {
       token.style.color = '#fff';
       token.style.boxShadow = `0 4px 10px rgba(0,0,0,0.6), 0 0 10px ${p.color}50`;
       token.style.borderColor = p.color === '#ffd700' ? '#000' : 'rgba(255,255,255,0.8)';
-      token.innerText = p.avatar;
+      if (p.avatar && p.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+        token.innerHTML = `<img src="${p.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+        token.style.padding = '0';
+        token.style.overflow = 'hidden';
+      } else {
+        token.innerText = p.avatar;
+      }
       this.dom.tokensContainer.appendChild(token);
     });
     this.updateTokensUI(false);
@@ -666,7 +679,15 @@ class UIController {
     const curPlayer = this.game.getCurrentPlayer();
     if (!curPlayer) return;
 
-    this.dom.currentPlayerAvatar.innerText = curPlayer.avatar;
+    if (curPlayer.avatar && curPlayer.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+      this.dom.currentPlayerAvatar.innerHTML = `<img src="${curPlayer.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+      this.dom.currentPlayerAvatar.style.padding = '0';
+      this.dom.currentPlayerAvatar.style.background = 'transparent';
+    } else {
+      this.dom.currentPlayerAvatar.innerText = curPlayer.avatar;
+      this.dom.currentPlayerAvatar.style.padding = '';
+      this.dom.currentPlayerAvatar.style.background = '';
+    }
     this.dom.currentPlayerAvatar.style.color = curPlayer.color;
     this.dom.currentPlayerAvatar.style.boxShadow = `0 0 20px ${curPlayer.color}`;
     this.dom.currentPlayerName.innerText = curPlayer.name;
@@ -803,8 +824,15 @@ class UIController {
     this.sound.playVictory();
     
     // Populate stats
-    this.dom.winnerAvatar.innerText = winner.avatar;
-    this.dom.winnerAvatar.style.textShadow = `0 0 20px ${winner.color}`;
+    if (winner.avatar && winner.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+      this.dom.winnerAvatar.innerHTML = `<img src="${winner.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+      this.dom.winnerAvatar.style.textShadow = 'none';
+      this.dom.winnerAvatar.style.background = 'transparent';
+    } else {
+      this.dom.winnerAvatar.innerText = winner.avatar;
+      this.dom.winnerAvatar.style.textShadow = `0 0 20px ${winner.color}`;
+      this.dom.winnerAvatar.style.background = '';
+    }
     this.dom.winnerName.innerText = winner.name;
     this.dom.winnerName.style.color = winner.color;
     
