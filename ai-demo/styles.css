@@ -518,6 +518,33 @@ input:checked + .slider:before {
   }
 }
 
+@media (max-width: 500px) {
+  header {
+    padding: 10px 15px;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+  }
+  
+  .logo {
+    font-size: 1.15rem;
+  }
+  
+  header .btn {
+    padding: 6px 10px;
+    font-size: 0.75rem;
+  }
+  
+  main {
+    padding: 10px;
+  }
+  
+  .glass-panel {
+    padding: 14px;
+  }
+}
+
+
 /* Math Walkthrough HUD overlay styles */
 .hidden {
   display: none !important;
