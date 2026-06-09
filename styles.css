@@ -385,7 +385,7 @@ input:checked + .slider:before {
 
 /* Play Screen */
 #play-screen {
-  display: contents; /* Let it participate in main's grid */
+  width: 100%;
 }
 
 /* Board styling */
