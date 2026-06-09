@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  
+  <title>Cyber Neural Lab - Interactive AI Visualizer</title>
+  <meta name="description" content="Explore and visualize how a multi-layer Neural Network learns binary classification in real-time. Customize nodes, adjust learning rates, and listen to acoustic loss hums.">
+  
+  <!-- Stylesheet -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo brand-font">CYBER NEURAL LAB</div>
+    <div style="display: flex; align-items: center; gap: 20px;">
+      <a href="../index.html" class="btn" style="padding: 6px 14px; font-size: 0.8rem;">◀ Back to Board Game</a>
+    </div>
+  </header>
+
+  <!-- Main Dashboard Workspace -->
+  <main>
+    <div class="dashboard">
+      
+      <!-- Column 1: Architecture Configuration -->
+      <div class="glass-panel">
+        <h2 class="panel-title brand-font">Configuration</h2>
+        
+        <!-- Activation Selector -->
+        <div class="control-group">
+          <label class="control-label">Activation Function</label>
+          <select id="select-activation" class="custom-select">
+            <option value="tanh" selected>Hyperbolic Tangent (Tanh)</option>
+            <option value="sigmoid">Sigmoid</option>
+            <option value="relu">Rectified Linear (ReLU)</option>
+          </select>
+        </div>
+        
+        <!-- Learning Rate Slider -->
+        <div class="control-group">
+          <label class="control-label">
+            <span>Learning Rate (η)</span>
+            <span class="control-val" id="val-lr">0.030</span>
+          </label>
+          <input type="range" id="slider-lr" class="custom-slider" min="0.003" max="0.3" step="0.003" value="0.03">
+        </div>
+
+        <!-- Hidden Layers Stack -->
+        <div class="control-group">
+          <label class="control-label" style="margin-bottom: 5px;">Hidden Layers (Max 3)</label>
+          <div id="layers-list" style="display:flex; flex-direction:column; gap:8px; margin-bottom: 8px;">
+            <!-- Dynamically Populated from UI JS -->
+          </div>
+          <button class="btn btn-primary" id="btn-add-layer" style="padding: 8px 12px; font-size:0.82rem;">
+            + Add Hidden Layer
+          </button>
+        </div>
+
+        <!-- Audio Hum Toggle -->
+        <div class="control-group" style="border-top: 1px solid rgba(255,255,255,0.05); padding-top: 15px; display:flex; flex-direction:row; align-items:center; justify-content:space-between;">
+          <span style="font-size:0.85rem; font-weight:600; color:var(--text-secondary)">Acoustic Loss Hum 🔊</span>
+          <label class="switch">
+            <input type="checkbox" id="sound-toggle">
+            <span class="slider"></span>
+          </label>
+        </div>
+
+        <!-- Concept Explainer Box -->
+        <div class="info-box">
+          <strong style="color:white; display:block; margin-bottom:4px;">How does it learn?</strong>
+          1. <strong>Feedforward</strong>: Node activation values flow left-to-right. Weights decide signal strength.<br>
+          2. <strong>Error Loss</strong>: The output is compared to the placed labels to compute error.<br>
+          3. <strong>Backpropagation</strong>: Gradients are sent backwards to update weight lines using Gradient Descent.
+        </div>
+      </div>
+
+      <!-- Column 2: 2D Dataset Lab -->
+      <div class="glass-panel canvas-card">
+        <h2 class="panel-title brand-font">2D Dataset Lab</h2>
+        
+        <!-- Dataset Canvas -->
+        <div class="canvas-container">
+          <canvas id="dataset-canvas"></canvas>
+        </div>
+        
+        <!-- Active class editor picker -->
+        <div class="class-picker">
+          <button class="class-btn class-a active" id="btn-class-a">
+            <div class="dot-indicator"></div> Class A (Cyan)
+          </button>
+          <button class="class-btn class-b" id="btn-class-b">
+            <div class="dot-indicator"></div> Class B (Rose)
+          </button>
+        </div>
+
+        <!-- Preset options -->
+        <div class="control-group" style="width: 100%;">
+          <label class="control-label" style="margin-bottom: 5px;">Dataset Presets</label>
+          <div class="presets-grid">
+            <button class="preset-btn active" data-preset="xor">XOR Grid</button>
+            <button class="preset-btn" data-preset="circle">Circle Ring</button>
+            <button class="preset-btn" data-preset="linear">Gaussian</button>
+          </div>
+        </div>
+
+        <div style="display:flex; gap:10px; width: 100%;">
+          <button class="btn" id="btn-randomize" style="flex:1; padding: 10px 0; font-size: 0.85rem;">Randomize Preset</button>
+          <button class="btn btn-danger" id="btn-clear-points" style="flex:1; padding: 10px 0; font-size: 0.85rem;">Clear Dataset</button>
+        </div>
+      </div>
+
+      <!-- Column 3: Live NN Viz and Training HUD -->
+      <div class="glass-panel viz-card">
+        <h2 class="panel-title brand-font">Training Arena</h2>
+        
+        <!-- HUD stats -->
+        <div class="stats-row">
+          <div class="stat-item">
+            <div class="stat-num" id="val-epochs">0</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary)">Epochs Trained</div>
+          </div>
+          <div class="stat-item">
+            <div class="stat-num" id="val-loss">0.00000</div>
+            <div style="font-size:0.75rem; color:var(--text-secondary)">Training Loss</div>
+          </div>
+        </div>
+
+        <!-- Scrolling loss graph -->
+        <div class="control-group">
+          <label class="control-label">Loss History Log</label>
+          <div class="loss-graph-container">
+            <canvas id="loss-canvas"></canvas>
+          </div>
+        </div>
+
+        <!-- Math Walkthrough HUD (Hidden by default) -->
+        <div id="math-walkthrough-card" class="control-group hidden" style="background: rgba(255, 255, 255, 0.02); border: 1px solid rgba(255, 255, 255, 0.06); padding: 12px; border-radius: 8px; margin-bottom: 12px;">
+          <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 8px;">
+            <span style="font-size:0.8rem; font-weight:700; color:var(--neon-rose); text-transform:uppercase;">Math Debugger</span>
+            <span id="walkthrough-phase-label" style="font-family:'Orbitron',sans-serif; font-size:0.75rem; color:var(--neon-cyan)">Phase 0/4</span>
+          </div>
+          <p id="walkthrough-text" style="font-size:0.82rem; line-height:1.4; color:var(--text-secondary); min-height: 52px; margin-bottom: 10px;">
+            Click "Start Trace" to pick a random training sample and visually inspect how the feedforward and backpropagation equations run.
+          </p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn" id="btn-wt-prev" style="padding: 6px 12px; font-size:0.78rem; flex:1;" disabled>◀ Back</button>
+            <button class="btn btn-primary" id="btn-wt-next" style="padding: 6px 12px; font-size:0.78rem; flex:2;">Start Trace ➔</button>
+          </div>
+        </div>
+
+        <!-- Neural network weight graph visualizer -->
+        <div class="control-group" style="flex: 1; display:flex; flex-direction:column;">
+          <label class="control-label">Live Weights Diagram</label>
+          <div class="network-svg-container" style="flex: 1;">
+            <svg id="network-svg">
+              <!-- Drawn by JS -->
+            </svg>
+          </div>
+        </div>
+
+        <div style="display:flex; flex-direction:column; gap:10px;">
+          <div style="display:flex; gap:10px; width: 100%;">
+            <button class="btn btn-primary" id="btn-train" style="flex:2; padding: 12px 0;">Train Model ▶</button>
+            <button class="btn" id="btn-step" style="flex:1; padding: 12px 0;" title="Single Batch Step">Step ⏭</button>
+            <button class="btn" id="btn-reset" style="flex:1; padding: 12px 0;" title="Reinitialize Weights">Reset 🔄</button>
+          </div>
+          <button class="btn btn-secondary" id="btn-walkthrough-toggle" style="width: 100%; padding: 10px 0; background: linear-gradient(135deg, #7f00ff 0%, #ff007f 100%); border:none; box-shadow: 0 0 10px rgba(255, 0, 127, 0.25);">
+            Visual Math Flow 🧪
+          </button>
+        </div>
+      </div>
+
+    </div>
+  </main>
+
+  <!-- Script Modules -->
+  <script src="network.js"></script>
+  <script src="ui.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      new NeuralNetworkUI();
+    });
+  </script>
+</body>
+</html>

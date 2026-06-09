@@ -1,0 +1,491 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <!-- Mobile-optimized viewports -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <title>AI Academy - Visual Interactive Learning</title>
+  
+  <!-- Premium Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&family=Space+Grotesk:wght@400;700&display=swap" rel="stylesheet">
+  
+  <!-- Main Stylesheet -->
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+  <!-- App Main Container -->
+  <div class="app-container">
+    
+    <!-- Top HUD Header -->
+    <header class="app-header">
+      <div class="header-logo">
+        <span class="logo-accent">AI</span> ACADEMY
+      </div>
+      <div class="header-meta" id="header-status">
+        VECTORS LAB ACTIVE
+      </div>
+    </header>
+
+    <!-- Main Scrollable Workspace -->
+    <main class="app-main">
+
+      <!-- ================= VECTORS & VECTOR DB LAB ================= -->
+      <section id="lab-vectors" class="lab-section active">
+        <div class="lab-intro">
+          <h2>Vectors & Vector DBs</h2>
+          <p>Drag vector heads to inspect operations. Place points to simulate vector search.</p>
+        </div>
+        
+        <!-- Grid layout for the lab -->
+        <div class="lab-grid">
+          <div class="card canvas-card">
+            <canvas id="vector-canvas"></canvas>
+          </div>
+          
+          <div class="card control-card">
+            <h3>Vector Math HUD</h3>
+            <div class="stat-grid">
+              <div class="stat-box">
+                <span class="stat-label">Vector A (Cyan)</span>
+                <span class="stat-val" id="vec-a-val">[2.0, 3.0]</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Vector B (Pink)</span>
+                <span class="stat-val" id="vec-b-val">[-3.0, 1.0]</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Dot Product (A · B)</span>
+                <span class="stat-valHighlight" id="vec-dot-val">-3.00</span>
+              </div>
+              <div class="stat-box">
+                <span class="stat-label">Cosine Similarity</span>
+                <span class="stat-valHighlight" id="vec-cos-val">-0.26</span>
+              </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <h3>Vector Database Simulation</h3>
+            <p class="description">Place documents (dots) on grid, select metric, and execute nearest neighbor search.</p>
+            <div class="control-row">
+              <label>Distance Metric</label>
+              <select id="vdb-metric" class="custom-select">
+                <option value="cosine" selected>Cosine Similarity</option>
+                <option value="euclidean">Euclidean Distance</option>
+              </select>
+            </div>
+            <div class="control-row">
+              <label>Retrieve Top-K</label>
+              <input type="range" id="vdb-k-slider" min="1" max="5" step="1" value="3" class="custom-slider">
+              <span id="vdb-k-val">3</span>
+            </div>
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="btn-vdb-add-docs">Add 15 Random Docs</button>
+              <button class="btn btn-primary" id="btn-vdb-search">Search DB 🔍</button>
+              <button class="btn btn-danger" id="btn-vdb-clear">Clear Docs</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= ACTIVATION FUNCTIONS LAB ================= -->
+      <section id="lab-activations" class="lab-section">
+        <div class="lab-intro">
+          <h2>Activation Functions</h2>
+          <p>Explore firing thresholds and visualize the vanishing gradient problem.</p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card canvas-card">
+            <canvas id="activation-canvas"></canvas>
+          </div>
+
+          <div class="card control-card">
+            <h3>Function Selector</h3>
+            <div class="presets-row">
+              <button class="preset-btn active" data-act="sigmoid">Sigmoid</button>
+              <button class="preset-btn" data-act="tanh">Tanh</button>
+              <button class="preset-btn" data-act="relu">ReLU</button>
+              <button class="preset-btn" data-act="leaky-relu">Leaky ReLU</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Interactive Firing Node</h3>
+            <div class="node-viz-container">
+              <div class="interactive-node" id="firing-node">
+                <div class="node-inner" id="firing-node-inner"></div>
+                <div class="node-label" id="firing-node-label">Z = 0.0</div>
+              </div>
+              <div class="node-math">
+                <div>Output (a) = <span id="firing-act-val" class="glow-cyan">0.50</span></div>
+                <div>Derivative (f') = <span id="firing-deriv-val" class="glow-pink">0.25</span></div>
+              </div>
+            </div>
+
+            <div class="control-row" style="margin-top: 15px;">
+              <label>Pre-activation Input (z)</label>
+              <input type="range" id="act-z-slider" min="-10" max="10" step="0.1" value="0" class="custom-slider">
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Vanishing Gradient Simulator</h3>
+            <p class="description">Send backprop gradient signals down a 5-layer network. Watch signals fade for saturating bounds.</p>
+            
+            <div class="network-gradient-chain" id="gradient-chain">
+              <!-- Rendered via JS -->
+            </div>
+            
+            <button class="btn btn-primary" id="btn-act-backprop" style="width: 100%; margin-top:10px;">Trigger Backprop Signal ⚡</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= NEURAL NETWORK & BACKPROP LAB ================= -->
+      <section id="lab-nn" class="lab-section">
+        <div class="lab-intro">
+          <h2>Neural Nets & Backpropagation</h2>
+          <p>Trace forward/backward math step-by-step or train in real-time.</p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card canvas-card relative-parent">
+            <!-- Canvas displaying classification boundary -->
+            <canvas id="nn-boundary-canvas"></canvas>
+            <div class="class-picker-overlay">
+              <button class="class-dot active" id="nn-class-cyan" style="background:var(--neon-cyan)"></button>
+              <button class="class-dot" id="nn-class-pink" style="background:var(--neon-pink)"></button>
+            </div>
+          </div>
+
+          <div class="card control-card">
+            <!-- Training / Epoch Stats -->
+            <div class="stats-row" style="margin-bottom: 12px;">
+              <div class="stat-item">
+                <span class="stat-num" id="nn-epochs">0</span>
+                <span class="stat-label">Epochs</span>
+              </div>
+              <div class="stat-item">
+                <span class="stat-num" id="nn-loss">0.0000</span>
+                <span class="stat-label">Training Loss</span>
+              </div>
+            </div>
+
+            <div class="control-row">
+              <label>Preset Data</label>
+              <div class="presets-row">
+                <button class="preset-btn active" data-dataset="xor">XOR</button>
+                <button class="preset-btn" data-dataset="circle">Circle</button>
+                <button class="preset-btn" data-dataset="gaussian">Gaussian</button>
+              </div>
+            </div>
+
+            <div class="control-row">
+              <label>Learning Rate (η): <span id="nn-lr-val">0.03</span></label>
+              <input type="range" id="nn-lr-slider" min="0.001" max="0.5" step="0.005" value="0.03" class="custom-slider">
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-primary" id="btn-nn-train" style="flex:2">Train ▶</button>
+              <button class="btn btn-secondary" id="btn-nn-step" style="flex:1">Step ⏭</button>
+              <button class="btn btn-danger" id="btn-nn-reset" style="flex:1">Reset 🔄</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <!-- Mathematical Step-by-Step Tracer -->
+            <div class="math-tracer-hud">
+              <div class="tracer-header">
+                <h3>Trace Math Step-by-Step</h3>
+                <button class="btn btn-small" id="btn-nn-trace-toggle">Start Trace 🧪</button>
+              </div>
+              <div id="nn-trace-details" class="tracer-body hidden">
+                <div class="trace-phase-indicator" id="trace-phase-title">Phase 1/4: Feedforward</div>
+                <p class="description" id="trace-formula">z = w₁x₁ + w₂x₂ + b</p>
+                <p id="trace-explain">Signal moves forward through active nodes.</p>
+                <div class="btn-group" style="margin-top: 8px;">
+                  <button class="btn btn-small" id="btn-trace-prev" disabled>Back</button>
+                  <button class="btn btn-small btn-primary" id="btn-trace-next">Next</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- SVG view for Weights Diagram -->
+            <div class="svg-diagram-wrapper" style="margin-top: 15px; height: 130px;">
+              <svg id="nn-svg" width="100%" height="100%"></svg>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= K-MEANS CLUSTERING LAB ================= -->
+      <section id="lab-kmeans" class="lab-section">
+        <div class="lab-intro">
+          <h2>K-Means Clustering</h2>
+          <p>Interactive centroid updates. Click custom points and cluster dynamically.</p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card canvas-card">
+            <canvas id="kmeans-canvas"></canvas>
+          </div>
+
+          <div class="card control-card">
+            <h3>Clustering Controls</h3>
+            <div class="control-row">
+              <label>Clusters (K): <span id="kmeans-k-val">3</span></label>
+              <input type="range" id="kmeans-k-slider" min="2" max="5" step="1" value="3" class="custom-slider">
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="btn-kmeans-generate">Gen Random Points</button>
+              <button class="btn btn-danger" id="btn-kmeans-clear">Clear Canvas</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Step-by-Step Process</h3>
+            <div class="step-card">
+              <div class="step-indicator" id="kmeans-step-label">Ready to start K-Means</div>
+              <p class="description" id="kmeans-step-explain">Click "Next Step" to initialize centroids and start the assignment phase.</p>
+              <div class="btn-group">
+                <button class="btn btn-primary" id="btn-kmeans-step" style="flex:2">Next Step ➔</button>
+                <button class="btn btn-secondary" id="btn-kmeans-run" style="flex:1">Auto ⏯</button>
+                <button class="btn btn-danger" id="btn-kmeans-reset" style="flex:1">Reset 🔄</button>
+              </div>
+            </div>
+
+            <div class="divider"></div>
+            <h3>What is K-Means?</h3>
+            <p class="description">
+              1. <strong>Assign</strong>: Each data point associates with its nearest centroid (colors partition regions).<br>
+              2. <strong>Update</strong>: Centroids glide to the average center of their assigned points.<br>
+              This repeats until the centroids stabilize.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= SUPPORT VECTOR MACHINE LAB ================= -->
+      <section id="lab-svm" class="lab-section">
+        <div class="lab-intro">
+          <h2>Support Vector Machines (SVM)</h2>
+          <p>Add binary classes (Cyan & Pink) and modify margins. Glow highlights Support Vectors.</p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card canvas-card relative-parent">
+            <canvas id="svm-canvas"></canvas>
+            <div class="class-picker-overlay">
+              <button class="class-dot active" id="svm-class-cyan" style="background:var(--neon-cyan)"></button>
+              <button class="class-dot" id="svm-class-pink" style="background:var(--neon-pink)"></button>
+            </div>
+          </div>
+
+          <div class="card control-card">
+            <h3>Kernel Type</h3>
+            <div class="presets-row">
+              <button class="preset-btn active" data-kernel="linear">Linear Kernel</button>
+              <button class="preset-btn" data-kernel="rbf">RBF Kernel (Gaussian)</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Hyperparameters</h3>
+            <div class="control-row">
+              <label>Cost / Penalty (C): <span id="svm-c-val">10</span></label>
+              <input type="range" id="svm-c-slider" min="0.1" max="100" step="0.5" value="10" class="custom-slider">
+            </div>
+
+            <div class="control-row" id="svm-gamma-container" style="display:none;">
+              <label>RBF Gamma (γ): <span id="svm-gamma-val">0.5</span></label>
+              <input type="range" id="svm-gamma-slider" min="0.05" max="3" step="0.05" value="0.5" class="custom-slider">
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="btn-svm-generate">Generate Data</button>
+              <button class="btn btn-danger" id="btn-svm-clear">Clear Points</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Mathematical Concept</h3>
+            <p class="description">
+              SVM constructs a dividing hyperplane that maximizes the "margin" between classes. 
+              The points touching the margins are the <strong>Support Vectors</strong> (highlighted with glowing rings). 
+              A low <strong>C</strong> penalty allows some margins violations (wider boundary), while high <strong>C</strong> forces strict classification.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <!-- ================= RANDOM FOREST LAB ================= -->
+      <section id="lab-forest" class="lab-section">
+        <div class="lab-intro">
+          <h2>Random Forest & Decision Trees</h2>
+          <p>Train decision trees recursively. Assemble a forest to see boundary voting.</p>
+        </div>
+
+        <div class="lab-grid">
+          <div class="card canvas-card relative-parent">
+            <canvas id="forest-canvas"></canvas>
+            <div class="class-picker-overlay">
+              <button class="class-dot active" id="forest-class-cyan" style="background:var(--neon-cyan)"></button>
+              <button class="class-dot" id="forest-class-pink" style="background:var(--neon-pink)"></button>
+            </div>
+          </div>
+
+          <div class="card control-card">
+            <h3>Visual Boundary Filter</h3>
+            <div class="presets-row">
+              <button class="preset-btn active" id="btn-forest-show-forest">Ensemble Forest</button>
+              <button class="preset-btn" id="btn-forest-show-tree" data-tree-idx="0">Tree 1</button>
+              <button class="preset-btn" id="btn-forest-show-tree" data-tree-idx="1">Tree 2</button>
+              <button class="preset-btn" id="btn-forest-show-tree" data-tree-idx="2">Tree 3</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Forest Parameters</h3>
+            <div class="control-row">
+              <label>Number of Trees: <span id="forest-num-val">3</span></label>
+              <input type="range" id="forest-num-slider" min="1" max="5" step="1" value="3" class="custom-slider">
+            </div>
+
+            <div class="control-row">
+              <label>Max Tree Depth: <span id="forest-depth-val">4</span></label>
+              <input type="range" id="forest-depth-slider" min="1" max="6" step="1" value="4" class="custom-slider">
+            </div>
+
+            <div class="btn-group">
+              <button class="btn btn-secondary" id="btn-forest-generate">Generate Data</button>
+              <button class="btn btn-danger" id="btn-forest-clear">Clear Points</button>
+            </div>
+
+            <div class="divider"></div>
+
+            <h3>Ensemble Concept</h3>
+            <p class="description">
+              A single <strong>Decision Tree</strong> splits data orthogonally, leading to blocky boundaries. 
+              A <strong>Random Forest</strong> trains multiple independent trees on bootstrapped (sampled) data. 
+              By averaging the probability outputs of all trees, the ensemble generates a smoother, generalized boundary that reduces overfitting.
+            </p>
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Bottom Navigation Bar (iOS Tab Bar style) -->
+    <nav class="app-navbar">
+      <button class="nav-item active" data-tab="lab-vectors">
+        <span class="nav-icon">↗</span>
+        <span class="nav-label">Vectors</span>
+      </button>
+      <button class="nav-item" data-tab="lab-activations">
+        <span class="nav-icon">∫</span>
+        <span class="nav-label">Activations</span>
+      </button>
+      <button class="nav-item" data-tab="lab-nn">
+        <span class="nav-icon">🧠</span>
+        <span class="nav-label">Nets</span>
+      </button>
+      <button class="nav-item" data-tab="lab-kmeans">
+        <span class="nav-icon">⚄</span>
+        <span class="nav-label">K-Means</span>
+      </button>
+      <button class="nav-item" data-tab="lab-svm">
+        <span class="nav-icon">☯</span>
+        <span class="nav-label">SVM</span>
+      </button>
+      <button class="nav-item" data-tab="lab-forest">
+        <span class="nav-icon">🌲</span>
+        <span class="nav-label">Forest</span>
+      </button>
+    </nav>
+
+  </div>
+
+  <!-- Javascript Modules -->
+  <script src="js/vector-lab.js"></script>
+  <script src="js/activation-lab.js"></script>
+  <script src="js/nn-lab.js"></script>
+  <script src="js/kmeans-lab.js"></script>
+  <script src="js/svm-lab.js"></script>
+  <script src="js/forest-lab.js"></script>
+  
+  <!-- App Coordinator -->
+  <script>
+    // Quick utility to set canvases HDPI
+    window.setupHdpiCanvas = function(canvas) {
+      const rect = canvas.getBoundingClientRect();
+      if (rect.width === 0 || rect.height === 0) {
+        return null; // Guard against 0 dimensions when hidden
+      }
+      const dpr = window.devicePixelRatio || 1;
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      const ctx = canvas.getContext('2d');
+      ctx.scale(dpr, dpr);
+      return { width: rect.width, height: rect.height, ctx };
+    };
+
+    document.addEventListener('DOMContentLoaded', () => {
+      // Setup Tab Switcher
+      const navItems = document.querySelectorAll('.nav-item');
+      const sections = document.querySelectorAll('.lab-section');
+      const headerStatus = document.getElementById('header-status');
+
+      const tabNames = {
+        'lab-vectors': 'VECTORS LAB ACTIVE',
+        'lab-activations': 'ACTIVATION FUNCTIONS LAB',
+        'lab-nn': 'NEURAL NETWORK LAB',
+        'lab-kmeans': 'K-MEANS CLUSTERING LAB',
+        'lab-svm': 'SUPPORT VECTOR MACHINES',
+        'lab-forest': 'RANDOM FOREST LAB'
+      };
+
+      // Instantiated lab classes will be assigned here
+      let activeLabInstance = null;
+
+      function switchTab(targetTabId) {
+        // Deactivate all
+        navItems.forEach(n => n.classList.remove('active'));
+        sections.forEach(s => s.classList.remove('active'));
+
+        // Activate target
+        const activeNav = document.querySelector(`.nav-item[data-tab="${targetTabId}"]`);
+        const activeSection = document.getElementById(targetTabId);
+
+        if (activeNav) activeNav.classList.add('active');
+        if (activeSection) activeSection.classList.add('active');
+
+        headerStatus.textContent = tabNames[targetTabId] || 'AI ACADEMY';
+
+        // Trigger resize on canvas for sizing adjustments
+        window.dispatchEvent(new Event('resize'));
+      }
+
+      navItems.forEach(item => {
+        item.addEventListener('click', (e) => {
+          const tabId = item.getAttribute('data-tab');
+          switchTab(tabId);
+        });
+      });
+
+      // Trigger resize after load to guarantee everything settles
+      if (document.readyState === 'complete') {
+        window.dispatchEvent(new Event('resize'));
+      } else {
+        window.addEventListener('load', () => {
+          window.dispatchEvent(new Event('resize'));
+        });
+      }
+    });
+  </script>
+</body>
+</html>

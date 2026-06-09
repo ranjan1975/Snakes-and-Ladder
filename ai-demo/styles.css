@@ -1,0 +1,581 @@
+/* Imports */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Orbitron:wght@500;700;900&family=Outfit:wght@400;600;800&display=swap');
+
+/* Variables */
+:root {
+  --bg-primary: #090615;
+  --bg-secondary: #120e2b;
+  --text-primary: #f8f9fa;
+  --text-secondary: #a0aec0;
+  
+  --neon-cyan: #00f2fe;
+  --neon-rose: #ff007f;
+  --neon-green: #39ff14;
+  --neon-orange: #ff5e00;
+  --neon-yellow: #ffd700;
+  
+  --glass-bg: rgba(255, 255, 255, 0.03);
+  --glass-border: rgba(255, 255, 255, 0.06);
+  --glass-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.45);
+}
+
+/* Reset and Global Styles */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+  background-color: var(--bg-primary);
+  background-image: 
+    radial-gradient(circle at 10% 20%, rgba(90, 40, 160, 0.15) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(0, 150, 255, 0.12) 0%, transparent 40%);
+  color: var(--text-primary);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4 {
+  font-family: 'Outfit', sans-serif;
+  letter-spacing: 0.5px;
+}
+
+.brand-font {
+  font-family: 'Orbitron', sans-serif;
+}
+
+/* Header */
+header {
+  width: 100%;
+  padding: 20px 40px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  background: rgba(9, 6, 21, 0.7);
+  backdrop-filter: blur(10px);
+  z-index: 10;
+}
+
+.logo {
+  font-size: 1.6rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--neon-cyan) 0%, var(--neon-rose) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow: 0 0 20px rgba(0, 242, 254, 0.3);
+}
+
+/* Main Layout */
+main {
+  flex: 1;
+  padding: 24px;
+  max-width: 1500px;
+  width: 100%;
+  margin: 0 auto;
+}
+
+.dashboard {
+  display: grid;
+  grid-template-columns: 320px 1fr 1fr;
+  gap: 24px;
+  align-items: start;
+}
+
+/* Glass Panels */
+.glass-panel {
+  background: var(--glass-bg);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid var(--glass-border);
+  box-shadow: var(--glass-shadow);
+  border-radius: 16px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.panel-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: white;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  padding-bottom: 10px;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* Controls Components */
+.control-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.control-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  display: flex;
+  justify-content: space-between;
+}
+
+.control-val {
+  color: var(--neon-cyan);
+  font-family: 'Orbitron', sans-serif;
+  font-size: 0.85rem;
+}
+
+/* Dropdown/Select Styles */
+.custom-select {
+  background: rgba(0, 0, 0, 0.3);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  padding: 10px 12px;
+  border-radius: 8px;
+  outline: none;
+  font-size: 0.9rem;
+  cursor: pointer;
+  width: 100%;
+}
+
+.custom-select:focus {
+  border-color: var(--neon-cyan);
+}
+
+/* Slider Bar */
+.custom-slider {
+  -webkit-appearance: none;
+  width: 100%;
+  height: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+  outline: none;
+  margin: 10px 0;
+}
+
+.custom-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--neon-cyan);
+  cursor: pointer;
+  box-shadow: 0 0 10px var(--neon-cyan);
+  transition: transform 0.1s;
+}
+
+.custom-slider::-webkit-slider-thumb:hover {
+  transform: scale(1.2);
+}
+
+/* Architecture Builder Buttons */
+.layer-setup-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  padding: 8px 12px;
+  border-radius: 8px;
+}
+
+.layer-btn-group {
+  display: flex;
+  gap: 6px;
+}
+
+.mini-btn {
+  background: rgba(255, 255, 255, 0.05);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.mini-btn:hover {
+  background: rgba(255,255,255,0.12);
+}
+
+.btn {
+  background: rgba(255, 255, 255, 0.05);
+  color: white;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  padding: 12px 20px;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 600;
+  font-size: 0.95rem;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.3s;
+}
+
+.btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: translateY(-1px);
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, #00f2fe 0%, #4facfe 100%);
+  border: none;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.3);
+}
+
+.btn-primary:hover {
+  box-shadow: 0 0 25px rgba(0, 242, 254, 0.5);
+}
+
+.btn-danger {
+  background: rgba(255, 0, 127, 0.15);
+  border: 1px solid var(--neon-rose);
+  color: var(--neon-rose);
+}
+
+.btn-danger:hover {
+  background: rgba(255, 0, 127, 0.25);
+  box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+}
+
+/* Custom switch */
+.switch {
+  position: relative;
+  display: inline-block;
+  width: 42px;
+  height: 24px;
+}
+
+.switch input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255,255,255,0.1);
+  transition: .3s;
+  border-radius: 24px;
+}
+
+.slider:before {
+  position: absolute;
+  content: "";
+  height: 16px;
+  width: 16px;
+  left: 4px;
+  bottom: 4px;
+  background-color: white;
+  transition: .3s;
+  border-radius: 50%;
+}
+
+input:checked + .slider {
+  background-color: rgba(0, 242, 254, 0.3);
+}
+
+input:checked + .slider:before {
+  transform: translateX(18px);
+  background-color: var(--neon-cyan);
+}
+
+/* Middle Column: Interactive Dataset Canvas */
+.canvas-card {
+  align-items: center;
+}
+
+.canvas-container {
+  width: 100%;
+  max-width: 400px;
+  aspect-ratio: 1/1;
+  position: relative;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 2px solid rgba(255, 255, 255, 0.05);
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+#dataset-canvas {
+  width: 100%;
+  height: 100%;
+  cursor: crosshair;
+}
+
+.class-picker {
+  display: flex;
+  gap: 12px;
+  width: 100%;
+}
+
+.class-btn {
+  flex: 1;
+  background: rgba(255, 255, 255, 0.03);
+  border: 2px solid rgba(255, 255, 255, 0.06);
+  padding: 10px;
+  border-radius: 8px;
+  cursor: pointer;
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  transition: all 0.2s;
+}
+
+.class-btn.class-a.active {
+  border-color: var(--neon-cyan);
+  color: white;
+  background: rgba(0, 242, 254, 0.08);
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+}
+
+.class-btn.class-b.active {
+  border-color: var(--neon-rose);
+  color: white;
+  background: rgba(255, 0, 127, 0.08);
+  box-shadow: 0 0 10px rgba(255, 0, 127, 0.2);
+}
+
+.dot-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+}
+
+.class-a .dot-indicator { background-color: var(--neon-cyan); box-shadow: 0 0 5px var(--neon-cyan); }
+.class-b .dot-indicator { background-color: var(--neon-rose); box-shadow: 0 0 5px var(--neon-rose); }
+
+/* Dataset Preset selectors */
+.presets-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 8px;
+  width: 100%;
+}
+
+.preset-btn {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.08);
+  color: var(--text-secondary);
+  padding: 8px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  font-weight: 500;
+  transition: all 0.2s;
+}
+
+.preset-btn:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: white;
+}
+
+.preset-btn.active {
+  border-color: var(--neon-cyan);
+  background: rgba(0,242,254,0.05);
+  color: white;
+}
+
+/* Right Column: Visualization SVG & Graphs */
+.viz-card {
+  height: 100%;
+}
+
+.network-svg-container {
+  width: 100%;
+  height: 260px;
+  background: rgba(0,0,0,0.2);
+  border-radius: 12px;
+  border: 1px solid rgba(255,255,255,0.03);
+  position: relative;
+  overflow: hidden;
+}
+
+#network-svg {
+  width: 100%;
+  height: 100%;
+}
+
+/* Node/Link styling in SVG */
+.node-circle {
+  transition: r 0.1s ease, fill 0.3s;
+}
+
+.weight-line {
+  transition: stroke-width 0.15s, stroke 0.3s;
+  stroke-linecap: round;
+}
+
+/* Pulse animation on firing weights */
+.signal-pulse {
+  fill: var(--neon-green);
+  opacity: 0;
+}
+
+.training .signal-pulse {
+  animation: flow 1.5s linear infinite;
+}
+
+@keyframes flow {
+  0% { offset-distance: 0%; opacity: 0; }
+  20% { opacity: 0.8; }
+  80% { opacity: 0.8; }
+  100% { offset-distance: 100%; opacity: 0; }
+}
+
+/* Stats and Loss card */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.stat-item {
+  background: rgba(0,0,0,0.15);
+  padding: 10px 14px;
+  border-radius: 8px;
+  border: 1px solid rgba(255,255,255,0.02);
+}
+
+.stat-num {
+  font-family: 'Orbitron', sans-serif;
+  font-size: 1.1rem;
+  color: white;
+  font-weight: 700;
+}
+
+.loss-graph-container {
+  width: 100%;
+  height: 80px;
+  background: rgba(0, 0, 0, 0.2);
+  border-radius: 8px;
+  overflow: hidden;
+  position: relative;
+}
+
+#loss-canvas {
+  width: 100%;
+  height: 100%;
+}
+
+/* Info Box */
+.info-box {
+  background: rgba(0, 242, 254, 0.04);
+  border-left: 3px solid var(--neon-cyan);
+  padding: 12px;
+  border-radius: 0 8px 8px 0;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  color: var(--text-secondary);
+}
+
+/* Responsive Grid styling */
+@media (max-width: 1100px) {
+  .dashboard {
+    grid-template-columns: 320px 1fr;
+  }
+  
+  .viz-card {
+    grid-column: span 2;
+  }
+}
+
+@media (max-width: 800px) {
+  .dashboard {
+    grid-template-columns: 1fr;
+  }
+  
+  .viz-card, .canvas-card {
+    grid-column: span 1;
+  }
+  
+  header {
+    padding: 15px 20px;
+  }
+}
+
+/* Math Walkthrough HUD overlay styles */
+.hidden {
+  display: none !important;
+}
+
+/* Formula and text variables next to SVG nodes */
+.node-text {
+  font-family: 'Orbitron', monospace, sans-serif;
+  font-size: 7.5px;
+  font-weight: 700;
+  fill: #ffffff;
+  text-anchor: middle;
+  pointer-events: none;
+  filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));
+}
+
+.node-text-z {
+  fill: var(--neon-cyan);
+}
+
+.node-text-a {
+  fill: var(--neon-green);
+}
+
+.node-text-delta {
+  fill: var(--neon-rose);
+}
+
+.weight-text {
+  font-family: 'Orbitron', monospace, sans-serif;
+  font-size: 6.5px;
+  font-weight: 500;
+  fill: #a0aec0;
+  text-anchor: middle;
+  pointer-events: none;
+}
+
+/* Pulse styles along path */
+.pulse-circle {
+  pointer-events: none;
+}
+
+/* Walkthrough dynamic highlight classes */
+.node-highlight {
+  stroke: var(--neon-green) !important;
+  stroke-width: 3px !important;
+  r: 12 !important;
+  filter: drop-shadow(0 0 8px var(--neon-green)) !important;
+}
+
+.node-highlight-delta {
+  stroke: var(--neon-rose) !important;
+  stroke-width: 3px !important;
+  r: 12 !important;
+  filter: drop-shadow(0 0 8px var(--neon-rose)) !important;
+}
+
+.weight-highlight {
+  stroke-width: 6px !important;
+  filter: drop-shadow(0 0 5px #ffffff) !important;
+}

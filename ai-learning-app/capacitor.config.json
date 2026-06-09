@@ -1,0 +1,6 @@
+{
+  "appId": "com.cyber.aiacademy",
+  "appName": "AI Academy",
+  "webDir": "www",
+  "bundledWebRuntime": false
+}

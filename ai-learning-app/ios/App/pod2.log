@@ -1,0 +1,985 @@
+  Preparing
+
+Analyzing dependencies
+
+Inspecting targets to integrate
+  Using `ARCHS` setting to build architectures of target `Pods-App`: (``)
+
+Fetching external sources
+-> Fetching podspec for `Capacitor` from `../../node_modules/@capacitor/ios`
+-> Fetching podspec for `CapacitorCordova` from `../../node_modules/@capacitor/ios`
+/Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/function.rb:65: [BUG] Bus Error at 0x0000000102fc0000
+ruby 2.6.10p210 (2022-04-12 revision 67958) [universal.arm64e-darwin21]
+
+-- Crash Report log information --------------------------------------------
+   See Crash Report log file under the one of following:
+     * ~/Library/Logs/DiagnosticReports
+     * /Library/Logs/DiagnosticReports
+   for more details.
+Don't forget to include the above Crash Report log file in bug reports.
+
+-- Control frame information -----------------------------------------------
+c:0050 p:---- s:0314 e:000313 CFUNC  :attach
+c:0049 p:0048 s:0308 e:000307 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/function.rb:65
+c:0048 p:0258 s:0301 e:000300 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/library.rb:218
+c:0047 p:0050 s:0281 e:000280 CLASS  /Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon/libc.rb:17
+c:0046 p:0007 s:0278 e:000277 CLASS  /Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon/libc.rb:7
+c:0045 p:0007 s:0275 e:000274 TOP    /Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon/libc.rb:2 [FINISH]
+c:0044 p:---- s:0272 e:000271 CFUNC  :require
+c:0043 p:0110 s:0267 e:000266 METHOD /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54
+c:0042 p:0042 s:0255 e:000254 TOP    /Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon.rb:15 [FINISH]
+c:0041 p:---- s:0252 e:000251 CFUNC  :require
+c:0040 p:0110 s:0247 e:000246 METHOD /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54
+c:0039 p:0013 s:0235 e:000234 TOP    /Users/ranjan/.gem/ruby/2.6.0/gems/typhoeus-1.6.0/lib/typhoeus.rb:2 [FINISH]
+c:0038 p:---- s:0232 e:000231 CFUNC  :require
+c:0037 p:0110 s:0227 e:000226 METHOD /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54
+c:0036 p:0006 s:0215 e:000214 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:446
+c:0035 p:0045 s:0207 e:000206 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:378
+c:0034 p:0318 s:0196 e:000195 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:371
+c:0033 p:0006 s:0186 e:000185 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:344
+c:0032 p:0059 s:0181 e:000180 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:54
+c:0031 p:0021 s:0177 e:000176 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source.rb:31
+c:0030 p:0030 s:0172 e:000171 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:31 [FINISH]
+c:0029 p:---- s:0167 e:000166 CFUNC  :new
+c:0028 p:0068 s:0162 e:000158 BLOCK  /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:315 [FINISH]
+c:0027 p:0039 s:0154 E:000408 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:322
+c:0026 p:0007 s:0147 e:000146 BLOCK  /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:331 [FINISH]
+c:0025 p:---- s:0143 e:000142 CFUNC  :map
+c:0024 p:0006 s:0139 e:000138 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:331
+c:0023 p:0008 s:0133 e:000132 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:26
+c:0022 p:0004 s:0129 e:000128 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:60
+c:0021 p:0025 s:0125 e:000124 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:393
+c:0020 p:0006 s:0120 e:000119 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/sources_manager.rb:22
+c:0019 p:0010 s:0115 e:000114 BLOCK  /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:179 [FINISH]
+c:0018 p:---- s:0111 e:000110 CFUNC  :map
+c:0017 p:0136 s:0107 e:000106 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:178
+c:0016 p:0024 s:0098 e:000093 BLOCK  /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:1081
+c:0015 p:0081 s:0090 e:000089 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface.rb:64
+c:0014 p:0078 s:0083 e:000082 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:1080
+c:0013 p:0161 s:0076 e:000075 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:125
+c:0012 p:0011 s:0061 e:000060 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:422
+c:0011 p:0007 s:0056 e:000055 BLOCK  /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:244
+c:0010 p:0081 s:0053 e:000052 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface.rb:64
+c:0009 p:0048 s:0046 e:000045 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:243
+c:0008 p:0009 s:0040 e:000039 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:162
+c:0007 p:0054 s:0036 e:000035 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/install.rb:52
+c:0006 p:0078 s:0031 e:000030 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/command.rb:334
+c:0005 p:0024 s:0024 e:000023 METHOD /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command.rb:52
+c:0004 p:0378 s:0019 e:000018 TOP    /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/bin/pod:55 [FINISH]
+c:0003 p:---- s:0013 e:000012 CFUNC  :load
+c:0002 p:0109 s:0008 E:0014c0 EVAL   /Users/ranjan/.gem/ruby/2.6.0/bin/pod:23 [FINISH]
+c:0001 p:0000 s:0003 E:002430 (none) [FINISH]
+
+-- Ruby level backtrace information ----------------------------------------
+/Users/ranjan/.gem/ruby/2.6.0/bin/pod:23:in `<main>'
+/Users/ranjan/.gem/ruby/2.6.0/bin/pod:23:in `load'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/bin/pod:55:in `<top (required)>'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command.rb:52:in `run'
+/Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/command.rb:334:in `run'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/install.rb:52:in `run'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:162:in `install!'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:243:in `resolve_dependencies'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface.rb:64:in `section'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:244:in `block in resolve_dependencies'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb:422:in `analyze'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:125:in `analyze'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:1080:in `resolve_dependencies'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface.rb:64:in `section'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:1081:in `block in resolve_dependencies'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:178:in `sources'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:178:in `map'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb:179:in `block in sources'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/sources_manager.rb:22:in `find_or_create_source_with_url'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:393:in `source_with_url'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:60:in `all'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:26:in `aggregate'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:331:in `aggregate_with_repos'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:331:in `map'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:331:in `block in aggregate_with_repos'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:322:in `source_from_path'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:315:in `block in source_from_path'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb:315:in `new'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:31:in `initialize'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source.rb:31:in `initialize'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:54:in `refresh_metadata'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:344:in `download_file'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:371:in `download_file_async'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:378:in `download_and_save_with_retries_async'
+/Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb:446:in `download_typhoeus_impl_async'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+/Users/ranjan/.gem/ruby/2.6.0/gems/typhoeus-1.6.0/lib/typhoeus.rb:2:in `<top (required)>'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+/Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon.rb:15:in `<top (required)>'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+/System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb:54:in `require'
+/Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon/libc.rb:2:in `<top (required)>'
+/Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon/libc.rb:7:in `<module:Ethon>'
+/Users/ranjan/.gem/ruby/2.6.0/gems/ethon-0.18.0/lib/ethon/libc.rb:17:in `<module:Libc>'
+/Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/library.rb:218:in `attach_function'
+/Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/function.rb:65:in `attach'
+/Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/function.rb:65:in `attach'
+
+-- Other runtime information -----------------------------------------------
+
+* Loaded script: /Users/ranjan/.gem/ruby/2.6.0/bin/pod
+
+* Loaded features:
+
+    0 enumerator.so
+    1 thread.rb
+    2 rational.so
+    3 complex.so
+    4 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/enc/encdb.bundle
+    5 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/enc/trans/transdb.bundle
+    6 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/rbconfig.rb
+    7 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/compatibility.rb
+    8 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/defaults.rb
+    9 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/deprecate.rb
+   10 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/errors.rb
+   11 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/version.rb
+   12 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/requirement.rb
+   13 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/platform.rb
+   14 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/basic_specification.rb
+   15 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/stub_specification.rb
+   16 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/delegate.rb
+   17 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/rfc2396_parser.rb
+   18 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/rfc3986_parser.rb
+   19 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/common.rb
+   20 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/generic.rb
+   21 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/file.rb
+   22 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/ftp.rb
+   23 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/http.rb
+   24 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/https.rb
+   25 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/ldap.rb
+   26 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/ldaps.rb
+   27 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri/mailto.rb
+   28 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/uri.rb
+   29 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/specification_policy.rb
+   30 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/util/list.rb
+   31 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/stringio.bundle
+   32 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/specification.rb
+   33 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/exceptions.rb
+   34 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/util.rb
+   35 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/bundler_version_finder.rb
+   36 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/dependency.rb
+   37 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_gem.rb
+   38 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/monitor.rb
+   39 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_require.rb
+   40 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/core_ext/kernel_warn.rb
+   41 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems.rb
+   42 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/path_support.rb
+   43 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/version.rb
+   44 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/core_ext/name_error.rb
+   45 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/levenshtein.rb
+   46 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/jaro_winkler.rb
+   47 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/spell_checker.rb
+   48 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/spell_checkers/name_error_checkers/class_name_checker.rb
+   49 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/spell_checkers/name_error_checkers/variable_name_checker.rb
+   50 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/spell_checkers/name_error_checkers.rb
+   51 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/spell_checkers/method_name_checker.rb
+   52 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/spell_checkers/key_error_checker.rb
+   53 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/spell_checkers/null_checker.rb
+   54 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean/formatters/plain_formatter.rb
+   55 /Library/Ruby/Gems/2.6.0/gems/did_you_mean-1.3.0/lib/did_you_mean.rb
+   56 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/tsort.rb
+   57 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/request_set/gem_dependency_api.rb
+   58 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/request_set/lockfile/parser.rb
+   59 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/request_set/lockfile/tokenizer.rb
+   60 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/request_set/lockfile.rb
+   61 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/request_set.rb
+   62 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/gem_metadata.rb
+   63 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/errors.rb
+   64 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/set.rb
+   65 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/action.rb
+   66 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/add_edge_no_circular.rb
+   67 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/add_vertex.rb
+   68 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/delete_edge.rb
+   69 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/detach_vertex_named.rb
+   70 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/set_payload.rb
+   71 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/tag.rb
+   72 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/log.rb
+   73 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph/vertex.rb
+   74 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/dependency_graph.rb
+   75 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/state.rb
+   76 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/modules/specification_provider.rb
+   77 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/delegates/resolution_state.rb
+   78 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/delegates/specification_provider.rb
+   79 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/resolution.rb
+   80 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/resolver.rb
+   81 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo/modules/ui.rb
+   82 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo/lib/molinillo.rb
+   83 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/molinillo.rb
+   84 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/activation_request.rb
+   85 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/conflict.rb
+   86 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/dependency_request.rb
+   87 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/requirement_list.rb
+   88 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/stats.rb
+   89 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/set.rb
+   90 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/api_set.rb
+   91 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/composed_set.rb
+   92 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/best_set.rb
+   93 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/current_set.rb
+   94 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/git_set.rb
+   95 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/index_set.rb
+   96 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/installer_set.rb
+   97 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/lock_set.rb
+   98 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/vendor_set.rb
+   99 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/source_set.rb
+  100 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/specification.rb
+  101 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/spec_specification.rb
+  102 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/api_specification.rb
+  103 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/git_specification.rb
+  104 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/index_specification.rb
+  105 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/installed_specification.rb
+  106 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/local_specification.rb
+  107 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/lock_specification.rb
+  108 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver/vendor_specification.rb
+  109 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/resolver.rb
+  110 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/source/git.rb
+  111 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/source/installed.rb
+  112 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/source/specific_file.rb
+  113 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/source/local.rb
+  114 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/source/lock.rb
+  115 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/source/vendor.rb
+  116 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/rubygems/source.rb
+  117 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/pathname.bundle
+  118 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/pathname.rb
+  119 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/ansi/cursor.rb
+  120 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/ansi/graphics.rb
+  121 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/ansi/string_escaper.rb
+  122 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/ansi.rb
+  123 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/argument.rb
+  124 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/argv.rb
+  125 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/command/banner.rb
+  126 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/command/plugin_manager.rb
+  127 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/command/argument_suggester.rb
+  128 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/command.rb
+  129 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/informative_error.rb
+  130 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide/help.rb
+  131 /Users/ranjan/.gem/ruby/2.6.0/gems/claide-1.1.0/lib/claide.rb
+  132 /Users/ranjan/.gem/ruby/2.6.0/gems/colored2-3.1.2/lib/colored2/codes.rb
+  133 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/forwardable/impl.rb
+  134 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/forwardable.rb
+  135 /Users/ranjan/.gem/ruby/2.6.0/gems/colored2-3.1.2/lib/colored2/ascii_decorator.rb
+  136 /Users/ranjan/.gem/ruby/2.6.0/gems/colored2-3.1.2/lib/colored2/strings.rb
+  137 /Users/ranjan/.gem/ruby/2.6.0/gems/colored2-3.1.2/lib/colored2.rb
+  138 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/gem_version.rb
+  139 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/user_interface.rb
+  140 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj.rb
+  141 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/securerandom.rb
+  142 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/constants.rb
+  143 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/utility/engine.rb
+  144 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/map/non_concurrent_map_backend.rb
+  145 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/map/mri_map_backend.rb
+  146 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/map.rb
+  147 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/deep_merge.rb
+  148 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/except.rb
+  149 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/slice.rb
+  150 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/thread_safe/util.rb
+  151 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/hash.rb
+  152 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/version.rb
+  153 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/utils.rb
+  154 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/exceptions.rb
+  155 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/interpolate/ruby.rb
+  156 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n.rb
+  157 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/lazy_load_hooks.rb
+  158 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/config.rb
+  159 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/i18n.rb
+  160 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/inflector/inflections.rb
+  161 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/inflections.rb
+  162 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/blank.rb
+  163 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/inflector/methods.rb
+  164 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/dependencies/autoload.rb
+  165 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/gem_version.rb
+  166 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/version.rb
+  167 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/concern.rb
+  168 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/attribute_accessors.rb
+  169 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/version.rb
+  170 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/errors.rb
+  171 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/timeout.rb
+  172 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/abstract_object.rb
+  173 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/utility/native_extension_loader.rb
+  174 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/utility/monotonic_time.rb
+  175 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/full_memory_barrier.rb
+  176 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/safe_initialization.rb
+  177 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/volatile.rb
+  178 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic_reference/atomic_direct_update.rb
+  179 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic_reference/numeric_cas_wrapper.rb
+  180 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic_reference/mutex_atomic.rb
+  181 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/atomic_reference.rb
+  182 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/object.rb
+  183 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/abstract_lockable_object.rb
+  184 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/mutex_lockable_object.rb
+  185 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/jruby_lockable_object.rb
+  186 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/lockable_object.rb
+  187 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/event.rb
+  188 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/concern/dereferenceable.rb
+  189 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/concern/obligation.rb
+  190 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/fiber.bundle
+  191 /Users/ranjan/.gem/ruby/2.6.0/gems/logger-1.7.0/lib/logger/version.rb
+  192 /Users/ranjan/.gem/ruby/2.6.0/gems/logger-1.7.0/lib/logger/formatter.rb
+  193 /Users/ranjan/.gem/ruby/2.6.0/gems/logger-1.7.0/lib/logger/period.rb
+  194 /Users/ranjan/.gem/ruby/2.6.0/gems/logger-1.7.0/lib/logger/log_device.rb
+  195 /Users/ranjan/.gem/ruby/2.6.0/gems/logger-1.7.0/lib/logger/severity.rb
+  196 /Users/ranjan/.gem/ruby/2.6.0/gems/logger-1.7.0/lib/logger/errors.rb
+  197 /Users/ranjan/.gem/ruby/2.6.0/gems/logger-1.7.0/lib/logger.rb
+  198 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/concern/logging.rb
+  199 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/concern/deprecation.rb
+  200 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/executor_service.rb
+  201 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/abstract_executor_service.rb
+  202 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/serial_executor_service.rb
+  203 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/immediate_executor.rb
+  204 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/delay.rb
+  205 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/ruby_executor_service.rb
+  206 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/ruby_thread_pool_executor.rb
+  207 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/thread_pool_executor.rb
+  208 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/fixed_thread_pool.rb
+  209 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/cached_thread_pool.rb
+  210 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/etc.bundle
+  211 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/utility/processor_counter.rb
+  212 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/configuration.rb
+  213 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/mutex_atomic_boolean.rb
+  214 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/atomic_boolean.rb
+  215 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/utility/native_integer.rb
+  216 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/mutex_atomic_fixnum.rb
+  217 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/atomic_fixnum.rb
+  218 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/cyclic_barrier.rb
+  219 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/mutex_count_down_latch.rb
+  220 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/java_count_down_latch.rb
+  221 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/count_down_latch.rb
+  222 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/lock.rb
+  223 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/read_write_lock.rb
+  224 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/locals.rb
+  225 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/fiber_local_var.rb
+  226 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/thread_local_var.rb
+  227 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/lock_local_var.rb
+  228 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/reentrant_read_write_lock.rb
+  229 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/mutex_semaphore.rb
+  230 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/semaphore.rb
+  231 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomics.rb
+  232 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/simple_executor_service.rb
+  233 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/indirect_immediate_executor.rb
+  234 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/java_executor_service.rb
+  235 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/java_single_thread_executor.rb
+  236 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/java_thread_pool_executor.rb
+  237 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/ruby_single_thread_executor.rb
+  238 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/safe_task_executor.rb
+  239 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/serialized_execution.rb
+  240 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/serialized_execution_delegator.rb
+  241 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/single_thread_executor.rb
+  242 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/copy_on_write_observer_set.rb
+  243 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/copy_on_notify_observer_set.rb
+  244 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/concern/observable.rb
+  245 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/ivar.rb
+  246 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/options.rb
+  247 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/scheduled_task.rb
+  248 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/java_non_concurrent_priority_queue.rb
+  249 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/ruby_non_concurrent_priority_queue.rb
+  250 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/non_concurrent_priority_queue.rb
+  251 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executor/timer_set.rb
+  252 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/executors.rb
+  253 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/condition.rb
+  254 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization.rb
+  255 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atomic/atomic_markable_reference.rb
+  256 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/agent.rb
+  257 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/atom.rb
+  258 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/array.rb
+  259 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/thread_safe/util/data_structures.rb
+  260 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/set.rb
+  261 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/tuple.rb
+  262 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/async.rb
+  263 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/future.rb
+  264 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/dataflow.rb
+  265 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/maybe.rb
+  266 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/exchanger.rb
+  267 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/synchronization/abstract_struct.rb
+  268 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/immutable_struct.rb
+  269 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/mutable_struct.rb
+  270 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/mvar.rb
+  271 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/promise.rb
+  272 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/settable_struct.rb
+  273 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/timer_task.rb
+  274 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/tvar.rb
+  275 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/collection/lock_free_stack.rb
+  276 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/re_include.rb
+  277 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/promises.rb
+  278 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent/thread_safe/synchronized_delegator.rb
+  279 /Users/ranjan/.gem/ruby/2.6.0/gems/concurrent-ruby-1.3.4/lib/concurrent-ruby/concurrent.rb
+  280 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/logger_thread_safe_level.rb
+  281 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/logger_silence.rb
+  282 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/logger.rb
+  283 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_and_time/compatibility.rb
+  284 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support.rb
+  285 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array/wrap.rb
+  286 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array/access.rb
+  287 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/date_core.bundle
+  288 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/date.rb
+  289 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/time.rb
+  290 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/base64.rb
+  291 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/bigdecimal.bundle
+  292 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/bigdecimal.rb
+  293 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/bigdecimal/util.rb
+  294 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/delegation.rb
+  295 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/multibyte.rb
+  296 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/multibyte.rb
+  297 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/inflector/transliterate.rb
+  298 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/inflections.rb
+  299 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_time/calculations.rb
+  300 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/kernel/reporting.rb
+  301 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/xml_mini/rexml.rb
+  302 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/xml_mini.rb
+  303 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/keys.rb
+  304 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/cgi/core.rb
+  305 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/cgi/escape.bundle
+  306 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/cgi/util.rb
+  307 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/cgi/cookie.rb
+  308 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/cgi.rb
+  309 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/to_query.rb
+  310 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/to_param.rb
+  311 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array/conversions.rb
+  312 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array/extract.rb
+  313 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array/extract_options.rb
+  314 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array/grouping.rb
+  315 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/symbol/starts_ends_with.rb
+  316 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/array_inquirer.rb
+  317 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array/inquiry.rb
+  318 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/array.rb
+  319 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/benchmark.rb
+  320 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/benchmark.rb
+  321 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/big_decimal/conversions.rb
+  322 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/big_decimal.rb
+  323 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/redefine_method.rb
+  324 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/class/attribute.rb
+  325 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/class/subclasses.rb
+  326 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/class.rb
+  327 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/acts_like.rb
+  328 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date/acts_like.rb
+  329 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date/blank.rb
+  330 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/filters.rb
+  331 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/duration.rb
+  332 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_and_time/zones.rb
+  333 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date/zones.rb
+  334 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/ruby_core_support.rb
+  335 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/version.rb
+  336 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/string_deduper.rb
+  337 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/timestamp.rb
+  338 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/with_offset.rb
+  339 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/datetime_with_offset.rb
+  340 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/time_with_offset.rb
+  341 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/timestamp_with_offset.rb
+  342 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/timezone_offset.rb
+  343 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/timezone_transition.rb
+  344 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/transition_rule.rb
+  345 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/annual_rules.rb
+  346 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources.rb
+  347 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/timezone_info.rb
+  348 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/data_timezone_info.rb
+  349 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/linked_timezone_info.rb
+  350 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/constant_offset_data_timezone_info.rb
+  351 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/transitions_data_timezone_info.rb
+  352 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/country_info.rb
+  353 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/strscan.bundle
+  354 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/posix_time_zone_parser.rb
+  355 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/zoneinfo_reader.rb
+  356 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_source.rb
+  357 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/ruby_data_source.rb
+  358 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_sources/zoneinfo_data_source.rb
+  359 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/timezone_period.rb
+  360 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/offset_timezone_period.rb
+  361 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/transitions_timezone_period.rb
+  362 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/timezone.rb
+  363 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/info_timezone.rb
+  364 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/data_timezone.rb
+  365 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/linked_timezone.rb
+  366 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/timezone_proxy.rb
+  367 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/country.rb
+  368 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/country_timezone.rb
+  369 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2.rb
+  370 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2/country_definer.rb
+  371 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2/country_index_definer.rb
+  372 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2/country_index_definition.rb
+  373 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2/timezone_definer.rb
+  374 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2/timezone_definition.rb
+  375 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2/timezone_index_definer.rb
+  376 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format2/timezone_index_definition.rb
+  377 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format1.rb
+  378 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format1/country_definer.rb
+  379 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format1/country_index_definition.rb
+  380 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format1/timezone_definer.rb
+  381 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format1/timezone_definition.rb
+  382 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo/format1/timezone_index_definition.rb
+  383 /Users/ranjan/.gem/ruby/2.6.0/gems/tzinfo-2.0.6/lib/tzinfo.rb
+  384 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/values/time_zone.rb
+  385 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/time_with_zone.rb
+  386 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/time/acts_like.rb
+  387 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/time/zones.rb
+  388 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/try.rb
+  389 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/time/conversions.rb
+  390 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_time/conversions.rb
+  391 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_and_time/calculations.rb
+  392 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date/calculations.rb
+  393 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date/conversions.rb
+  394 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date.rb
+  395 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_time/acts_like.rb
+  396 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_time/blank.rb
+  397 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_time/compatibility.rb
+  398 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/date_time.rb
+  399 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/digest.bundle
+  400 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/digest.rb
+  401 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/digest/uuid.rb
+  402 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/digest.rb
+  403 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/enumerable.rb
+  404 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/fileutils/version.rb
+  405 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/fileutils.rb
+  406 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/file/atomic.rb
+  407 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/file.rb
+  408 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/reverse_merge.rb
+  409 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/conversions.rb
+  410 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/deep_transform_values.rb
+  411 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/hash_with_indifferent_access.rb
+  412 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash/indifferent_access.rb
+  413 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/hash.rb
+  414 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/integer/multiple.rb
+  415 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/inflector.rb
+  416 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/integer/inflections.rb
+  417 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/remove_method.rb
+  418 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/time/calculations.rb
+  419 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/numeric/time.rb
+  420 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/integer/time.rb
+  421 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/integer.rb
+  422 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/concerning.rb
+  423 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/kernel/concern.rb
+  424 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/kernel/singleton_class.rb
+  425 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/kernel.rb
+  426 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/load_error.rb
+  427 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/marshal.rb
+  428 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/aliasing.rb
+  429 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/introspection.rb
+  430 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/anonymous.rb
+  431 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/attribute_accessors_per_thread.rb
+  432 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/attr_internal.rb
+  433 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module/deprecation.rb
+  434 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/module.rb
+  435 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/name_error.rb
+  436 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/numeric/bytes.rb
+  437 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/number_helper.rb
+  438 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/numeric/conversions.rb
+  439 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/numeric.rb
+  440 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/duplicable.rb
+  441 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/deep_dup.rb
+  442 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/inclusion.rb
+  443 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/conversions.rb
+  444 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/instance_variables.rb
+  445 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/json/version.rb
+  446 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/ostruct.rb
+  447 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/json/generic_object.rb
+  448 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/json/common.rb
+  449 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/json/ext/parser.bundle
+  450 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/json/ext/generator.bundle
+  451 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/json/ext.rb
+  452 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/json.rb
+  453 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/socket.bundle
+  454 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/io/wait.bundle
+  455 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/socket.rb
+  456 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/ipaddr.rb
+  457 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/json.rb
+  458 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/option_merger.rb
+  459 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object/with_options.rb
+  460 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/object.rb
+  461 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/range/conversions.rb
+  462 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/range/compare_range.rb
+  463 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/singleton.rb
+  464 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation/instance_delegator.rb
+  465 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/notifications/instrumenter.rb
+  466 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/mutex_m.rb
+  467 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/notifications/fanout.rb
+  468 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/per_thread_registry.rb
+  469 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/notifications.rb
+  470 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation/behaviors.rb
+  471 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation/reporting.rb
+  472 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation/disallowed.rb
+  473 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation/constant_accessor.rb
+  474 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation/method_wrappers.rb
+  475 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation/proxy_wrappers.rb
+  476 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/deprecation.rb
+  477 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/range/include_time_with_zone.rb
+  478 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/range/overlaps.rb
+  479 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/range/each.rb
+  480 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/range.rb
+  481 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/regexp.rb
+  482 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/securerandom.rb
+  483 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/conversions.rb
+  484 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/starts_ends_with.rb
+  485 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/access.rb
+  486 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/behavior.rb
+  487 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/erb.rb
+  488 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/multibyte/unicode.rb
+  489 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/output_safety.rb
+  490 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/exclude.rb
+  491 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/strip.rb
+  492 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/string_inquirer.rb
+  493 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/environment_inquirer.rb
+  494 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/inquiry.rb
+  495 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/indent.rb
+  496 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string/zones.rb
+  497 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/string.rb
+  498 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/symbol.rb
+  499 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/time/compatibility.rb
+  500 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/time.rb
+  501 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext/uri.rb
+  502 /Users/ranjan/.gem/ruby/2.6.0/gems/activesupport-6.1.7.10/lib/active_support/core_ext.rb
+  503 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/tmpdir.rb
+  504 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/gem_version.rb
+  505 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/version_metadata.rb
+  506 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/gem_version.rb
+  507 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/vendor/version.rb
+  508 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/vendor/requirement.rb
+  509 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/vendor.rb
+  510 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/root_attribute_accessors.rb
+  511 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/consumer.rb
+  512 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/dsl/attribute_support.rb
+  513 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/dsl/attribute.rb
+  514 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/dsl/platform_proxy.rb
+  515 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/dsl/deprecations.rb
+  516 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/dsl.rb
+  517 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/linter/result.rb
+  518 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/linter/analyzer.rb
+  519 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/linter.rb
+  520 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/set/presenter.rb
+  521 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/set.rb
+  522 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification/json.rb
+  523 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/specification.rb
+  524 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core.rb
+  525 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/config.rb
+  526 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/gem_version.rb
+  527 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/api.rb
+  528 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/api_exposable.rb
+  529 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/shellwords.rb
+  530 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/base.rb
+  531 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/standard_error.rb
+  532 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader.rb
+  533 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/downloader/cache.rb
+  534 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/downloader/request.rb
+  535 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/downloader/response.rb
+  536 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/downloader.rb
+  537 /Users/ranjan/.gem/ruby/2.6.0/gems/gh_inspector-1.1.3/lib/gh_inspector/version.rb
+  538 /Users/ranjan/.gem/ruby/2.6.0/gems/gh_inspector-1.1.3/lib/gh_inspector/inspector.rb
+  539 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/protocol.rb
+  540 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/zlib.bundle
+  541 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/exceptions.rb
+  542 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/header.rb
+  543 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/enc/windows_31j.bundle
+  544 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/generic_request.rb
+  545 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/request.rb
+  546 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/requests.rb
+  547 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/response.rb
+  548 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/responses.rb
+  549 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/proxy_delta.rb
+  550 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http/backward.rb
+  551 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/net/http.rb
+  552 /Users/ranjan/.gem/ruby/2.6.0/gems/gh_inspector-1.1.3/lib/gh_inspector/sidekick.rb
+  553 /Users/ranjan/.gem/ruby/2.6.0/gems/gh_inspector-1.1.3/lib/gh_inspector/evidence.rb
+  554 /Users/ranjan/.gem/ruby/2.6.0/gems/gh_inspector-1.1.3/lib/gh_inspector/exception_hound.rb
+  555 /Users/ranjan/.gem/ruby/2.6.0/gems/gh_inspector-1.1.3/lib/gh_inspector.rb
+  556 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface/error_report.rb
+  557 /Users/ranjan/.gem/ruby/2.6.0/gems/addressable-2.9.0/lib/addressable/version.rb
+  558 /Users/ranjan/.gem/ruby/2.6.0/gems/addressable-2.9.0/lib/addressable/idna/pure.rb
+  559 /Users/ranjan/.gem/ruby/2.6.0/gems/addressable-2.9.0/lib/addressable/idna.rb
+  560 /Users/ranjan/.gem/ruby/2.6.0/gems/public_suffix-4.0.7/lib/public_suffix/domain.rb
+  561 /Users/ranjan/.gem/ruby/2.6.0/gems/public_suffix-4.0.7/lib/public_suffix/version.rb
+  562 /Users/ranjan/.gem/ruby/2.6.0/gems/public_suffix-4.0.7/lib/public_suffix/errors.rb
+  563 /Users/ranjan/.gem/ruby/2.6.0/gems/public_suffix-4.0.7/lib/public_suffix/rule.rb
+  564 /Users/ranjan/.gem/ruby/2.6.0/gems/public_suffix-4.0.7/lib/public_suffix/list.rb
+  565 /Users/ranjan/.gem/ruby/2.6.0/gems/public_suffix-4.0.7/lib/public_suffix.rb
+  566 /Users/ranjan/.gem/ruby/2.6.0/gems/addressable-2.9.0/lib/addressable/uri.rb
+  567 /Users/ranjan/.gem/ruby/2.6.0/gems/addressable-2.9.0/lib/addressable/template.rb
+  568 /Users/ranjan/.gem/ruby/2.6.0/gems/addressable-2.9.0/lib/addressable.rb
+  569 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface/inspector_reporter.rb
+  570 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/core_ui.rb
+  571 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/user_interface.rb
+  572 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/acceptor.rb
+  573 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/aggregate.rb
+  574 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/health_reporter.rb
+  575 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/manager.rb
+  576 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source/metadata.rb
+  577 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/source.rb
+  578 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/open-uri.rb
+  579 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/open-uri.rb
+  580 /Users/ranjan/.gem/ruby/2.6.0/gems/netrc-0.11.0/lib/netrc.rb
+  581 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/openssl.bundle
+  582 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/bn.rb
+  583 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/pkey.rb
+  584 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/cipher.rb
+  585 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/config.rb
+  586 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/digest.rb
+  587 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/x509.rb
+  588 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/buffering.rb
+  589 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/io/nonblock.bundle
+  590 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/ssl.rb
+  591 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl/pkcs5.rb
+  592 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/openssl.rb
+  593 /Users/ranjan/.gem/ruby/2.6.0/gems/nap-1.1.0/lib/rest/error.rb
+  594 /Users/ranjan/.gem/ruby/2.6.0/gems/nap-1.1.0/lib/rest/request.rb
+  595 /Users/ranjan/.gem/ruby/2.6.0/gems/nap-1.1.0/lib/rest/response.rb
+  596 /Users/ranjan/.gem/ruby/2.6.0/gems/nap-1.1.0/lib/rest.rb
+  597 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/versions.rb
+  598 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/exception.rb
+  599 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/syntax_error.rb
+  600 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/psych.bundle
+  601 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/omap.rb
+  602 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/set.rb
+  603 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/class_loader.rb
+  604 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/scalar_scanner.rb
+  605 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes/node.rb
+  606 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes/stream.rb
+  607 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes/document.rb
+  608 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes/sequence.rb
+  609 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes/scalar.rb
+  610 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes/mapping.rb
+  611 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes/alias.rb
+  612 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/nodes.rb
+  613 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/streaming.rb
+  614 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/visitors/visitor.rb
+  615 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/visitors/to_ruby.rb
+  616 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/visitors/emitter.rb
+  617 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/handler.rb
+  618 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/tree_builder.rb
+  619 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/visitors/yaml_tree.rb
+  620 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/json/ruby_events.rb
+  621 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/visitors/json_tree.rb
+  622 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/visitors/depth_first.rb
+  623 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/visitors.rb
+  624 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/parser.rb
+  625 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/coder.rb
+  626 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/core_ext.rb
+  627 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/stream.rb
+  628 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/json/yaml_events.rb
+  629 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/json/tree_builder.rb
+  630 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/json/stream.rb
+  631 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych/handlers/document_stream.rb
+  632 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/psych.rb
+  633 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/yaml.rb
+  634 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/executable.rb
+  635 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/cdn_source.rb
+  636 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/trunk_source.rb
+  637 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/sources_manager.rb
+  638 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/core_overrides.rb
+  639 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods.rb
+  640 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/delegates/specification_provider.rb
+  641 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/errors.rb
+  642 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/options/repo_update.rb
+  643 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/options/project_directory.rb
+  644 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/cache/list.rb
+  645 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/cache/clean.rb
+  646 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/cache.rb
+  647 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/env.rb
+  648 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/init.rb
+  649 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/install.rb
+  650 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/ipc/list.rb
+  651 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/ipc/podfile.rb
+  652 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/ipc/podfile_json.rb
+  653 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/ipc/repl.rb
+  654 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/ipc/spec.rb
+  655 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/ipc/update_search_index.rb
+  656 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/ipc.rb
+  657 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/lib/create.rb
+  658 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/lib/lint.rb
+  659 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/lib.rb
+  660 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/list.rb
+  661 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/outdated.rb
+  662 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo/add.rb
+  663 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo/add_cdn.rb
+  664 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo/lint.rb
+  665 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo/list.rb
+  666 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/tempfile.rb
+  667 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo/push.rb
+  668 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo/remove.rb
+  669 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo/update.rb
+  670 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/repo.rb
+  671 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/setup.rb
+  672 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/spec/create.rb
+  673 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/spec/lint.rb
+  674 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/spec/which.rb
+  675 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/spec/cat.rb
+  676 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/spec/edit.rb
+  677 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/spec.rb
+  678 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command/update.rb
+  679 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/command.rb
+  680 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/open3.rb
+  681 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-deintegrate-1.0.5/lib/cocoapods/deintegrate/gem_version.rb
+  682 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-deintegrate-1.0.5/lib/cocoapods/deintegrator.rb
+  683 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-deintegrate-1.0.5/lib/cocoapods_deintegrate.rb
+  684 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-deintegrate-1.0.5/lib/cocoapods/command/deintegrate.rb
+  685 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-deintegrate-1.0.5/lib/cocoapods_plugin.rb
+  686 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/gem_index_cache.rb
+  687 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/gem_helper.rb
+  688 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/plugins_helper.rb
+  689 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/plugins/list.rb
+  690 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/plugins/search.rb
+  691 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/plugins/create.rb
+  692 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/plugins/publish.rb
+  693 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/plugins/installed.rb
+  694 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/pod/command/plugins.rb
+  695 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-plugins-1.0.0/lib/cocoapods_plugin.rb
+  696 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-search-1.0.1/lib/cocoapods-search/command/search.rb
+  697 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-search-1.0.1/lib/cocoapods-search/command.rb
+  698 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-search-1.0.1/lib/cocoapods_plugin.rb
+  699 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/add_owner.rb
+  700 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/delete.rb
+  701 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/deprecate.rb
+  702 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/info.rb
+  703 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/me.rb
+  704 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/push.rb
+  705 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/register.rb
+  706 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk/remove_owner.rb
+  707 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/pod/command/trunk.rb
+  708 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-trunk-1.6.0/lib/cocoapods_plugin.rb
+  709 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-try-1.2.0/lib/pod/try_settings.rb
+  710 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-try-1.2.0/lib/pod/command/try.rb
+  711 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-try-1.2.0/lib/cocoapods_plugin.rb
+  712 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/unicode_normalize/tables.rb
+  713 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/unicode_normalize/normalize.rb
+  714 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/podfile/dsl.rb
+  715 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/podfile/target_definition.rb
+  716 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/podfile.rb
+  717 /Users/ranjan/Documents/AntiGravity Learning/ai-learning-app/node_modules/@capacitor/ios/scripts/pods_helpers.rb
+  718 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/build_type.rb
+  719 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/podfile.rb
+  720 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer.rb
+  721 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/sandbox.rb
+  722 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/sandbox/headers_store.rb
+  723 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/lockfile.rb
+  724 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/pre_install_hooks_context.rb
+  725 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/hooks_manager.rb
+  726 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/source_provider_hooks_context.rb
+  727 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/version.rb
+  728 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer.rb
+  729 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/installation_options.rb
+  730 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer/podfile_dependency_cache.rb
+  731 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/platform.rb
+  732 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/dependency.rb
+  733 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-core-1.16.2/lib/cocoapods-core/requirement.rb
+  734 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/podfile_validator.rb
+  735 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/git.rb
+  736 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/mercurial.rb
+  737 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/remote_file.rb
+  738 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/http.rb
+  739 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/scp.rb
+  740 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-downloader-2.1/lib/cocoapods-downloader/subversion.rb
+  741 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer/target_inspector.rb
+  742 /Users/ranjan/.gem/ruby/2.6.0/gems/atomos-0.1.3/lib/atomos/version.rb
+  743 /Users/ranjan/.gem/ruby/2.6.0/gems/atomos-0.1.3/lib/atomos.rb
+  744 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/case_converter.rb
+  745 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object_attributes.rb
+  746 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object_dictionary.rb
+  747 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object_list.rb
+  748 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/constants.rb
+  749 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/swift_package_remote_reference.rb
+  750 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/swift_package_local_reference.rb
+  751 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/swift_package_product_dependency.rb
+  752 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/helpers/groupable_helper.rb
+  753 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/file_system_synchronized_exception_set.rb
+  754 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/file_system_synchronized_root_group.rb
+  755 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/helpers/build_settings_array_settings_by_object_version.rb
+  756 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/build_configuration.rb
+  757 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/build_file.rb
+  758 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/build_phase.rb
+  759 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/build_rule.rb
+  760 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/configuration_list.rb
+  761 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/container_item_proxy.rb
+  762 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/file_reference.rb
+  763 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/helpers/file_references_factory.rb
+  764 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/group.rb
+  765 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/native_target.rb
+  766 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/root_object.rb
+  767 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/target_dependency.rb
+  768 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object/reference_proxy.rb
+  769 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/object.rb
+  770 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/project_helper.rb
+  771 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project/uuid_generator.rb
+  772 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/plist.rb
+  773 /Users/ranjan/.gem/ruby/2.6.0/gems/xcodeproj-1.27.0/lib/xcodeproj/project.rb
+  774 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/version.rb
+  775 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/object.rb
+  776 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/plist.rb
+  777 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/reader.rb
+  778 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/unicode/next_step_mapping.rb
+  779 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/unicode/quote_maps.rb
+  780 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/unicode.rb
+  781 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo/writer.rb
+  782 /Users/ranjan/.gem/ruby/2.6.0/gems/nanaimo-0.4.0/lib/nanaimo.rb
+  783 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer/target_inspection_result.rb
+  784 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer/specs_state.rb
+  785 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/external_sources/abstract_external_source.rb
+  786 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/external_sources/downloader_source.rb
+  787 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/external_sources/path_source.rb
+  788 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/external_sources/podspec_source.rb
+  789 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/external_sources.rb
+  790 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/validator.rb
+  791 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/backend.rb
+  792 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/backend/transliterator.rb
+  793 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/backend/base.rb
+  794 /Users/ranjan/.gem/ruby/2.6.0/gems/i18n-1.14.8/lib/i18n/backend/simple.rb
+  795 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/action.rb
+  796 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/add_edge_no_circular.rb
+  797 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/add_vertex.rb
+  798 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/delete_edge.rb
+  799 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/detach_vertex_named.rb
+  800 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/set_payload.rb
+  801 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/tag.rb
+  802 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/log.rb
+  803 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph/vertex.rb
+  804 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/dependency_graph.rb
+  805 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/installer/analyzer/locking_dependency_analyzer.rb
+  806 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/gem_metadata.rb
+  807 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/state.rb
+  808 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/modules/specification_provider.rb
+  809 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/delegates/resolution_state.rb
+  810 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolution.rb
+  811 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/resolver.rb
+  812 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo/modules/ui.rb
+  813 /Users/ranjan/.gem/ruby/2.6.0/gems/molinillo-0.8.0/lib/molinillo.rb
+  814 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver/lazy_specification.rb
+  815 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver/resolver_specification.rb
+  816 /Users/ranjan/.gem/ruby/2.6.0/gems/cocoapods-1.16.2/lib/cocoapods/resolver.rb
+  817 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/universal-darwin21/digest/sha2.bundle
+  818 /System/Library/Frameworks/Ruby.framework/Versions/2.6/usr/lib/ruby/2.6.0/digest/sha2.rb
+  819 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi_c.bundle
+  820 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/compat.rb
+  821 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/platform.rb
+  822 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/data_converter.rb
+  823 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/types.rb
+  824 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/library_path.rb
+  825 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/dynamic_library.rb
+  826 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/library.rb
+  827 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/errno.rb
+  828 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/abstract_memory.rb
+  829 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/pointer.rb
+  830 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/memorypointer.rb
+  831 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/struct_layout.rb
+  832 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/struct_layout_builder.rb
+  833 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/struct_by_reference.rb
+  834 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/struct.rb
+  835 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/union.rb
+  836 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/managedstruct.rb
+  837 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/callback.rb
+  838 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/io.rb
+  839 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/autopointer.rb
+  840 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/variadic.rb
+  841 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/enum.rb
+  842 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/version.rb
+  843 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/function.rb
+  844 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi/ffi.rb
+  845 /Users/ranjan/.gem/ruby/2.6.0/gems/ffi-1.16.3/lib/ffi.rb
+
+[NOTE]
+You may have encountered a bug in the Ruby interpreter or extension libraries.
+Bug reports are welcome.
+For details: https://www.ruby-lang.org/bugreport.html
+
+[IMPORTANT]
+Don't forget to include the Crash Report log file under
+DiagnosticReports directory in bug reports.
+
