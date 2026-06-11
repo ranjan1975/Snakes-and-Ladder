@@ -68,8 +68,8 @@ class UIController {
       adHintBtn: document.getElementById('ad-hint-btn'),
       adSkipBtn: document.getElementById('ad-skip-btn'),
       rescueTriviaBox: document.getElementById('rescue-trivia-box'),
-      rescueTriviaHeader: document.getElementById('rescue-trivia-header'),
-      rescueTriviaText: document.getElementById('rescue-trivia-text'),
+      rescueTriviaHeader: document.getElementById('trivia-result-header'),
+      rescueTriviaText: document.getElementById('trivia-result-text'),
       rescueContinueBtn: document.getElementById('rescue-continue-btn'),
 
       // Rewarded Ad elements
