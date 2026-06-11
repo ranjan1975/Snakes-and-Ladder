@@ -180,6 +180,36 @@ class UIController {
       this.game.reset();
     });
 
+    // Continue Game Button from Snake Rescue Modal
+    this.dom.rescueContinueBtn.addEventListener('click', () => {
+      this.dom.rescueModal.classList.remove('show');
+      if (this.rescueResolveCallback) {
+        const callback = this.rescueResolveCallback;
+        const result = this.rescueIsCorrect;
+        
+        // Clear references
+        this.rescueResolveCallback = null;
+        this.rescueAdHintCallback = null;
+        this.rescueAdSkipCallback = null;
+        
+        callback(result);
+      }
+    });
+
+    // Hint Button from Snake Rescue Modal
+    this.dom.adHintBtn.addEventListener('click', () => {
+      if (this.rescueAdHintCallback) {
+        this.rescueAdHintCallback();
+      }
+    });
+
+    // Skip Button from Snake Rescue Modal
+    this.dom.adSkipBtn.addEventListener('click', () => {
+      if (this.rescueAdSkipCallback) {
+        this.rescueAdSkipCallback();
+      }
+    });
+
     // Recalculate token positions and redrawing SVGs on resize
     window.addEventListener('resize', () => {
       this.updateTokensUI(false);
@@ -862,7 +892,18 @@ class UIController {
         await this.wait(600); // Wait for the climb/slide transition to finish
       } else {
         // Snake interception flow!
-        const escaped = await this.triggerSnakeRescueFlow(player, snakeOrLadder);
+        let escaped = false;
+        
+        if (player.isBot) {
+          // Bots resolve in the background without showing any modal
+          escaped = Math.random() < 0.35; // 35% chance of bot escaping
+          if (escaped) {
+            this.showToast(`🤖 Clever! Bot ${player.name} answered correctly in background and escaped!`, 'ladder');
+          }
+        } else {
+          // Human player gets the interactive question modal
+          escaped = await this.triggerSnakeRescueFlow(player, snakeOrLadder);
+        }
         
         // Let game engine resolve state
         this.game.resolveSnakeRescue(escaped);
@@ -1069,7 +1110,7 @@ class UIController {
 
   // --- Snake Interception Rescue Question Modal ---
   triggerSnakeRescueFlow(player, snakeOrLadder) {
-    return new Promise(async (resolve) => {
+    return new Promise((resolve) => {
       // Pick a random question
       const randomQuestion = QuestionBank[Math.floor(Math.random() * QuestionBank.length)];
       
@@ -1096,22 +1137,24 @@ class UIController {
       });
 
       // Handle speech voiceover for human players
-      if (!player.isBot) {
-        const optionsText = randomQuestion.options.map((o, i) => `${labels[i]}, ${o}`).join('. ');
-        this.sound.speakText(`Hiss... Interception! Answer this question: ${randomQuestion.question}. Options are: ${optionsText}`);
-      }
+      const optionsText = randomQuestion.options.map((o, i) => `${labels[i]}, ${o}`).join('. ');
+      this.sound.speakText(`Hiss... Interception! Answer this question: ${randomQuestion.question}. Options are: ${optionsText}`);
+
+      // Store resolve callback reference
+      this.rescueResolveCallback = resolve;
 
       // Helper function to handle choice selection
       const selectChoice = (chosenIdx) => {
         // Stop speech
         if (window.speechSynthesis) window.speechSynthesis.cancel();
         
-        // Disable everything
+        // Disable option buttons and ad buttons
         optionButtons.forEach(b => b.classList.add('disabled'));
         this.dom.adHintBtn.disabled = true;
         this.dom.adSkipBtn.disabled = true;
         
         const isCorrect = (parseInt(chosenIdx) === randomQuestion.correct);
+        this.rescueIsCorrect = isCorrect;
         
         // Style selected buttons
         optionButtons.forEach(b => {
@@ -1138,129 +1181,59 @@ class UIController {
         
         this.dom.rescueTriviaText.innerText = randomQuestion.trivia;
         this.dom.rescueTriviaBox.classList.remove('hidden');
-        
-        // Human player must click Continue to resolve
-        if (!player.isBot) {
-          // Remove old listeners from continue button
-          const newContinueBtn = this.dom.rescueContinueBtn.cloneNode(true);
-          this.dom.rescueContinueBtn.parentNode.replaceChild(newContinueBtn, this.dom.rescueContinueBtn);
-          this.dom.rescueContinueBtn = newContinueBtn;
-          
-          this.dom.rescueContinueBtn.addEventListener('click', () => {
-            this.dom.rescueModal.classList.remove('show');
-            resolve(isCorrect);
-          }, { once: true });
-        } else {
-          // Bot auto-continues after reading trivia
-          setTimeout(() => {
-            this.dom.rescueModal.classList.remove('show');
-            resolve(isCorrect);
-          }, 3500);
-        }
       };
 
       // Set up selection handlers
-      if (!player.isBot) {
-        optionButtons.forEach(btn => {
-          btn.addEventListener('click', () => {
-            selectChoice(btn.dataset.index);
-          });
+      optionButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+          selectChoice(btn.dataset.index);
         });
+      });
 
-        // Set up Ad Helper Buttons for humans
-        this.dom.adHintBtn.disabled = false;
-        this.dom.adSkipBtn.disabled = false;
-        
-        // Hint Button (Remove 2 wrong options)
-        const handleHint = async () => {
-          this.dom.adHintBtn.disabled = true;
-          // Stop speech
-          if (window.speechSynthesis) window.speechSynthesis.cancel();
-          
-          // Watch Ad
-          await this.playRewardedAd(5);
-          
-          // Apply Reward: Disable two wrong options
-          const wrongIndices = [];
-          randomQuestion.options.forEach((opt, idx) => {
-            if (idx !== randomQuestion.correct) {
-              wrongIndices.push(idx);
-            }
-          });
-          
-          // Pick two random wrong indices to disable
-          const shuffledWrong = wrongIndices.sort(() => 0.5 - Math.random());
-          const disabledIndices = shuffledWrong.slice(0, 2);
-          
-          disabledIndices.forEach(idx => {
-            optionButtons[idx].classList.add('disabled');
-            optionButtons[idx].style.pointerEvents = 'none';
-          });
-          
-          this.showToast("50/50 hint applied! 2 wrong options removed.", 'info');
-          
-          // Re-announce question concisely
-          this.sound.speakText(`Hiss... 50/50 help applied. Choose from remaining options for: ${randomQuestion.question}`);
-        };
-        
-        // Rebind hint listener
-        const newHintBtn = this.dom.adHintBtn.cloneNode(true);
-        this.dom.adHintBtn.parentNode.replaceChild(newHintBtn, this.dom.adHintBtn);
-        this.dom.adHintBtn = newHintBtn;
-        this.dom.adHintBtn.addEventListener('click', handleHint);
-
-        // Skip Button (Free Escape)
-        const handleSkip = async () => {
-          this.dom.adSkipBtn.disabled = true;
-          this.dom.adHintBtn.disabled = true;
-          
-          // Watch Ad
-          await this.playRewardedAd(5);
-          
-          // Apply Reward: Automatically correct!
-          this.showToast("Bypass applied! Snake excused 🐍✨", 'ladder');
-          selectChoice(randomQuestion.correct);
-        };
-        
-        // Rebind skip listener
-        const newSkipBtn = this.dom.adSkipBtn.cloneNode(true);
-        this.dom.adSkipBtn.parentNode.replaceChild(newSkipBtn, this.dom.adSkipBtn);
-        this.dom.adSkipBtn = newSkipBtn;
-        this.dom.adSkipBtn.addEventListener('click', handleSkip);
-
-      } else {
-        // Bot flow
+      // Set up Ad Helper Button values
+      this.dom.adHintBtn.disabled = false;
+      this.dom.adSkipBtn.disabled = false;
+      
+      // Define Hint Callback
+      this.rescueAdHintCallback = async () => {
         this.dom.adHintBtn.disabled = true;
-        this.dom.adSkipBtn.disabled = true;
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
         
-        // Visual text indicating bot is thinking
-        this.dom.rescueQuestion.innerText = `🤖 [Bot Turn] ${player.name} is reading the question...`;
+        // Watch Ad
+        await this.playRewardedAd(5);
         
-        setTimeout(() => {
-          // Choose option: 55% chance of picking correct index
-          const pickCorrect = Math.random() < 0.55;
-          let selectedIndex;
-          if (pickCorrect) {
-            selectedIndex = randomQuestion.correct;
-          } else {
-            // Pick a random incorrect index
-            const wrongIndices = [];
-            randomQuestion.options.forEach((opt, idx) => {
-              if (idx !== randomQuestion.correct) wrongIndices.push(idx);
-            });
-            selectedIndex = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
+        // Disable two wrong options
+        const wrongIndices = [];
+        randomQuestion.options.forEach((opt, idx) => {
+          if (idx !== randomQuestion.correct) {
+            wrongIndices.push(idx);
           }
-          
-          // Highlight chosen option in bot's turn
-          optionButtons[selectedIndex].style.background = 'rgba(255,255,255,0.15)';
-          optionButtons[selectedIndex].style.border = '2px solid white';
-          
-          setTimeout(() => {
-            selectChoice(selectedIndex);
-          }, 1000);
-          
-        }, 2500);
-      }
+        });
+        
+        // Pick two random wrong indices to disable
+        const shuffledWrong = wrongIndices.sort(() => 0.5 - Math.random());
+        const disabledIndices = shuffledWrong.slice(0, 2);
+        
+        disabledIndices.forEach(idx => {
+          optionButtons[idx].classList.add('disabled');
+          optionButtons[idx].style.pointerEvents = 'none';
+        });
+        
+        this.showToast("50/50 hint applied! 2 wrong options removed.", 'info');
+        this.sound.speakText(`Hiss... Choose from remaining options for: ${randomQuestion.question}`);
+      };
+
+      // Define Skip Callback
+      this.rescueAdSkipCallback = async () => {
+        this.dom.adSkipBtn.disabled = true;
+        this.dom.adHintBtn.disabled = true;
+        
+        // Watch Ad
+        await this.playRewardedAd(5);
+        
+        this.showToast("Bypass applied! Snake excused 🐍✨", 'ladder');
+        selectChoice(randomQuestion.correct);
+      };
     });
   }
 
