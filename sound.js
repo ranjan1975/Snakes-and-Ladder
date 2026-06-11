@@ -395,30 +395,42 @@ class SoundController {
     if (this.bgMusicTimer) return; // Already running
     
     this.musicStep = 0;
+    this.musicActive = true;
     
-    // A slow, atmospheric Am -> F -> C -> G arpeggiator chord progression
+    // Jazzy 7th chords arpeggio pattern (ii-V-I-IV style swing)
+    // Am7 -> D7 -> Gmaj7 -> Cmaj7
     const pattern = [
-      110.00, 130.81, 164.81, 220.00, // Am (A2, C3, E3, A3)
-      87.31,  110.00, 130.81, 174.61, // F (F2, A2, C3, F3)
-      65.41,  82.41,  98.00,  130.81, // C (C2, E2, G2, C3)
-      98.00,  123.47, 146.83, 196.00  // G (G2, B2, D3, G3)
+      // Am7 (ii) (A2, E3, C3, G3)
+      110.00, 164.81, 130.81, 196.00,
+      // D7 (V) (D2, F#3, A3, C4)
+      73.42,  185.00, 220.00, 261.63,
+      // Gmaj7 (I) (G2, B3, D4, F#4)
+      98.00,  246.94, 293.66, 369.99,
+      // Cmaj7 (IV) (C2, E3, G3, B3)
+      65.41,  164.81, 196.00, 246.94
     ];
     
-    const noteTime = 380; // Duration between notes (approx 158 BPM)
-    this.bgMusicTimer = setInterval(() => {
-      if (!this.enabled) {
-        this.stopMusic();
-        return;
-      }
+    const playNextNote = () => {
+      if (!this.musicActive || !this.enabled) return;
+      
       const freq = pattern[this.musicStep];
       this.playBackgroundNote(freq);
+      
+      // Swing rhythm: alternate between long and short beats (approx 65% and 35%)
+      const isSwingOffbeat = (this.musicStep % 2 === 1);
+      const delay = isSwingOffbeat ? 250 : 470; // Swing swing swing!
+      
       this.musicStep = (this.musicStep + 1) % pattern.length;
-    }, noteTime);
+      this.bgMusicTimer = setTimeout(playNextNote, delay);
+    };
+    
+    playNextNote();
   }
 
   stopMusic() {
+    this.musicActive = false;
     if (this.bgMusicTimer) {
-      clearInterval(this.bgMusicTimer);
+      clearTimeout(this.bgMusicTimer);
       this.bgMusicTimer = null;
     }
   }

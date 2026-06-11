@@ -391,6 +391,7 @@ input:checked + .slider:before {
 /* Board styling */
 .board-column {
   display: flex;
+  flex-direction: column;
   justify-content: center;
   align-items: center;
   width: 100%;
@@ -399,7 +400,7 @@ input:checked + .slider:before {
 .board-wrapper {
   position: relative;
   width: 100%;
-  max-width: 620px;
+  max-width: 750px;
   aspect-ratio: 1/1;
   background: rgba(18, 14, 43, 0.5);
   border: 2px solid rgba(255, 255, 255, 0.05);
@@ -1292,12 +1293,13 @@ input:checked + .slider:before {
 
 /* Banner Ad styling */
 .banner-ad-container {
+  grid-column: 1 / -1; /* Span full width of grid container */
   width: 100%;
-  max-width: 620px;
+  max-width: 100%;
   padding: 12px 20px;
   position: relative;
   overflow: hidden;
-  margin-top: 15px;
+  margin-top: 25px; /* Add some space below the board/dice */
   border: 1px solid rgba(255,255,255,0.06);
   border-radius: 12px;
   background: linear-gradient(135deg, rgba(20, 15, 50, 0.4), rgba(8, 5, 25, 0.4));
