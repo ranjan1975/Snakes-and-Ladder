@@ -42,23 +42,55 @@ class UIController {
       winnerRolls: document.getElementById('winner-rolls'),
       winnerClimbs: document.getElementById('winner-climbs'),
       winnerBites: document.getElementById('winner-bites'),
+      winnerEscapes: document.getElementById('winner-escapes'),
       restartBtn: document.getElementById('restart-btn'),
       
       // Toast and Canvas
       toastContainer: document.getElementById('toast-container'),
-      confettiCanvas: document.getElementById('confetti-canvas')
+      confettiCanvas: document.getElementById('confetti-canvas'),
+
+      // Live Ad Monetization Hub & Banners
+      bannerAd: document.getElementById('banner-ad'),
+      bannerAdTitle: document.getElementById('banner-ad-title'),
+      bannerAdDesc: document.getElementById('banner-ad-desc'),
+      bannerAdIcon: document.getElementById('banner-ad-icon'),
+      bannerAdBtn: document.getElementById('banner-ad-btn'),
+      revenueVal: document.getElementById('revenue-val'),
+      impressionsVal: document.getElementById('impressions-val'),
+      ctrVal: document.getElementById('ctr-val'),
+
+      // Snake Rescue Modal elements
+      rescueModal: document.getElementById('rescue-modal'),
+      rescueCategory: document.getElementById('rescue-category'),
+      rescueQuestion: document.getElementById('rescue-question'),
+      rescueOptions: document.getElementById('rescue-options'),
+      rescueAdActions: document.getElementById('rescue-ad-actions'),
+      adHintBtn: document.getElementById('ad-hint-btn'),
+      adSkipBtn: document.getElementById('ad-skip-btn'),
+      rescueTriviaBox: document.getElementById('rescue-trivia-box'),
+      rescueTriviaHeader: document.getElementById('rescue-trivia-header'),
+      rescueTriviaText: document.getElementById('rescue-trivia-text'),
+      rescueContinueBtn: document.getElementById('rescue-continue-btn'),
+
+      // Rewarded Ad elements
+      rewardedAdModal: document.getElementById('rewarded-ad-modal'),
+      adCountdown: document.getElementById('ad-countdown'),
+      adProgressBar: document.getElementById('ad-progress-bar'),
+      adAdvertiserLogo: document.getElementById('ad-advertiser-logo'),
+      adAdvertiserName: document.getElementById('ad-advertiser-name'),
+      adAdvertiserDesc: document.getElementById('ad-advertiser-desc')
     };
 
     // Predefined Avatars and Neon Colors
-    this.avatars = ['🧙‍♂️', '🥷', '🤖', '🦄', '👽', '🐯', '🦖', '👻', 'face1.png', 'face2.png'];
+    this.avatars = ['🧙‍♂️', '🥷', '🤖', '🦄', '👽', '🐯', '🦖', '👻'];
     this.colors = ['#00f2fe', '#ff007f', '#39ff14', '#ffd700', '#7f00ff', '#ff8800', '#00ffcc', '#ff3366'];
     
     this.setupConfig = {
       playerCount: 2,
       players: [
         { name: '🧙‍♂️ Mage', avatar: '🧙‍♂️', color: '#00f2fe', isBot: false },
-        { name: '🥷 Shadow', avatar: 'face1.png', color: '#ff007f', isBot: true },
-        { name: '🤖 Cyber', avatar: '🤖', color: '#39ff14', isBot: true },
+        { name: '🥷 Shadow', avatar: '🤖', color: '#ff007f', isBot: true },
+        { name: '🤖 Cyber', avatar: '👽', color: '#39ff14', isBot: true },
         { name: '🦄 Prism', avatar: '🦄', color: '#ffd700', isBot: true }
       ]
     };
@@ -78,6 +110,7 @@ class UIController {
     this.setupEventListeners();
     this.renderPlayerSetupList();
     this.drawSnakesAndLadders();
+    this.startAdEcosystem(); // Start mock advertising platform
     
     // Wire game state triggers
     this.game.onStateChange = (game) => this.handleGameStateChange(game);
@@ -203,6 +236,12 @@ class UIController {
               ${this.avatars.map(a => `<div class="dropdown-item select-avatar-item" data-avatar="${a}">${this.renderAvatarHelper(a)}</div>`).join('')}
             </div>
           </div>
+
+          <!-- Face Photo Upload -->
+          <div class="face-upload-container">
+            <label for="face-upload-${i}" class="upload-face-label" title="Upload custom photo for character face">📷</label>
+            <input type="file" id="face-upload-${i}" accept="image/*" style="display: none;">
+          </div>
           
           <div class="color-selector">
             <button class="select-btn" id="color-btn-${i}">
@@ -233,7 +272,23 @@ class UIController {
     const avatarMenu = document.getElementById(`avatar-menu-${index}`);
     const colorBtn = document.getElementById(`color-btn-${index}`);
     const colorMenu = document.getElementById(`color-menu-${index}`);
+    const fileInput = document.getElementById(`face-upload-${index}`);
     
+    // File Input Face Photo Upload Change Listener
+    fileInput.addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (file) {
+        const reader = new FileReader();
+        reader.onload = (event) => {
+          const base64Url = event.target.result;
+          this.setupConfig.players[index].avatar = base64Url;
+          avatarBtn.innerHTML = this.renderAvatarHelper(base64Url);
+          this.showToast(`Face photo uploaded for Player ${index+1}! 📷`, 'info');
+        };
+        reader.readAsDataURL(file);
+      }
+    });
+
     // Toggle Avatar Dropdown
     avatarBtn.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -611,17 +666,22 @@ class UIController {
       const token = document.createElement('div');
       token.className = 'token';
       token.id = `token-${p.id}`;
-      token.style.backgroundColor = p.color;
-      token.style.color = '#fff';
-      token.style.boxShadow = `0 4px 10px rgba(0,0,0,0.6), 0 0 10px ${p.color}50`;
-      token.style.borderColor = p.color === '#ffd700' ? '#000' : 'rgba(255,255,255,0.8)';
-      if (p.avatar && p.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
-        token.innerHTML = `<img src="${p.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
-        token.style.padding = '0';
-        token.style.overflow = 'hidden';
-      } else {
-        token.innerText = p.avatar;
-      }
+      token.style.color = p.color;
+      
+      const isImg = p.avatar && (p.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i) || p.avatar.startsWith('data:image/'));
+      
+      token.innerHTML = `
+        <div class="walking-character" id="char-${p.id}" style="color: ${p.color}">
+          <div class="char-head" style="color: ${p.color}; ${isImg ? `background-image: url(${p.avatar});` : ''}">
+            ${isImg ? '' : p.avatar}
+          </div>
+          <div class="char-body" style="color: ${p.color}"></div>
+          <div class="char-legs" style="color: ${p.color}">
+            <div class="char-leg left" style="color: ${p.color}"></div>
+            <div class="char-leg right" style="color: ${p.color}"></div>
+          </div>
+        </div>
+      `;
       this.dom.tokensContainer.appendChild(token);
     });
     this.updateTokensUI(false);
@@ -647,24 +707,23 @@ class UIController {
         const token = document.getElementById(`token-${player.id}`);
         if (!token) return;
         
-        // Remove animation override classes
+        // Highlight Active Player
         if (this.game.getCurrentPlayer().id === player.id && this.game.gameState === 'playing') {
           token.classList.add('active-player-token');
-          // Inline styles to match custom color glow
           token.style.color = player.color;
         } else {
           token.classList.remove('active-player-token');
         }
 
         let dx = 0;
-        let dy = 0;
+        let dy = -2.0; // Shift characters slightly upwards to stand on the cell
         
         // Circular offset calculation if overlapping on same square
         if (count > 1) {
-          const r = 2.0; // Radius in SVG percent coordinates
+          const r = 2.2; // Radius in SVG percent coordinates
           const angle = (2 * Math.PI / count) * idx - Math.PI / 2;
           dx = r * Math.cos(angle);
-          dy = r * Math.sin(angle);
+          dy = r * Math.sin(angle) - 2.0;
         }
 
         // Apply percentages
@@ -772,10 +831,12 @@ class UIController {
   async animatePlayerPath(result) {
     const { player, path, snakeOrLadder, finalPosition } = result;
     const token = document.getElementById(`token-${player.id}`);
+    const charEl = document.getElementById(`char-${player.id}`);
     
     if (!token) return;
 
     // 1. Move step-by-step
+    if (charEl) charEl.classList.add('walking');
     for (let i = 0; i < path.length; i++) {
       const currentStep = path[i];
       player.position = currentStep;
@@ -787,6 +848,7 @@ class UIController {
       // Wait for step transition
       await this.wait(350);
     }
+    if (charEl) charEl.classList.remove('walking');
 
     // 2. If snake or ladder is hit, wait briefly then play special climb/slide animation
     if (snakeOrLadder) {
@@ -795,14 +857,28 @@ class UIController {
       if (snakeOrLadder.type === 'ladder') {
         this.sound.playLadderClimb();
         this.showToast(`${player.name} climbed a ladder! ✨`, 'ladder');
+        player.position = finalPosition;
+        this.updateTokensUI(true);
+        await this.wait(600); // Wait for the climb/slide transition to finish
       } else {
-        this.sound.playSnakeBite();
-        this.showToast(`Oh no! ${player.name} was bit! 🐍`, 'snake');
+        // Snake interception flow!
+        const escaped = await this.triggerSnakeRescueFlow(player, snakeOrLadder);
+        
+        // Let game engine resolve state
+        this.game.resolveSnakeRescue(escaped);
+        
+        if (!escaped) {
+          // If bit, play sound and slide down to the tail
+          this.sound.playSnakeBite();
+          this.showToast(`Bitten! ${player.name} slid down to ${finalPosition}! 🐍`, 'snake');
+          
+          if (charEl) charEl.classList.add('walking');
+          player.position = finalPosition;
+          this.updateTokensUI(true);
+          await this.wait(800);
+          if (charEl) charEl.classList.remove('walking');
+        }
       }
-      
-      player.position = finalPosition;
-      this.updateTokensUI(true);
-      await this.wait(600); // Wait for the climb/slide transition to finish
     }
   }
 
@@ -839,12 +915,353 @@ class UIController {
     this.dom.winnerRolls.innerText = winner.stats.rolls;
     this.dom.winnerClimbs.innerText = winner.stats.climbs;
     this.dom.winnerBites.innerText = winner.stats.bites;
+    if (this.dom.winnerEscapes) {
+      this.dom.winnerEscapes.innerText = winner.stats.escapes || 0;
+    }
     
     // Show Modal and Confetti
     setTimeout(() => {
       this.dom.victoryModal.classList.add('show');
       this.startConfetti();
     }, 1000);
+  }
+
+  // --- Simulated Ad Ecosystem & Revenue Dashboard ---
+  startAdEcosystem() {
+    this.adsCatalog = [
+      {
+        title: "Quantum Dice V2",
+        desc: "Upgrade to premium neon dice skins today!",
+        icon: "🎲",
+        btn: "Upgrade"
+      },
+      {
+        title: "Antigravity AI",
+        desc: "Hire autonomous AI software developers to code your projects.",
+        icon: "💻",
+        btn: "Hire Now"
+      },
+      {
+        title: "Cyber-Vitamins",
+        desc: "Boost your bot's response rate by 25% with plasma fluid.",
+        icon: "🧪",
+        btn: "Synthesize"
+      },
+      {
+        title: "Hacker Shield VPN",
+        desc: "Mask your IP from digital snakes. Get 3 months free!",
+        icon: "🛡️",
+        btn: "Get VPN"
+      },
+      {
+        title: "Neon Burger",
+        desc: "Synthesized synth-beef burgers delivered in 5 minutes.",
+        icon: "🍔",
+        btn: "Order"
+      }
+    ];
+    this.currentAdIndex = 0;
+    this.mockAdClicks = 0;
+    
+    // Display first ad immediately
+    this.rotateBannerAd();
+    
+    // Rotate every 12 seconds
+    this.adInterval = setInterval(() => {
+      this.rotateBannerAd();
+    }, 12000);
+    
+    // Hook up click handler for Banner ad CPC simulation
+    if (this.dom.bannerAdBtn) {
+      this.dom.bannerAdBtn.addEventListener('click', () => {
+        this.mockAdClicks++;
+        this.game.totalMockRevenue += 0.25; // Banner CPC pays $0.25 mock revenue!
+        this.updateRevenueDashboard();
+        this.showToast("Mock Ad Clicked! Earned $0.25 CPC revenue 💸", 'info');
+      });
+    }
+  }
+
+  rotateBannerAd() {
+    if (!this.adsCatalog || this.adsCatalog.length === 0) return;
+    
+    // Rotate index
+    this.currentAdIndex = (this.currentAdIndex + 1) % this.adsCatalog.length;
+    const ad = this.adsCatalog[this.currentAdIndex];
+    
+    // Update DOM
+    if (this.dom.bannerAdTitle) this.dom.bannerAdTitle.innerText = ad.title;
+    if (this.dom.bannerAdDesc) this.dom.bannerAdDesc.innerText = ad.desc;
+    if (this.dom.bannerAdIcon) this.dom.bannerAdIcon.innerText = ad.icon;
+    if (this.dom.bannerAdBtn) this.dom.bannerAdBtn.innerText = ad.btn;
+    
+    // Banner impression CPM adds $0.004
+    this.game.mockImpressions++;
+    this.game.totalMockRevenue += 0.004;
+    this.updateRevenueDashboard();
+  }
+
+  updateRevenueDashboard() {
+    if (this.dom.revenueVal) {
+      this.dom.revenueVal.innerText = `$${this.game.totalMockRevenue.toFixed(2)}`;
+    }
+    if (this.dom.impressionsVal) {
+      this.dom.impressionsVal.innerText = this.game.mockImpressions;
+    }
+    if (this.dom.ctrVal) {
+      const clicks = this.mockAdClicks || 0;
+      const impressions = this.game.mockImpressions;
+      let ctr = 1.8;
+      if (impressions > 0) {
+        ctr = (clicks / impressions) * 100 + 1.2;
+      }
+      this.dom.ctrVal.innerText = `${ctr.toFixed(1)}%`;
+    }
+  }
+
+  playRewardedAd(durationSeconds = 5) {
+    return new Promise(resolve => {
+      if (!this.dom.rewardedAdModal) {
+        resolve();
+        return;
+      }
+      
+      this.dom.rewardedAdModal.classList.add('show');
+      let timeLeft = durationSeconds;
+      this.dom.adCountdown.innerText = timeLeft;
+      
+      // Select advertiser
+      const advertiser = this.adsCatalog[Math.floor(Math.random() * this.adsCatalog.length)];
+      if (this.dom.adAdvertiserLogo) this.dom.adAdvertiserLogo.innerText = advertiser.icon;
+      if (this.dom.adAdvertiserName) this.dom.adAdvertiserName.innerText = advertiser.title;
+      if (this.dom.adAdvertiserDesc) this.dom.adAdvertiserDesc.innerText = advertiser.desc;
+      
+      // Reset transition
+      this.dom.adProgressBar.style.transition = 'none';
+      this.dom.adProgressBar.style.width = '0%';
+      
+      // Reflow
+      setTimeout(() => {
+        this.dom.adProgressBar.style.transition = `width ${durationSeconds}s linear`;
+        this.dom.adProgressBar.style.width = '100%';
+      }, 50);
+      
+      const interval = setInterval(() => {
+        timeLeft--;
+        this.dom.adCountdown.innerText = timeLeft;
+        if (timeLeft <= 0) {
+          clearInterval(interval);
+          this.dom.rewardedAdModal.classList.remove('show');
+          this.dom.adProgressBar.style.transition = 'none';
+          this.dom.adProgressBar.style.width = '0%';
+          
+          // Rewarded video view adds $0.15 mock revenue
+          this.game.mockImpressions++;
+          this.game.mockRewardedAdsWatched++;
+          this.game.totalMockRevenue += 0.15;
+          this.updateRevenueDashboard();
+          
+          resolve();
+        }
+      }, 1000);
+    });
+  }
+
+  // --- Snake Interception Rescue Question Modal ---
+  triggerSnakeRescueFlow(player, snakeOrLadder) {
+    return new Promise(async (resolve) => {
+      // Pick a random question
+      const randomQuestion = QuestionBank[Math.floor(Math.random() * QuestionBank.length)];
+      
+      // Populate Modal Question Details
+      this.dom.rescueCategory.innerText = randomQuestion.category;
+      this.dom.rescueQuestion.innerText = randomQuestion.question;
+      this.dom.rescueOptions.innerHTML = '';
+      this.dom.rescueTriviaBox.classList.add('hidden');
+      this.dom.rescueAdActions.classList.remove('hidden');
+      
+      // Show Modal
+      this.dom.rescueModal.classList.add('show');
+      
+      // Construct options HTML
+      const labels = ['A', 'B', 'C', 'D'];
+      const optionButtons = [];
+      randomQuestion.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = 'rescue-option-btn';
+        btn.innerHTML = `<span class="rescue-option-label">${labels[idx]}</span> <span class="rescue-option-text">${opt}</span>`;
+        btn.dataset.index = idx;
+        this.dom.rescueOptions.appendChild(btn);
+        optionButtons.push(btn);
+      });
+
+      // Handle speech voiceover for human players
+      if (!player.isBot) {
+        const optionsText = randomQuestion.options.map((o, i) => `${labels[i]}, ${o}`).join('. ');
+        this.sound.speakText(`Hiss... Interception! Answer this question: ${randomQuestion.question}. Options are: ${optionsText}`);
+      }
+
+      // Helper function to handle choice selection
+      const selectChoice = (chosenIdx) => {
+        // Stop speech
+        if (window.speechSynthesis) window.speechSynthesis.cancel();
+        
+        // Disable everything
+        optionButtons.forEach(b => b.classList.add('disabled'));
+        this.dom.adHintBtn.disabled = true;
+        this.dom.adSkipBtn.disabled = true;
+        
+        const isCorrect = (parseInt(chosenIdx) === randomQuestion.correct);
+        
+        // Style selected buttons
+        optionButtons.forEach(b => {
+          const bIdx = parseInt(b.dataset.index);
+          if (bIdx === randomQuestion.correct) {
+            b.classList.add('correct');
+          } else if (bIdx === parseInt(chosenIdx)) {
+            b.classList.add('incorrect');
+          }
+        });
+        
+        // Hide ad action panel
+        this.dom.rescueAdActions.classList.add('hidden');
+
+        // Play feedback sound and speech synthesis dialog
+        this.dom.rescueTriviaBox.className = `rescue-trivia-box ${isCorrect ? 'correct-answer' : 'incorrect-answer'}`;
+        if (isCorrect) {
+          this.dom.rescueTriviaHeader.innerText = "EXCUSED! SAFE PASSAGE GRANTED.";
+          this.sound.speakText("Yes, you are excused.");
+        } else {
+          this.dom.rescueTriviaHeader.innerText = "BITTEN! SLIDING DOWN...";
+          this.sound.speakText("Sorry, you left me with no choice other than biting you.");
+        }
+        
+        this.dom.rescueTriviaText.innerText = randomQuestion.trivia;
+        this.dom.rescueTriviaBox.classList.remove('hidden');
+        
+        // Human player must click Continue to resolve
+        if (!player.isBot) {
+          // Remove old listeners from continue button
+          const newContinueBtn = this.dom.rescueContinueBtn.cloneNode(true);
+          this.dom.rescueContinueBtn.parentNode.replaceChild(newContinueBtn, this.dom.rescueContinueBtn);
+          this.dom.rescueContinueBtn = newContinueBtn;
+          
+          this.dom.rescueContinueBtn.addEventListener('click', () => {
+            this.dom.rescueModal.classList.remove('show');
+            resolve(isCorrect);
+          }, { once: true });
+        } else {
+          // Bot auto-continues after reading trivia
+          setTimeout(() => {
+            this.dom.rescueModal.classList.remove('show');
+            resolve(isCorrect);
+          }, 3500);
+        }
+      };
+
+      // Set up selection handlers
+      if (!player.isBot) {
+        optionButtons.forEach(btn => {
+          btn.addEventListener('click', () => {
+            selectChoice(btn.dataset.index);
+          });
+        });
+
+        // Set up Ad Helper Buttons for humans
+        this.dom.adHintBtn.disabled = false;
+        this.dom.adSkipBtn.disabled = false;
+        
+        // Hint Button (Remove 2 wrong options)
+        const handleHint = async () => {
+          this.dom.adHintBtn.disabled = true;
+          // Stop speech
+          if (window.speechSynthesis) window.speechSynthesis.cancel();
+          
+          // Watch Ad
+          await this.playRewardedAd(5);
+          
+          // Apply Reward: Disable two wrong options
+          const wrongIndices = [];
+          randomQuestion.options.forEach((opt, idx) => {
+            if (idx !== randomQuestion.correct) {
+              wrongIndices.push(idx);
+            }
+          });
+          
+          // Pick two random wrong indices to disable
+          const shuffledWrong = wrongIndices.sort(() => 0.5 - Math.random());
+          const disabledIndices = shuffledWrong.slice(0, 2);
+          
+          disabledIndices.forEach(idx => {
+            optionButtons[idx].classList.add('disabled');
+            optionButtons[idx].style.pointerEvents = 'none';
+          });
+          
+          this.showToast("50/50 hint applied! 2 wrong options removed.", 'info');
+          
+          // Re-announce question concisely
+          this.sound.speakText(`Hiss... 50/50 help applied. Choose from remaining options for: ${randomQuestion.question}`);
+        };
+        
+        // Rebind hint listener
+        const newHintBtn = this.dom.adHintBtn.cloneNode(true);
+        this.dom.adHintBtn.parentNode.replaceChild(newHintBtn, this.dom.adHintBtn);
+        this.dom.adHintBtn = newHintBtn;
+        this.dom.adHintBtn.addEventListener('click', handleHint);
+
+        // Skip Button (Free Escape)
+        const handleSkip = async () => {
+          this.dom.adSkipBtn.disabled = true;
+          this.dom.adHintBtn.disabled = true;
+          
+          // Watch Ad
+          await this.playRewardedAd(5);
+          
+          // Apply Reward: Automatically correct!
+          this.showToast("Bypass applied! Snake excused 🐍✨", 'ladder');
+          selectChoice(randomQuestion.correct);
+        };
+        
+        // Rebind skip listener
+        const newSkipBtn = this.dom.adSkipBtn.cloneNode(true);
+        this.dom.adSkipBtn.parentNode.replaceChild(newSkipBtn, this.dom.adSkipBtn);
+        this.dom.adSkipBtn = newSkipBtn;
+        this.dom.adSkipBtn.addEventListener('click', handleSkip);
+
+      } else {
+        // Bot flow
+        this.dom.adHintBtn.disabled = true;
+        this.dom.adSkipBtn.disabled = true;
+        
+        // Visual text indicating bot is thinking
+        this.dom.rescueQuestion.innerText = `🤖 [Bot Turn] ${player.name} is reading the question...`;
+        
+        setTimeout(() => {
+          // Choose option: 55% chance of picking correct index
+          const pickCorrect = Math.random() < 0.55;
+          let selectedIndex;
+          if (pickCorrect) {
+            selectedIndex = randomQuestion.correct;
+          } else {
+            // Pick a random incorrect index
+            const wrongIndices = [];
+            randomQuestion.options.forEach((opt, idx) => {
+              if (idx !== randomQuestion.correct) wrongIndices.push(idx);
+            });
+            selectedIndex = wrongIndices[Math.floor(Math.random() * wrongIndices.length)];
+          }
+          
+          // Highlight chosen option in bot's turn
+          optionButtons[selectedIndex].style.background = 'rgba(255,255,255,0.15)';
+          optionButtons[selectedIndex].style.border = '2px solid white';
+          
+          setTimeout(() => {
+            selectChoice(selectedIndex);
+          }, 1000);
+          
+        }, 2500);
+      }
+    });
   }
 
   showToast(message, type = 'info') {

@@ -422,6 +422,38 @@ class SoundController {
       this.bgMusicTimer = null;
     }
   }
+
+  speakText(text, onEndCallback = null) {
+    if (!this.enabled || !window.speechSynthesis) {
+      if (onEndCallback) onEndCallback();
+      return;
+    }
+    
+    // Cancel any ongoing speech
+    window.speechSynthesis.cancel();
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    
+    // Choose a voice
+    const voices = window.speechSynthesis.getVoices();
+    const englishVoice = voices.find(v => v.lang.startsWith('en')) || voices[0];
+    if (englishVoice) {
+      utterance.voice = englishVoice;
+    }
+    
+    // Snake parameters: low pitch, slightly slower rate
+    utterance.pitch = 0.55; 
+    utterance.rate = 0.82;  
+    
+    utterance.onend = () => {
+      if (onEndCallback) onEndCallback();
+    };
+    utterance.onerror = () => {
+      if (onEndCallback) onEndCallback();
+    };
+    
+    window.speechSynthesis.speak(utterance);
+  }
 }
 
 // Export sound controller
