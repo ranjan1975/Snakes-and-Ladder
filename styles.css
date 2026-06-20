@@ -1094,7 +1094,7 @@ input:checked + .slider:before {
 .svg-snake-head-viper {
   fill: url(#realSnakeHeadGrad);
   filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
-  stroke: #211510;
+  stroke: #08210b;
   stroke-width: 0.28;
 }
 

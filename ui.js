@@ -504,13 +504,13 @@ class UIController {
         <stop offset="100%" stop-color="#7f00ff" />
       </linearGradient>
       <linearGradient id="realSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#d24f33" />
-        <stop offset="50%" stop-color="#943825" />
-        <stop offset="100%" stop-color="#4e2017" />
+        <stop offset="0%" stop-color="#3ebd46" />
+        <stop offset="50%" stop-color="#23852a" />
+        <stop offset="100%" stop-color="#0e4a13" />
       </linearGradient>
       <linearGradient id="realSnakeHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#d24f33" />
-        <stop offset="100%" stop-color="#4e2017" />
+        <stop offset="0%" stop-color="#3ebd46" />
+        <stop offset="100%" stop-color="#0e4a13" />
       </linearGradient>
       <linearGradient id="woodLadderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="#d6b280" />
@@ -810,7 +810,7 @@ class UIController {
       const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
       underbelly.setAttribute("d", pathData);
       underbelly.setAttribute("fill", "none");
-      underbelly.setAttribute("stroke", "#ebd4c8");
+      underbelly.setAttribute("stroke", "#d8f0c2");
       underbelly.setAttribute("stroke-width", "2.2");
       underbelly.setAttribute("stroke-dasharray", "8 5");
       underbelly.setAttribute("opacity", "0.35");
@@ -821,7 +821,7 @@ class UIController {
       const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
       bands.setAttribute("d", pathData);
       bands.setAttribute("fill", "none");
-      bands.setAttribute("stroke", "#2d120d");
+      bands.setAttribute("stroke", "#09220c");
       bands.setAttribute("stroke-width", "3.2");
       bands.setAttribute("stroke-dasharray", "1.5 3.0");
       bodyGroup.appendChild(bands);
@@ -928,8 +928,8 @@ class UIController {
       const lp4x = p0.x + 0.1 * fx + 0.2 * jx;
       const lp4y = p0.y + 0.1 * fy + 0.2 * jy;
       leftPatch.setAttribute("points", `${lp1x},${lp1y} ${lp2x},${lp2y} ${lp3x},${lp3y} ${lp4x},${lp4y}`);
-      leftPatch.setAttribute("fill", "#dba085");
-      leftPatch.setAttribute("stroke", "#4a180f");
+      leftPatch.setAttribute("fill", "#8fd696");
+      leftPatch.setAttribute("stroke", "#1b4f1f");
       leftPatch.setAttribute("stroke-width", "0.1");
       detailsGroup.appendChild(leftPatch);
 
@@ -943,8 +943,8 @@ class UIController {
       const rp4x = p0.x + 0.1 * fx - 0.2 * jx;
       const rp4y = p0.y + 0.1 * fy - 0.2 * jy;
       rightPatch.setAttribute("points", `${rp1x},${rp1y} ${rp2x},${rp2y} ${rp3x},${rp3y} ${rp4x},${rp4y}`);
-      rightPatch.setAttribute("fill", "#dba085");
-      rightPatch.setAttribute("stroke", "#4a180f");
+      rightPatch.setAttribute("fill", "#8fd696");
+      rightPatch.setAttribute("stroke", "#1b4f1f");
       rightPatch.setAttribute("stroke-width", "0.1");
       detailsGroup.appendChild(rightPatch);
 
@@ -959,8 +959,8 @@ class UIController {
       const sp4x = p0.x - 0.4 * fx - 0.18 * jx;
       const sp4y = p0.y - 0.4 * fy - 0.18 * jy;
       spearhead.setAttribute("points", `${sp1x},${sp1y} ${sp2x},${sp2y} ${sp3x},${sp3y} ${sp4x},${sp4y}`);
-      spearhead.setAttribute("fill", "#4a180f");
-      spearhead.setAttribute("stroke", "#2d120d");
+      spearhead.setAttribute("fill", "#123c15");
+      spearhead.setAttribute("stroke", "#08210b");
       spearhead.setAttribute("stroke-width", "0.08");
       detailsGroup.appendChild(spearhead);
 
@@ -970,7 +970,7 @@ class UIController {
       leftPostOcular.setAttribute("y1", ey1);
       leftPostOcular.setAttribute("x2", leftJawX);
       leftPostOcular.setAttribute("y2", leftJawY);
-      leftPostOcular.setAttribute("stroke", "#4a180f");
+      leftPostOcular.setAttribute("stroke", "#123c15");
       leftPostOcular.setAttribute("stroke-width", "0.18");
       leftPostOcular.setAttribute("stroke-linecap", "round");
       detailsGroup.appendChild(leftPostOcular);
@@ -980,7 +980,7 @@ class UIController {
       rightPostOcular.setAttribute("y1", ey2);
       rightPostOcular.setAttribute("x2", rightJawX);
       rightPostOcular.setAttribute("y2", rightJawY);
-      rightPostOcular.setAttribute("stroke", "#4a180f");
+      rightPostOcular.setAttribute("stroke", "#123c15");
       rightPostOcular.setAttribute("stroke-width", "0.18");
       rightPostOcular.setAttribute("stroke-linecap", "round");
       detailsGroup.appendChild(rightPostOcular);
@@ -990,14 +990,14 @@ class UIController {
       spot1.setAttribute("cx", p0.x + 0.3 * fx);
       spot1.setAttribute("cy", p0.y + 0.3 * fy);
       spot1.setAttribute("r", "0.55");
-      spot1.setAttribute("fill", "#2d120d");
+      spot1.setAttribute("fill", "#08210b");
       detailsGroup.appendChild(spot1);
 
       const spot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       spot2.setAttribute("cx", p0.x + 0.6 * bx_dir);
       spot2.setAttribute("cy", p0.y + 0.6 * by_dir);
       spot2.setAttribute("r", "0.45");
-      spot2.setAttribute("fill", "#2d120d");
+      spot2.setAttribute("fill", "#08210b");
       detailsGroup.appendChild(spot2);
 
       // Left Eye
@@ -1005,8 +1005,8 @@ class UIController {
       eye1.setAttribute("cx", ex1);
       eye1.setAttribute("cy", ey1);
       eye1.setAttribute("r", "0.38");
-      eye1.setAttribute("fill", "#ad3e28");
-      eye1.setAttribute("stroke", "#2d120d");
+      eye1.setAttribute("fill", "#f39c12");
+      eye1.setAttribute("stroke", "#08210b");
       eye1.setAttribute("stroke-width", "0.08");
       detailsGroup.appendChild(eye1);
 
@@ -1031,8 +1031,8 @@ class UIController {
       eye2.setAttribute("cx", ex2);
       eye2.setAttribute("cy", ey2);
       eye2.setAttribute("r", "0.38");
-      eye2.setAttribute("fill", "#ad3e28");
-      eye2.setAttribute("stroke", "#2d120d");
+      eye2.setAttribute("fill", "#f39c12");
+      eye2.setAttribute("stroke", "#08210b");
       eye2.setAttribute("stroke-width", "0.08");
       detailsGroup.appendChild(eye2);
 
