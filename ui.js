@@ -493,6 +493,11 @@ class UIController {
   }
 
   drawSnakesAndLadders() {
+    if (this.snakeAnimations) {
+      this.snakeAnimations.forEach(anim => {
+        if (anim.resetTimeoutId) clearTimeout(anim.resetTimeoutId);
+      });
+    }
     this.snakeAnimations = [];
     this.dom.boardSvg.innerHTML = '';
     
@@ -1060,6 +1065,7 @@ class UIController {
         snakeIdx,
         start,
         end,
+        defaultEnd: end,
         p0,
         p1,
         cx1,
@@ -1416,6 +1422,17 @@ class UIController {
             player.position = randomTail;
             this.updateTokensUI(true);
             await this.wait(400);
+
+            // Clear any existing reset timeout for this snake
+            if (anim.resetTimeoutId) {
+              clearTimeout(anim.resetTimeoutId);
+            }
+            
+            // Set a 60-second timer to morph the snake back to its default position
+            anim.resetTimeoutId = setTimeout(() => {
+              this.morphSnakeBack(startPos);
+              anim.resetTimeoutId = null;
+            }, 60000);
           } else {
             // Fallback
             player.position = randomTail;
@@ -1430,6 +1447,74 @@ class UIController {
         }
       }
     }
+  }
+
+  async morphSnakeBack(startPos) {
+    const anim = this.snakeAnimations.find(a => a.start === startPos);
+    if (!anim) return;
+    
+    const defaultTail = anim.defaultEnd;
+    if (anim.end === defaultTail) return;
+    
+    // Get target coordinates of the default tail
+    const p1_target = this.getCellCoordinates(defaultTail);
+    const p1_start = { x: anim.p1.x, y: anim.p1.y };
+    const p0_coords = anim.p0;
+    
+    // Animating loop for morphing the snake tail back slowly (over 2 seconds)
+    const duration = 2000; 
+    const startTime = performance.now();
+    
+    anim.end = defaultTail;
+    
+    // Update GameConfig back to the original tail in both UI and game engine config
+    GameConfig.snakes[startPos] = defaultTail;
+    
+    await new Promise((resolve) => {
+      const animateBack = (now) => {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1);
+        
+        const ease = progress < 0.5 
+          ? 4 * progress * progress * progress 
+          : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+          
+        const currentP1 = {
+          x: p1_start.x + (p1_target.x - p1_start.x) * ease,
+          y: p1_start.y + (p1_target.y - p1_start.y) * ease
+        };
+        
+        const dx = currentP1.x - p0_coords.x;
+        const dy = currentP1.y - p0_coords.y;
+        const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+        
+        const nx = -dy / dist;
+        const ny = dx / dist;
+        
+        const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
+        const cx1 = p0_coords.x + 0.33 * dx + waveAmp * nx;
+        const cy1 = p0_coords.y + 0.33 * dy + waveAmp * ny;
+        const cx2 = p0_coords.x + 0.66 * dx - waveAmp * nx;
+        const cy2 = p0_coords.y + 0.66 * dy - waveAmp * ny;
+        
+        anim.p1 = currentP1;
+        anim.cx1 = cx1;
+        anim.cy1 = cy1;
+        anim.cx2 = cx2;
+        anim.cy2 = cy2;
+        anim.nx = nx;
+        anim.ny = ny;
+        
+        if (progress < 1) {
+          requestAnimationFrame(animateBack);
+        } else {
+          resolve();
+        }
+      };
+      requestAnimationFrame(animateBack);
+    });
+    
+    this.showToast(`The snake at ${startPos} has returned to its default nest! 🐍`, 'info');
   }
 
   checkBotTurn() {
