@@ -900,11 +900,12 @@ class UIController {
       const rtx = sx + 0.9 * fx - 0.65 * jx; // Right tip
       const rty = sy + 0.9 * fy - 0.65 * jy;
 
-      // 8. Draw Forked Tongue with CSS Origin flicker animation
+      // 8. Draw Forked Tongue with CSS Origin flicker animation (randomized delay to avoid simultaneous flickering)
       const tongue = document.createElementNS("http://www.w3.org/2000/svg", "path");
       tongue.setAttribute("d", `M ${tx} ${ty} L ${sx} ${sy} L ${ltx} ${lty} M ${sx} ${sy} L ${rtx} ${rty}`);
       tongue.setAttribute("class", "svg-snake-tongue");
-      tongue.setAttribute("style", `transform-origin: ${tx}% ${ty}%;`);
+      const delay = (Math.random() * 2.0).toFixed(2);
+      tongue.setAttribute("style", `transform-origin: ${tx}% ${ty}%; animation-delay: -${delay}s;`);
       this.dom.boardSvg.appendChild(tongue);
 
       // Eye positions
