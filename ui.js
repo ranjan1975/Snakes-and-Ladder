@@ -429,13 +429,13 @@ class UIController {
         <stop offset="100%" stop-color="#7f00ff" />
       </linearGradient>
       <linearGradient id="realSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#e3c8a1" />
-        <stop offset="50%" stop-color="#a67b56" />
-        <stop offset="100%" stop-color="#6e473b" />
+        <stop offset="0%" stop-color="#d24f33" />
+        <stop offset="50%" stop-color="#943825" />
+        <stop offset="100%" stop-color="#4e2017" />
       </linearGradient>
       <linearGradient id="realSnakeHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#e3c8a1" />
-        <stop offset="100%" stop-color="#6e473b" />
+        <stop offset="0%" stop-color="#d24f33" />
+        <stop offset="100%" stop-color="#4e2017" />
       </linearGradient>
       <linearGradient id="woodLadderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
         <stop offset="0%" stop-color="#d6b280" />
@@ -726,7 +726,7 @@ class UIController {
       const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
       underbelly.setAttribute("d", pathData);
       underbelly.setAttribute("fill", "none");
-      underbelly.setAttribute("stroke", "#ecdab9");
+      underbelly.setAttribute("stroke", "#ebd4c8");
       underbelly.setAttribute("stroke-width", "2.2");
       underbelly.setAttribute("stroke-dasharray", "8 5");
       underbelly.setAttribute("opacity", "0.35");
@@ -736,7 +736,7 @@ class UIController {
       const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
       bands.setAttribute("d", pathData);
       bands.setAttribute("fill", "none");
-      bands.setAttribute("stroke", "#211510");
+      bands.setAttribute("stroke", "#2d120d");
       bands.setAttribute("stroke-width", "3.2");
       bands.setAttribute("stroke-dasharray", "1.5 3.0");
       bodyGroup.appendChild(bands);
@@ -825,7 +825,7 @@ class UIController {
       const ex2 = p0.x + 0.85 * fx - 0.58 * jx;
       const ey2 = p0.y + 0.85 * fy - 0.58 * jy;
 
-      // Group for all python head markings and eyes (hidden if user photo is loaded)
+      // Group for all python head markings and eyes
       const detailsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       detailsGroup.setAttribute("id", `head-details-${start}`);
 
@@ -840,8 +840,8 @@ class UIController {
       const lp4x = p0.x + 0.1 * fx + 0.2 * jx;
       const lp4y = p0.y + 0.1 * fy + 0.2 * jy;
       leftPatch.setAttribute("points", `${lp1x},${lp1y} ${lp2x},${lp2y} ${lp3x},${lp3y} ${lp4x},${lp4y}`);
-      leftPatch.setAttribute("fill", "#dfb17d");
-      leftPatch.setAttribute("stroke", "#503529");
+      leftPatch.setAttribute("fill", "#dba085");
+      leftPatch.setAttribute("stroke", "#4a180f");
       leftPatch.setAttribute("stroke-width", "0.1");
       detailsGroup.appendChild(leftPatch);
 
@@ -855,8 +855,8 @@ class UIController {
       const rp4x = p0.x + 0.1 * fx - 0.2 * jx;
       const rp4y = p0.y + 0.1 * fy - 0.2 * jy;
       rightPatch.setAttribute("points", `${rp1x},${rp1y} ${rp2x},${rp2y} ${rp3x},${rp3y} ${rp4x},${rp4y}`);
-      rightPatch.setAttribute("fill", "#dfb17d");
-      rightPatch.setAttribute("stroke", "#503529");
+      rightPatch.setAttribute("fill", "#dba085");
+      rightPatch.setAttribute("stroke", "#4a180f");
       rightPatch.setAttribute("stroke-width", "0.1");
       detailsGroup.appendChild(rightPatch);
 
@@ -871,8 +871,8 @@ class UIController {
       const sp4x = p0.x - 0.4 * fx - 0.18 * jx;
       const sp4y = p0.y - 0.4 * fy - 0.18 * jy;
       spearhead.setAttribute("points", `${sp1x},${sp1y} ${sp2x},${sp2y} ${sp3x},${sp3y} ${sp4x},${sp4y}`);
-      spearhead.setAttribute("fill", "#301f17");
-      spearhead.setAttribute("stroke", "#211510");
+      spearhead.setAttribute("fill", "#4a180f");
+      spearhead.setAttribute("stroke", "#2d120d");
       spearhead.setAttribute("stroke-width", "0.08");
       detailsGroup.appendChild(spearhead);
 
@@ -882,7 +882,7 @@ class UIController {
       leftPostOcular.setAttribute("y1", ey1);
       leftPostOcular.setAttribute("x2", leftJawX);
       leftPostOcular.setAttribute("y2", leftJawY);
-      leftPostOcular.setAttribute("stroke", "#301f17");
+      leftPostOcular.setAttribute("stroke", "#4a180f");
       leftPostOcular.setAttribute("stroke-width", "0.18");
       leftPostOcular.setAttribute("stroke-linecap", "round");
       detailsGroup.appendChild(leftPostOcular);
@@ -892,7 +892,7 @@ class UIController {
       rightPostOcular.setAttribute("y1", ey2);
       rightPostOcular.setAttribute("x2", rightJawX);
       rightPostOcular.setAttribute("y2", rightJawY);
-      rightPostOcular.setAttribute("stroke", "#301f17");
+      rightPostOcular.setAttribute("stroke", "#4a180f");
       rightPostOcular.setAttribute("stroke-width", "0.18");
       rightPostOcular.setAttribute("stroke-linecap", "round");
       detailsGroup.appendChild(rightPostOcular);
@@ -902,14 +902,14 @@ class UIController {
       spot1.setAttribute("cx", p0.x + 0.3 * fx);
       spot1.setAttribute("cy", p0.y + 0.3 * fy);
       spot1.setAttribute("r", "0.55");
-      spot1.setAttribute("fill", "#211510");
+      spot1.setAttribute("fill", "#2d120d");
       detailsGroup.appendChild(spot1);
 
       const spot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       spot2.setAttribute("cx", p0.x + 0.6 * bx_dir);
       spot2.setAttribute("cy", p0.y + 0.6 * by_dir);
       spot2.setAttribute("r", "0.45");
-      spot2.setAttribute("fill", "#211510");
+      spot2.setAttribute("fill", "#2d120d");
       detailsGroup.appendChild(spot2);
 
       // Left Eye
@@ -917,8 +917,8 @@ class UIController {
       eye1.setAttribute("cx", ex1);
       eye1.setAttribute("cy", ey1);
       eye1.setAttribute("r", "0.38");
-      eye1.setAttribute("fill", "#c68a4c");
-      eye1.setAttribute("stroke", "#211510");
+      eye1.setAttribute("fill", "#ad3e28");
+      eye1.setAttribute("stroke", "#2d120d");
       eye1.setAttribute("stroke-width", "0.08");
       detailsGroup.appendChild(eye1);
 
@@ -943,8 +943,8 @@ class UIController {
       eye2.setAttribute("cx", ex2);
       eye2.setAttribute("cy", ey2);
       eye2.setAttribute("r", "0.38");
-      eye2.setAttribute("fill", "#c68a4c");
-      eye2.setAttribute("stroke", "#211510");
+      eye2.setAttribute("fill", "#ad3e28");
+      eye2.setAttribute("stroke", "#2d120d");
       eye2.setAttribute("stroke-width", "0.08");
       detailsGroup.appendChild(eye2);
 
@@ -965,41 +965,6 @@ class UIController {
       detailsGroup.appendChild(glint2);
 
       this.dom.boardSvg.appendChild(detailsGroup);
-
-      // 9. Overlay Face Image if face[X].png exists in root
-      const faceUrl = `face${snakeIdx}.png`;
-      const clipPathId = `face-clip-${start}`;
-      
-      const clipPath = document.createElementNS("http://www.w3.org/2000/svg", "clipPath");
-      clipPath.setAttribute("id", clipPathId);
-      const clipCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      clipCircle.setAttribute("cx", p0.x);
-      clipCircle.setAttribute("cy", p0.y);
-      clipCircle.setAttribute("r", "1.95");
-      clipPath.appendChild(clipCircle);
-      defs.appendChild(clipPath);
-      
-      const faceImage = document.createElementNS("http://www.w3.org/2000/svg", "image");
-      faceImage.setAttribute("href", faceUrl);
-      faceImage.setAttribute("x", p0.x - 2.1);
-      faceImage.setAttribute("y", p0.y - 2.1);
-      faceImage.setAttribute("width", "4.2");
-      faceImage.setAttribute("height", "4.2");
-      faceImage.setAttribute("clip-path", `url(#${clipPathId})`);
-      faceImage.setAttribute("transform", `rotate(${angleDeg + 90}, ${p0.x}, ${p0.y})`);
-      faceImage.setAttribute("style", "opacity: 0; transition: opacity 0.3s;");
-      
-      // If user provided a face photo, show the photo and style the snake head as border
-      faceImage.addEventListener('load', () => {
-        faceImage.setAttribute("style", "opacity: 1;");
-        const details = document.getElementById(`head-details-${start}`);
-        if (details) {
-          details.setAttribute("style", "display: none;");
-        }
-        head.setAttribute("style", "fill: rgba(0,0,0,0.5); stroke: var(--neon-magenta); stroke-width: 0.35;");
-      });
-      
-      this.dom.boardSvg.appendChild(faceImage);
     }
   }
 
