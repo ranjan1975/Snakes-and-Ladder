@@ -117,12 +117,86 @@ class UIController {
     };
   }
 
+  startSnakeAnimation() {
+    if (this.snakeAnimationId) {
+      cancelAnimationFrame(this.snakeAnimationId);
+    }
+    const animate = () => {
+      this.updateSnakeWiggle();
+      this.snakeAnimationId = requestAnimationFrame(animate);
+    };
+    this.snakeAnimationId = requestAnimationFrame(animate);
+  }
+
+  updateSnakeWiggle() {
+    if (!this.snakeAnimations || this.snakeAnimations.length === 0) return;
+    
+    const time = Date.now() / 200;
+    
+    for (const anim of this.snakeAnimations) {
+      const {
+        snakeIdx,
+        p0, p1, cx1, cy1, cx2, cy2, nx, ny,
+        bodyPaths, shadowLines, maskLines
+      } = anim;
+      
+      // Calculate wave wiggle offset (only wiggles near the tail, head remains still)
+      const wOffset = Math.sin(time + snakeIdx * 1.5) * 1.1;
+      
+      // Wiggle tail tip and second control point
+      const p1_anim = {
+        x: p1.x + wOffset * nx,
+        y: p1.y + wOffset * ny
+      };
+      const cx2_anim = {
+        x: cx2 + wOffset * 0.45 * nx,
+        y: cy2 + wOffset * 0.45 * ny
+      };
+      
+      const newPathData = `M ${p0.x} ${p0.y} C ${cx1} ${cy1}, ${cx2_anim.x} ${cx2_anim.y}, ${p1_anim.x} ${p1_anim.y}`;
+      
+      // Update body paths
+      for (const path of bodyPaths) {
+        path.setAttribute("d", newPathData);
+      }
+      
+      // Update shadow lines and mask lines
+      const numSegments = shadowLines.length;
+      const c1 = { x: cx1, y: cy1 };
+      const c2 = cx2_anim;
+      
+      for (let i = 0; i < numSegments; i++) {
+        const tA = i / numSegments;
+        const tB = (i + 1) / numSegments;
+        const ptA = this.getBezierPoint(tA, p0, c1, c2, p1_anim);
+        const ptB = this.getBezierPoint(tB, p0, c1, c2, p1_anim);
+        
+        const sLine = shadowLines[i];
+        if (sLine) {
+          sLine.setAttribute("x1", ptA.x);
+          sLine.setAttribute("y1", ptA.y);
+          sLine.setAttribute("x2", ptB.x);
+          sLine.setAttribute("y2", ptB.y);
+        }
+        
+        const mLine = maskLines[i];
+        if (mLine) {
+          mLine.setAttribute("x1", ptA.x);
+          mLine.setAttribute("y1", ptA.y);
+          mLine.setAttribute("x2", ptB.x);
+          mLine.setAttribute("y2", ptB.y);
+        }
+      }
+    }
+  }
+
   init() {
     this.renderBoardCells();
     this.setupEventListeners();
     this.renderPlayerSetupList();
     this.drawSnakesAndLadders();
     this.startAdEcosystem(); // Start mock advertising platform
+    this.startSnakeAnimation(); // Start tail wiggling animations
     
     // Wire game state triggers
     this.game.onStateChange = (game) => this.handleGameStateChange(game);
@@ -419,6 +493,7 @@ class UIController {
   }
 
   drawSnakesAndLadders() {
+    this.snakeAnimations = [];
     this.dom.boardSvg.innerHTML = '';
     
     // Create gradients and glow filters in SVG definition
@@ -661,13 +736,17 @@ class UIController {
       const c1 = { x: cx1, y: cy1 };
       const c2 = { x: cx2, y: cy2 };
 
+      const shadowLines = [];
+      const maskLines = [];
+
       // 1. Drop Shadow Group (tapered shadow using overlapping line segments)
       const shadowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       shadowGroup.setAttribute("filter", "url(#snakeShadow)");
       
-      for (let i = 0; i < 50; i++) {
-        const tA = i / 50;
-        const tB = (i + 1) / 50;
+      const numSegments = 40;
+      for (let i = 0; i < numSegments; i++) {
+        const tA = i / numSegments;
+        const tB = (i + 1) / numSegments;
         const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
         const ptB = this.getBezierPoint(tB, p0, c1, c2, p1);
         const tMid = (tA + tB) / 2;
@@ -682,6 +761,7 @@ class UIController {
         sLine.setAttribute("stroke-width", w + 0.4);
         sLine.setAttribute("stroke-linecap", "round");
         shadowGroup.appendChild(sLine);
+        shadowLines.push(sLine);
       }
       this.dom.boardSvg.appendChild(shadowGroup);
 
@@ -690,9 +770,9 @@ class UIController {
       const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
       mask.setAttribute("id", maskId);
       
-      for (let i = 0; i < 50; i++) {
-        const tA = i / 50;
-        const tB = (i + 1) / 50;
+      for (let i = 0; i < numSegments; i++) {
+        const tA = i / numSegments;
+        const tB = (i + 1) / numSegments;
         const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
         const ptB = this.getBezierPoint(tB, p0, c1, c2, p1);
         const tMid = (tA + tB) / 2;
@@ -707,12 +787,15 @@ class UIController {
         mLine.setAttribute("stroke-width", w);
         mLine.setAttribute("stroke-linecap", "round");
         mask.appendChild(mLine);
+        maskLines.push(mLine);
       }
       defs.appendChild(mask);
 
       // 2. Snake Body Group (masked for tapered look)
       const bodyGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       bodyGroup.setAttribute("mask", `url(#${maskId})`);
+
+      const bodyPaths = [];
 
       // Snake Body base path (Thick gradient base)
       const body = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -721,6 +804,7 @@ class UIController {
       body.setAttribute("stroke", "url(#realSnakeGrad)");
       body.setAttribute("stroke-width", "3.2");
       bodyGroup.appendChild(body);
+      bodyPaths.push(body);
 
       // Mottled Underbelly Layer (cream highlighting on sides)
       const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -731,6 +815,7 @@ class UIController {
       underbelly.setAttribute("stroke-dasharray", "8 5");
       underbelly.setAttribute("opacity", "0.35");
       bodyGroup.appendChild(underbelly);
+      bodyPaths.push(underbelly);
 
       // Dark Transverse Bands (Dark brown stripes crossing the body)
       const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -740,6 +825,7 @@ class UIController {
       bands.setAttribute("stroke-width", "3.2");
       bands.setAttribute("stroke-dasharray", "1.5 3.0");
       bodyGroup.appendChild(bands);
+      bodyPaths.push(bands);
 
       // Snake Scales Overlay (Diamond texture specular highlights)
       const scales = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -749,6 +835,7 @@ class UIController {
       scales.setAttribute("stroke-width", "2.6");
       scales.setAttribute("stroke-dasharray", "0.3 0.9");
       bodyGroup.appendChild(scales);
+      bodyPaths.push(scales);
 
       // Specular Spinal Highlight (3D cylinder sheen)
       const spine = document.createElementNS("http://www.w3.org/2000/svg", "path");
@@ -757,6 +844,7 @@ class UIController {
       spine.setAttribute("stroke", "rgba(255, 255, 255, 0.22)");
       spine.setAttribute("stroke-width", "0.5");
       bodyGroup.appendChild(spine);
+      bodyPaths.push(spine);
 
       this.dom.boardSvg.appendChild(bodyGroup);
 
@@ -965,6 +1053,22 @@ class UIController {
       detailsGroup.appendChild(glint2);
 
       this.dom.boardSvg.appendChild(detailsGroup);
+
+      // Save animation references
+      this.snakeAnimations.push({
+        snakeIdx,
+        p0,
+        p1,
+        cx1,
+        cy1,
+        cx2,
+        cy2,
+        nx,
+        ny,
+        bodyPaths,
+        shadowLines,
+        maskLines
+      });
     }
   }
 
