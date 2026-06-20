@@ -386,7 +386,7 @@ class SnakeAndLaddersGame {
     return result;
   }
 
-  resolveSnakeRescue(escaped) {
+  resolveSnakeRescue(escaped, actualTailPos = null) {
     if (this.gameState !== 'playing') return;
     const player = this.getCurrentPlayer();
     const startPos = player.position;
@@ -397,7 +397,8 @@ class SnakeAndLaddersGame {
       this.log(`🧠 Clever! ${player.name} answered correctly and escaped the snake at ${startPos}!`);
     } else {
       // Slide down to the snake tail
-      const tailPos = GameConfig.snakes[startPos];
+      const tailPos = actualTailPos !== null ? actualTailPos : GameConfig.snakes[startPos];
+      GameConfig.snakes[startPos] = tailPos; // Sync the game config map
       player.position = tailPos;
       player.stats.bites++;
       this.log(`🐍 Oh no! ${player.name} answered incorrectly and slid down to ${tailPos}!`);

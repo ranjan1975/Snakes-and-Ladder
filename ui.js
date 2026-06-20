@@ -1058,6 +1058,8 @@ class UIController {
       // Save animation references
       this.snakeAnimations.push({
         snakeIdx,
+        start,
+        end,
         p0,
         p1,
         cx1,
@@ -1318,19 +1320,113 @@ class UIController {
           escaped = await this.triggerSnakeRescueFlow(player, snakeOrLadder);
         }
         
-        // Let game engine resolve state
-        this.game.resolveSnakeRescue(escaped);
-        
         if (!escaped) {
-          // If bit, play sound and slide down to the tail
+          const startPos = snakeOrLadder.start;
+          
+          // Determine a list of valid random cells (lower than head, not another snake head)
+          const possibleCells = [];
+          for (let i = 1; i < startPos; i++) {
+            if (!GameConfig.snakes[i]) {
+              possibleCells.push(i);
+            }
+          }
+          if (possibleCells.length === 0) possibleCells.push(1);
+          
+          const randomTail = possibleCells[Math.floor(Math.random() * possibleCells.length)];
+          
+          // Let game engine resolve state with this custom tail
+          this.game.resolveSnakeRescue(escaped, randomTail);
+          
+          // Find the corresponding snake animation object to morph the tail coordinates
+          const anim = this.snakeAnimations.find(a => a.start === startPos);
+          
           this.sound.playSnakeBite();
-          this.showToast(`Bitten! ${player.name} slid down to ${finalPosition}! 🐍`, 'snake');
+          this.showToast(`Bitten! ${player.name} sliding down to a randomized cell (${randomTail})! 🐍`, 'snake');
           
           if (charEl) charEl.classList.add('walking');
-          player.position = finalPosition;
-          this.updateTokensUI(true);
-          await this.wait(800);
+          
+          if (anim) {
+            // Get coordinates of the new random tail cell
+            const p1_target = this.getCellCoordinates(randomTail);
+            
+            // Animating loop for morphing the snake tail and sliding the player slowly
+            const duration = 2500; // 2.5 seconds (very slow and suspenseful)
+            const startTime = performance.now();
+            const p1_start = { x: anim.p1.x, y: anim.p1.y };
+            const p0_coords = anim.p0;
+            
+            // Set the final target in the anim object for subsequent turns/draws
+            anim.end = randomTail;
+            
+            await new Promise((resolve) => {
+              const animateSnakeTail = (now) => {
+                const elapsed = now - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Smooth easing
+                const ease = progress < 0.5 
+                  ? 4 * progress * progress * progress 
+                  : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                  
+                // Interpolate
+                const currentP1 = {
+                  x: p1_start.x + (p1_target.x - p1_start.x) * ease,
+                  y: p1_start.y + (p1_target.y - p1_start.y) * ease
+                };
+                
+                const dx = currentP1.x - p0_coords.x;
+                const dy = currentP1.y - p0_coords.y;
+                const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+                
+                const nx = -dy / dist;
+                const ny = dx / dist;
+                
+                const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
+                const cx1 = p0_coords.x + 0.33 * dx + waveAmp * nx;
+                const cy1 = p0_coords.y + 0.33 * dy + waveAmp * ny;
+                const cx2 = p0_coords.x + 0.66 * dx - waveAmp * nx;
+                const cy2 = p0_coords.y + 0.66 * dy - waveAmp * ny;
+                
+                // Update properties in anim object
+                anim.p1 = currentP1;
+                anim.cx1 = cx1;
+                anim.cy1 = cy1;
+                anim.cx2 = cx2;
+                anim.cy2 = cy2;
+                anim.nx = nx;
+                anim.ny = ny;
+                
+                // Visually move player token along with the tail tip
+                if (token) {
+                  token.style.transition = 'none';
+                  token.style.left = `${currentP1.x}%`;
+                  token.style.top = `${currentP1.y - 2.0}%`;
+                }
+                
+                if (progress < 1) {
+                  requestAnimationFrame(animateSnakeTail);
+                } else {
+                  resolve();
+                }
+              };
+              requestAnimationFrame(animateSnakeTail);
+            });
+            
+            // Set final positions and update UI overlays/overlaps
+            player.position = randomTail;
+            this.updateTokensUI(true);
+            await this.wait(400);
+          } else {
+            // Fallback
+            player.position = randomTail;
+            this.updateTokensUI(true);
+            await this.wait(1500);
+          }
+          
           if (charEl) charEl.classList.remove('walking');
+        } else {
+          // If escaped, resolve in engine normally (no movement)
+          this.game.resolveSnakeRescue(escaped);
         }
       }
     }
