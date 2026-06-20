@@ -10,6 +10,16 @@ class UIController {
     this.confettiParticles = [];
     this.confettiActive = false;
     
+    // WebRTC Online Multiplayer state variables
+    this.isOnlineMode = false;
+    this.onlineRoomType = 'host'; // 'host' or 'join'
+    this.peer = null;
+    this.conn = null;
+    this.onlineMyColor = '#00f2fe'; // Default cyan
+    this.onlineMyAvatarData = ''; // Store custom uploaded photo if any
+    this.onlinePartnerData = null; // Store partner's config
+    this.quizResultResolver = null; // Promise resolver for online snake quiz sync
+    
     // Binding DOM element references
     this.dom = {
       setupScreen: document.getElementById('setup-screen'),
@@ -20,11 +30,29 @@ class UIController {
       tokensContainer: document.getElementById('tokens-container'),
       
       // Setup controls
-      playerCountBtns: document.querySelectorAll('.player-count-btn'),
+      playerCountBtns: document.querySelectorAll('.setup-number-players .player-count-btn'),
       playerSetupList: document.getElementById('player-setup-list'),
       startGameBtn: document.getElementById('start-game-btn'),
       exactRollToggle: document.getElementById('exact-roll-toggle'),
       soundToggle: document.getElementById('sound-toggle'),
+      
+      // Game Mode Toggles
+      modeLocalBtn: document.getElementById('mode-local-btn'),
+      modeOnlineBtn: document.getElementById('mode-online-btn'),
+      localSetupOptions: document.getElementById('local-setup-options'),
+      onlineSetupOptions: document.getElementById('online-setup-options'),
+      onlineHostTab: document.getElementById('online-host-tab'),
+      onlineJoinTab: document.getElementById('online-join-tab'),
+      onlineHostPanel: document.getElementById('online-host-panel'),
+      onlineJoinPanel: document.getElementById('online-join-panel'),
+      generateCodeBtn: document.getElementById('generate-code-btn'),
+      hostCodeDisplay: document.getElementById('host-code-display'),
+      roomCodeVal: document.getElementById('room-code-val'),
+      joinCodeInput: document.getElementById('join-code-input'),
+      connectGameBtn: document.getElementById('connect-game-btn'),
+      onlinePlayerName: document.getElementById('online-player-name'),
+      onlinePlayerAvatar: document.getElementById('online-player-avatar'),
+      onlinePlayerAvatarFile: document.getElementById('online-player-avatar-file'),
       
       // HUD
       currentPlayerAvatar: document.getElementById('current-player-avatar'),
@@ -221,23 +249,162 @@ class UIController {
       // Save exact roll setting
       this.game.exactRollToWin = this.dom.exactRollToggle.checked;
       
-      // Add configure players to game
-      this.game.reset();
-      for (let i = 0; i < this.setupConfig.playerCount; i++) {
-        const pConf = this.setupConfig.players[i];
-        
-        // Grab values from inputs if available
-        const nameInput = document.getElementById(`setup-name-${i}`);
-        const nameVal = nameInput ? nameInput.value.trim() : pConf.name;
-        
-        const botToggle = document.getElementById(`setup-bot-${i}`);
-        const isBotVal = botToggle ? botToggle.checked : pConf.isBot;
-        
-        this.game.addPlayer(nameVal || `Player ${i+1}`, pConf.color, pConf.avatar, isBotVal);
+      if (this.isOnlineMode) {
+        // Host starts the online match
+        if (this.onlineRoomType === 'host' && this.conn && this.conn.open && this.onlinePartnerData) {
+          const hostProfile = {
+            name: this.dom.onlinePlayerName.value.trim() || "Host",
+            color: this.onlineMyColor,
+            avatar: this.dom.onlinePlayerAvatar.value === 'custom' ? this.onlineMyAvatarData : this.dom.onlinePlayerAvatar.value
+          };
+          
+          this.game.reset();
+          this.game.exactRollToWin = this.dom.exactRollToggle.checked;
+          this.game.addPlayer(hostProfile.name, hostProfile.color, hostProfile.avatar, false);
+          this.game.addPlayer(this.onlinePartnerData.name, this.onlinePartnerData.color, this.onlinePartnerData.avatar, false);
+          
+          // Send START_GAME message to partner with full configurations
+          this.conn.send({
+            type: 'START_GAME',
+            players: this.game.players.map(p => ({
+              name: p.name,
+              color: p.color,
+              avatar: p.avatar
+            })),
+            exactRollToWin: this.game.exactRollToWin
+          });
+          
+          this.game.startGame();
+        }
+      } else {
+        // Add configure players to game (Local Mode)
+        this.game.reset();
+        for (let i = 0; i < this.setupConfig.playerCount; i++) {
+          const pConf = this.setupConfig.players[i];
+          const nameInput = document.getElementById(`setup-name-${i}`);
+          const nameVal = nameInput ? nameInput.value.trim() : pConf.name;
+          const botToggle = document.getElementById(`setup-bot-${i}`);
+          const isBotVal = botToggle ? botToggle.checked : pConf.isBot;
+          this.game.addPlayer(nameVal || `Player ${i+1}`, pConf.color, pConf.avatar, isBotVal);
+        }
+        this.game.startGame();
       }
-      
-      this.game.startGame();
     });
+
+    // Toggle Game Modes: Local vs Online
+    if (this.dom.modeLocalBtn) {
+      this.dom.modeLocalBtn.addEventListener('click', () => {
+        this.dom.modeLocalBtn.classList.add('active');
+        this.dom.modeOnlineBtn.classList.remove('active');
+        this.dom.localSetupOptions.classList.remove('hidden');
+        this.dom.onlineSetupOptions.classList.add('hidden');
+        this.dom.startGameBtn.classList.remove('hidden');
+        this.dom.startGameBtn.innerText = "Launch Game 🚀";
+        this.isOnlineMode = false;
+        
+        // Clean up peer if active
+        this.disconnectPeer();
+      });
+    }
+    
+    if (this.dom.modeOnlineBtn) {
+      this.dom.modeOnlineBtn.addEventListener('click', () => {
+        this.dom.modeOnlineBtn.classList.add('active');
+        this.dom.modeLocalBtn.classList.remove('active');
+        this.dom.onlineSetupOptions.classList.remove('hidden');
+        this.dom.localSetupOptions.classList.add('hidden');
+        this.isOnlineMode = true;
+        
+        // Hide launch button until connected (Host will see it once connected)
+        this.dom.startGameBtn.classList.add('hidden');
+        
+        this.updateOnlineSetupView();
+      });
+    }
+    
+    // Online Tabs: Host vs Join
+    if (this.dom.onlineHostTab) {
+      this.dom.onlineHostTab.addEventListener('click', () => {
+        this.dom.onlineHostTab.classList.add('active');
+        this.dom.onlineJoinTab.classList.remove('active');
+        this.dom.onlineHostPanel.classList.remove('hidden');
+        this.dom.onlineJoinPanel.classList.add('hidden');
+        this.onlineRoomType = 'host';
+        this.dom.startGameBtn.classList.add('hidden');
+        this.disconnectPeer();
+      });
+    }
+    
+    if (this.dom.onlineJoinTab) {
+      this.dom.onlineJoinTab.addEventListener('click', () => {
+        this.dom.onlineJoinTab.classList.add('active');
+        this.dom.onlineHostTab.classList.remove('active');
+        this.dom.onlineJoinPanel.classList.remove('hidden');
+        this.dom.onlineHostPanel.classList.add('hidden');
+        this.onlineRoomType = 'join';
+        this.dom.startGameBtn.classList.add('hidden');
+        this.disconnectPeer();
+      });
+    }
+
+    // Generate Room Code (Host)
+    if (this.dom.generateCodeBtn) {
+      this.dom.generateCodeBtn.addEventListener('click', () => {
+        this.initHostPeer();
+      });
+    }
+    
+    // Connect to Host (Joiner)
+    if (this.dom.connectGameBtn) {
+      this.dom.connectGameBtn.addEventListener('click', () => {
+        const code = this.dom.joinCodeInput.value.trim();
+        if (code.length !== 4 || isNaN(code)) {
+          this.showToast("Please enter a valid 4-digit code", "error");
+          return;
+        }
+        this.initJoinerPeer(code);
+      });
+    }
+    
+    // Profile Selection Color Picker
+    const colorBtns = document.querySelectorAll('.online-color-btn');
+    colorBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        colorBtns.forEach(b => {
+          b.classList.remove('active');
+          b.style.borderColor = 'transparent';
+        });
+        btn.classList.add('active');
+        btn.style.borderColor = 'white';
+        this.onlineMyColor = btn.dataset.color;
+      });
+    });
+    
+    // Profile Selection Avatar upload triggers
+    if (this.dom.onlinePlayerAvatar) {
+      this.dom.onlinePlayerAvatar.addEventListener('change', (e) => {
+        if (e.target.value === 'custom') {
+          this.dom.onlinePlayerAvatarFile.click();
+        }
+      });
+    }
+    
+    if (this.dom.onlinePlayerAvatarFile) {
+      this.dom.onlinePlayerAvatarFile.addEventListener('change', (e) => {
+        const file = e.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (event) => {
+            this.onlineMyAvatarData = event.target.result;
+            this.showToast("Custom photo uploaded! 📷", "info");
+          };
+          reader.readAsDataURL(file);
+        } else {
+          // Reset avatar select if cancelled
+          this.dom.onlinePlayerAvatar.value = '🦊';
+        }
+      });
+    }
 
     // Dice Roll trigger
     this.dom.rollBtn.addEventListener('click', () => this.handleDiceRollRequest());
@@ -263,6 +430,16 @@ class UIController {
     this.dom.restartBtn.addEventListener('click', () => {
       this.dom.victoryModal.classList.remove('show');
       this.stopConfetti();
+      
+      if (this.isOnlineMode && this.conn && this.conn.open) {
+        if (this.onlineRoomType === 'host') {
+          // Send restart signal to guest
+          this.conn.send({
+            type: 'RESTART_GAME'
+          });
+        }
+      }
+      
       this.game.reset();
     });
 
@@ -1092,6 +1269,9 @@ class UIController {
       this.dom.setupScreen.classList.add('hidden');
       this.dom.playScreen.classList.remove('hidden');
       
+      // Draw board elements for both players (including resets)
+      this.drawSnakesAndLadders();
+      
       // Create tokens if not exists
       if (this.dom.tokensContainer.childElementCount === 0) {
         this.initializeTokens(game.players);
@@ -1202,14 +1382,29 @@ class UIController {
     this.dom.currentPlayerAvatar.style.boxShadow = `0 0 20px ${curPlayer.color}`;
     this.dom.currentPlayerName.innerText = curPlayer.name;
     
-    if (curPlayer.isBot) {
-      this.dom.currentPlayerStatus.innerHTML = `🤖 Thinking...`;
-      this.dom.rollBtn.disabled = true;
-      this.dom.rollBtn.innerText = "Robot Rolling...";
+    if (this.isOnlineMode) {
+      const activeIdx = this.game.activePlayerIndex;
+      const isMyTurn = (this.onlineRoomType === 'host' && activeIdx === 0) ||
+                       (this.onlineRoomType === 'join' && activeIdx === 1);
+      if (isMyTurn) {
+        this.dom.currentPlayerStatus.innerHTML = `Your Turn! Click Dice to Roll`;
+        this.dom.rollBtn.disabled = false;
+        this.dom.rollBtn.innerText = "Roll Dice";
+      } else {
+        this.dom.currentPlayerStatus.innerHTML = `Waiting for ${curPlayer.name} to roll...`;
+        this.dom.rollBtn.disabled = true;
+        this.dom.rollBtn.innerText = "Waiting...";
+      }
     } else {
-      this.dom.currentPlayerStatus.innerHTML = `Your Turn! Click Dice to Roll`;
-      this.dom.rollBtn.disabled = false;
-      this.dom.rollBtn.innerText = "Roll Dice";
+      if (curPlayer.isBot) {
+        this.dom.currentPlayerStatus.innerHTML = `🤖 Thinking...`;
+        this.dom.rollBtn.disabled = true;
+        this.dom.rollBtn.innerText = "Robot Rolling...";
+      } else {
+        this.dom.currentPlayerStatus.innerHTML = `Your Turn! Click Dice to Roll`;
+        this.dom.rollBtn.disabled = false;
+        this.dom.rollBtn.innerText = "Roll Dice";
+      }
     }
     
     // Highlight Active Player's target cell briefly
@@ -1245,10 +1440,20 @@ class UIController {
     const player = this.game.getCurrentPlayer();
     if (player.isBot) return; // Prevent double clicking bot turn
 
+    if (this.isOnlineMode) {
+      const activeIdx = this.game.activePlayerIndex;
+      const isMyTurn = (this.onlineRoomType === 'host' && activeIdx === 0) ||
+                       (this.onlineRoomType === 'join' && activeIdx === 1);
+      if (!isMyTurn) {
+        this.showToast("It's your opponent's turn!", 'info');
+        return;
+      }
+    }
+
     this.rollAndExecute();
   }
 
-  async rollAndExecute() {
+  async rollAndExecute(forcedRoll = null) {
     this.isAnimating = true;
     this.dom.rollBtn.disabled = true;
 
@@ -1257,9 +1462,17 @@ class UIController {
     this.dom.diceCube.classList.add('rolling');
     
     // We fetch the result before animation completes to target the rotation face
-    const result = await this.game.playTurn();
+    const result = await this.game.playTurn(forcedRoll);
     const roll = result.roll;
     
+    // Broadcast the roll if it's online mode and we rolled it locally
+    if (this.isOnlineMode && forcedRoll === null) {
+      this.conn.send({
+        type: 'ROLL',
+        roll: roll
+      });
+    }
+
     // Play the clicking bounce sound sequence
     setTimeout(() => {
       this.sound.playDiceRoll();
@@ -1314,31 +1527,61 @@ class UIController {
       } else {
         // Snake interception flow!
         let escaped = false;
+        let randomTail = null;
         
-        if (player.isBot) {
-          // Bots resolve in the background without showing any modal
-          escaped = Math.random() < 0.35; // 35% chance of bot escaping
-          if (escaped) {
-            this.showToast(`🤖 Clever! Bot ${player.name} answered correctly in background and escaped!`, 'ladder');
+        if (this.isOnlineMode) {
+          const activeIdx = this.game.activePlayerIndex;
+          const isLocalPlayer = (this.onlineRoomType === 'host' && activeIdx === 0) ||
+                                 (this.onlineRoomType === 'join' && activeIdx === 1);
+          if (isLocalPlayer) {
+            escaped = await this.triggerSnakeRescueFlow(player, snakeOrLadder);
+            if (!escaped) {
+              const startPos = snakeOrLadder.start;
+              const possibleCells = [];
+              for (let i = 1; i < startPos; i++) {
+                if (!GameConfig.snakes[i]) possibleCells.push(i);
+              }
+              if (possibleCells.length === 0) possibleCells.push(1);
+              randomTail = possibleCells[Math.floor(Math.random() * possibleCells.length)];
+            }
+            // Send result to remote player
+            this.conn.send({
+              type: 'QUIZ_RESULT',
+              escaped: escaped,
+              randomTail: randomTail
+            });
+          } else {
+            this.showToast(`Waiting for ${player.name} to solve rescue quiz... ⏱️`, 'info');
+            // Wait for incoming WebRTC sync message
+            const syncResult = await new Promise((resolve) => {
+              this.quizResultResolver = resolve;
+            });
+            escaped = syncResult.escaped;
+            randomTail = syncResult.randomTail;
           }
         } else {
-          // Human player gets the interactive question modal
-          escaped = await this.triggerSnakeRescueFlow(player, snakeOrLadder);
+          if (player.isBot) {
+            escaped = Math.random() < 0.35;
+            if (escaped) {
+              this.showToast(`🤖 Clever! Bot ${player.name} answered correctly in background and escaped!`, 'ladder');
+            }
+          } else {
+            escaped = await this.triggerSnakeRescueFlow(player, snakeOrLadder);
+          }
+          
+          if (!escaped) {
+            const startPos = snakeOrLadder.start;
+            const possibleCells = [];
+            for (let i = 1; i < startPos; i++) {
+              if (!GameConfig.snakes[i]) possibleCells.push(i);
+            }
+            if (possibleCells.length === 0) possibleCells.push(1);
+            randomTail = possibleCells[Math.floor(Math.random() * possibleCells.length)];
+          }
         }
         
         if (!escaped) {
           const startPos = snakeOrLadder.start;
-          
-          // Determine a list of valid random cells (lower than head, not another snake head)
-          const possibleCells = [];
-          for (let i = 1; i < startPos; i++) {
-            if (!GameConfig.snakes[i]) {
-              possibleCells.push(i);
-            }
-          }
-          if (possibleCells.length === 0) possibleCells.push(1);
-          
-          const randomTail = possibleCells[Math.floor(Math.random() * possibleCells.length)];
           
           // Let game engine resolve state with this custom tail
           this.game.resolveSnakeRescue(escaped, randomTail);
@@ -1428,11 +1671,13 @@ class UIController {
               clearTimeout(anim.resetTimeoutId);
             }
             
-            // Set a 60-second timer to morph the snake back to its default position
-            anim.resetTimeoutId = setTimeout(() => {
-              this.morphSnakeBack(startPos);
-              anim.resetTimeoutId = null;
-            }, 60000);
+            // Only host or local play schedules the 60-second timer to morph the snake back
+            if (!this.isOnlineMode || this.onlineRoomType === 'host') {
+              anim.resetTimeoutId = setTimeout(() => {
+                this.morphSnakeBack(startPos);
+                anim.resetTimeoutId = null;
+              }, 60000);
+            }
           } else {
             // Fallback
             player.position = randomTail;
@@ -1469,6 +1714,14 @@ class UIController {
     
     // Update GameConfig back to the original tail in both UI and game engine config
     GameConfig.snakes[startPos] = defaultTail;
+    
+    // If online mode and we are the host, broadcast morph-back to guest
+    if (this.isOnlineMode && this.onlineRoomType === 'host' && this.conn && this.conn.open) {
+      this.conn.send({
+        type: 'MORPH_BACK',
+        startPos: startPos
+      });
+    }
     
     await new Promise((resolve) => {
       const animateBack = (now) => {
@@ -1515,6 +1768,208 @@ class UIController {
     });
     
     this.showToast(`The snake at ${startPos} has returned to its default nest! 🐍`, 'info');
+  }
+
+  initHostPeer() {
+    this.dom.generateCodeBtn.disabled = true;
+    this.dom.generateCodeBtn.innerText = "Connecting to PeerJS signal server...";
+    
+    // Choose a random 4 digit code
+    const code = Math.floor(1000 + Math.random() * 9000);
+    this.peer = new Peer(`cs-game-${code}`);
+    
+    this.peer.on('open', (id) => {
+      this.showToast("Room created! Share your code.", "info");
+      this.dom.generateCodeBtn.classList.add('hidden');
+      this.dom.hostCodeDisplay.classList.remove('hidden');
+      this.dom.roomCodeVal.innerText = code;
+    });
+    
+    this.peer.on('connection', (conn) => {
+      this.conn = conn;
+      this.setupConnectionListeners();
+    });
+    
+    this.peer.on('error', (err) => {
+      if (err.type === 'unavailable-id') {
+        // ID taken, retry
+        this.peer.destroy();
+        this.initHostPeer();
+      } else {
+        this.showToast(`Signal error: ${err.message}`, "error");
+        this.dom.generateCodeBtn.disabled = false;
+        this.dom.generateCodeBtn.innerText = "Generate Room Code";
+      }
+    });
+  }
+
+  initJoinerPeer(code) {
+    this.dom.connectGameBtn.disabled = true;
+    this.dom.connectGameBtn.innerText = "Connecting...";
+    
+    this.peer = new Peer();
+    
+    this.peer.on('open', (id) => {
+      this.conn = this.peer.connect(`cs-game-${code}`);
+      this.setupConnectionListeners();
+    });
+    
+    this.peer.on('error', (err) => {
+      this.showToast(`Connection failed: ${err.message}`, "error");
+      this.dom.connectGameBtn.disabled = false;
+      this.dom.connectGameBtn.innerText = "Connect & Play";
+      if (this.peer) this.peer.destroy();
+    });
+  }
+
+  setupConnectionListeners() {
+    this.conn.on('open', () => {
+      this.showToast("Opponent Connected! 🎮", "info");
+      
+      const myProfile = {
+        name: this.dom.onlinePlayerName.value.trim() || (this.onlineRoomType === 'host' ? "Host" : "Guest"),
+        color: this.onlineMyColor,
+        avatar: this.dom.onlinePlayerAvatar.value === 'custom' ? this.onlineMyAvatarData : this.dom.onlinePlayerAvatar.value
+      };
+      
+      if (this.onlineRoomType === 'host') {
+        // Waiting for guest profile message
+        this.showToast("Waiting for partner profile details...", "info");
+      } else {
+        // Guest sends their profile to host
+        this.conn.send({
+          type: 'SETUP_GUEST',
+          profile: myProfile
+        });
+        this.dom.connectGameBtn.innerText = "Connected! Waiting for Host...";
+        this.dom.connectGameBtn.disabled = true;
+      }
+    });
+    
+    this.conn.on('data', (data) => {
+      this.handleIncomingData(data);
+    });
+    
+    this.conn.on('close', () => {
+      this.handleDisconnect();
+    });
+    
+    this.conn.on('error', (err) => {
+      this.showToast(`Connection error: ${err.message}`, "error");
+      this.handleDisconnect();
+    });
+  }
+
+  handleIncomingData(data) {
+    switch (data.type) {
+      case 'SETUP_GUEST':
+        // Host receives guest profile
+        this.onlinePartnerData = data.profile;
+        this.showToast(`Opponent: ${data.profile.name} is ready!`, "info");
+        
+        // Show launch match button to host
+        this.dom.startGameBtn.classList.remove('hidden');
+        this.dom.startGameBtn.innerText = "Start Online Match 🚀";
+        break;
+        
+      case 'START_GAME':
+        // Guest receives start game signal with complete synced settings
+        this.game.reset();
+        this.game.exactRollToWin = data.exactRollToWin;
+        data.players.forEach(p => {
+          this.game.addPlayer(p.name, p.color, p.avatar, false);
+        });
+        
+        this.game.startGame();
+        this.showToast("Match Started!", "info");
+        break;
+        
+      case 'ROLL':
+        // Receive forced dice roll result from opponent
+        this.rollAndExecute(data.roll);
+        break;
+        
+      case 'QUIZ_RESULT':
+        // Receive snake rescue quiz result
+        if (this.quizResultResolver) {
+          this.quizResultResolver({
+            escaped: data.escaped,
+            randomTail: data.randomTail
+          });
+          this.quizResultResolver = null;
+        }
+        break;
+        
+      case 'MORPH_BACK':
+        // Receive snake tail morph reset command
+        this.morphSnakeBack(data.startPos);
+        break;
+        
+      case 'RESTART_GAME':
+        // Opponent restarted
+        this.dom.victoryModal.classList.remove('show');
+        this.stopConfetti();
+        this.game.reset();
+        break;
+    }
+  }
+
+  handleDisconnect() {
+    this.showToast("Opponent Disconnected! Reverting to local play setup.", "error");
+    
+    // Clear connection and reset ui
+    this.disconnectPeer();
+    
+    // Revert setup UI to local play
+    this.isOnlineMode = false;
+    if (this.dom.modeLocalBtn) this.dom.modeLocalBtn.classList.add('active');
+    if (this.dom.modeOnlineBtn) this.dom.modeOnlineBtn.classList.remove('active');
+    if (this.dom.localSetupOptions) this.dom.localSetupOptions.classList.remove('hidden');
+    if (this.dom.onlineSetupOptions) this.dom.onlineSetupOptions.classList.add('hidden');
+    if (this.dom.startGameBtn) {
+      this.dom.startGameBtn.classList.remove('hidden');
+      this.dom.startGameBtn.innerText = "Launch Game 🚀";
+    }
+    
+    // Return to setup if in game
+    this.dom.victoryModal.classList.remove('show');
+    this.stopConfetti();
+    this.game.reset(); // trigger setup screen redirect
+  }
+
+  disconnectPeer() {
+    if (this.conn) {
+      this.conn.close();
+      this.conn = null;
+    }
+    if (this.peer) {
+      this.peer.destroy();
+      this.peer = null;
+    }
+    
+    // Reset buttons and panels
+    if (this.dom.generateCodeBtn) {
+      this.dom.generateCodeBtn.disabled = false;
+      this.dom.generateCodeBtn.classList.remove('hidden');
+      this.dom.generateCodeBtn.innerText = "Generate Room Code";
+    }
+    if (this.dom.hostCodeDisplay) {
+      this.dom.hostCodeDisplay.classList.add('hidden');
+    }
+    if (this.dom.connectGameBtn) {
+      this.dom.connectGameBtn.disabled = false;
+      this.dom.connectGameBtn.innerText = "Connect & Play";
+    }
+    this.onlinePartnerData = null;
+  }
+
+  updateOnlineSetupView() {
+    // Sync the tabs view
+    if (this.onlineRoomType === 'host') {
+      this.dom.onlineHostTab.click();
+    } else {
+      this.dom.onlineJoinTab.click();
+    }
   }
 
   checkBotTurn() {
