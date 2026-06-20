@@ -416,6 +416,15 @@ class UIController {
         <stop offset="0%" stop-color="#ff007f" />
         <stop offset="100%" stop-color="#7f00ff" />
       </linearGradient>
+      <linearGradient id="realSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#e3c8a1" />
+        <stop offset="50%" stop-color="#a67b56" />
+        <stop offset="100%" stop-color="#6e473b" />
+      </linearGradient>
+      <linearGradient id="realSnakeHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#e3c8a1" />
+        <stop offset="100%" stop-color="#6e473b" />
+      </linearGradient>
       <linearGradient id="ladderGrad" x1="0%" y1="100%" x2="0%" y2="0%">
         <stop offset="0%" stop-color="#00f2fe" />
         <stop offset="100%" stop-color="#39ff14" />
@@ -435,6 +444,9 @@ class UIController {
           <feMergeNode in="blur"/>
           <feMergeNode in="SourceGraphic"/>
         </feMerge>
+      </filter>
+      <filter id="snakeShadow" x="-30%" y="-30%" width="160%" height="160%">
+        <feDropShadow dx="0.5" dy="1.0" stdDeviation="0.9" flood-color="#000000" flood-opacity="0.65"/>
       </filter>
     `;
     this.dom.boardSvg.appendChild(defs);
@@ -529,22 +541,58 @@ class UIController {
       
       const pathData = `M ${p0.x} ${p0.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x} ${p1.y}`;
 
-      // 1. Snake Body path (Thick gradient base)
+      // 1. Drop Shadow Layer
+      const shadow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      shadow.setAttribute("d", pathData);
+      shadow.setAttribute("fill", "none");
+      shadow.setAttribute("stroke", "rgba(0, 0, 0, 0.45)");
+      shadow.setAttribute("stroke-width", "2.8");
+      shadow.setAttribute("filter", "url(#snakeShadow)");
+      this.dom.boardSvg.appendChild(shadow);
+
+      // 2. Snake Body base path (Thick gradient base)
       const body = document.createElementNS("http://www.w3.org/2000/svg", "path");
       body.setAttribute("d", pathData);
       body.setAttribute("class", "svg-snake-body");
-      body.setAttribute("stroke", "url(#snakeGrad)");
+      body.setAttribute("stroke", "url(#realSnakeGrad)");
       body.setAttribute("stroke-width", "2.2");
-      body.setAttribute("filter", "url(#glowRed)");
       this.dom.boardSvg.appendChild(body);
 
-      // 2. Snake Scales Overlay (Dashed white/pink line for diamond texture)
+      // 3. Mottled Underbelly Layer (cream highlighting on sides)
+      const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      underbelly.setAttribute("d", pathData);
+      underbelly.setAttribute("fill", "none");
+      underbelly.setAttribute("stroke", "#ecdab9");
+      underbelly.setAttribute("stroke-width", "1.7");
+      underbelly.setAttribute("stroke-dasharray", "8 5");
+      underbelly.setAttribute("opacity", "0.35");
+      this.dom.boardSvg.appendChild(underbelly);
+
+      // 4. Dark Transverse Bands (Dark brown stripes crossing the body)
+      const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      bands.setAttribute("d", pathData);
+      bands.setAttribute("fill", "none");
+      bands.setAttribute("stroke", "#211510");
+      bands.setAttribute("stroke-width", "2.2");
+      bands.setAttribute("stroke-dasharray", "1.5 3.0");
+      this.dom.boardSvg.appendChild(bands);
+
+      // 5. Snake Scales Overlay (Diamond texture specular highlights)
       const scales = document.createElementNS("http://www.w3.org/2000/svg", "path");
       scales.setAttribute("d", pathData);
       scales.setAttribute("class", "svg-snake-scales");
-      scales.setAttribute("stroke", "rgba(255, 255, 255, 0.4)");
-      scales.setAttribute("stroke-width", "1.4");
+      scales.setAttribute("stroke", "rgba(255, 255, 255, 0.28)");
+      scales.setAttribute("stroke-width", "1.9");
+      scales.setAttribute("stroke-dasharray", "0.3 0.9");
       this.dom.boardSvg.appendChild(scales);
+
+      // 6. Specular Spinal Highlight (3D cylinder sheen)
+      const spine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+      spine.setAttribute("d", pathData);
+      spine.setAttribute("fill", "none");
+      spine.setAttribute("stroke", "rgba(255, 255, 255, 0.22)");
+      spine.setAttribute("stroke-width", "0.4");
+      this.dom.boardSvg.appendChild(spine);
 
       // --- Viper Head Math ---
       // Direction vector pointing from head center towards body
@@ -579,11 +627,26 @@ class UIController {
       const angleRad = Math.atan2(fy, fx);
       const angleDeg = angleRad * (180 / Math.PI);
 
-      // 3. Draw Viper Head
+      // 7. Draw Viper Head
       const head = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
       head.setAttribute("points", `${noseX},${noseY} ${leftJawX},${leftJawY} ${neckX},${neckY} ${rightJawX},${rightJawY}`);
       head.setAttribute("class", "svg-snake-head-viper");
       this.dom.boardSvg.appendChild(head);
+
+      // --- Mottled spots on head ---
+      const spot1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      spot1.setAttribute("cx", p0.x + 0.3 * fx);
+      spot1.setAttribute("cy", p0.y + 0.3 * fy);
+      spot1.setAttribute("r", "0.55");
+      spot1.setAttribute("fill", "#211510");
+      this.dom.boardSvg.appendChild(spot1);
+
+      const spot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      spot2.setAttribute("cx", p0.x + 0.6 * bx_dir);
+      spot2.setAttribute("cy", p0.y + 0.6 * by_dir);
+      spot2.setAttribute("r", "0.45");
+      spot2.setAttribute("fill", "#211510");
+      this.dom.boardSvg.appendChild(spot2);
 
       // --- Forked Tongue Math ---
       const tx = p0.x + 1.6 * fx; // Tongue base (at nose)
@@ -598,34 +661,72 @@ class UIController {
       const rtx = sx + 0.9 * fx - 0.65 * jx; // Right tip
       const rty = sy + 0.9 * fy - 0.65 * jy;
 
-      // 4. Draw Forked Tongue with CSS Origin flicker animation
+      // 8. Draw Forked Tongue with CSS Origin flicker animation
       const tongue = document.createElementNS("http://www.w3.org/2000/svg", "path");
       tongue.setAttribute("d", `M ${tx} ${ty} L ${sx} ${sy} L ${ltx} ${lty} M ${sx} ${sy} L ${rtx} ${rty}`);
       tongue.setAttribute("class", "svg-snake-tongue");
       tongue.setAttribute("style", `transform-origin: ${tx}% ${ty}%;`);
       this.dom.boardSvg.appendChild(tongue);
 
-      // --- Eye Placements ---
+      // --- Realistic Eye Placements (slit pupil and specular glint) ---
       const ex1 = p0.x + 0.85 * fx + 0.58 * jx;
       const ey1 = p0.y + 0.85 * fy + 0.58 * jy;
       const ex2 = p0.x + 0.85 * fx - 0.58 * jx;
       const ey2 = p0.y + 0.85 * fy - 0.58 * jy;
       
+      // Left Eye
       const eye1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       eye1.setAttribute("cx", ex1);
       eye1.setAttribute("cy", ey1);
-      eye1.setAttribute("r", "0.32");
-      eye1.setAttribute("fill", "#ffff00"); // Glowing yellow eyes
+      eye1.setAttribute("r", "0.38");
+      eye1.setAttribute("fill", "#801a0e");
+      eye1.setAttribute("stroke", "#211510");
+      eye1.setAttribute("stroke-width", "0.08");
       this.dom.boardSvg.appendChild(eye1);
+
+      const pupil1 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+      pupil1.setAttribute("cx", ex1);
+      pupil1.setAttribute("cy", ey1);
+      pupil1.setAttribute("rx", "0.08");
+      pupil1.setAttribute("ry", "0.24");
+      pupil1.setAttribute("fill", "black");
+      pupil1.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex1}, ${ey1})`);
+      this.dom.boardSvg.appendChild(pupil1);
+
+      const glint1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      glint1.setAttribute("cx", ex1 + 0.12 * fx + 0.08 * jx);
+      glint1.setAttribute("cy", ey1 + 0.12 * fy + 0.08 * jy);
+      glint1.setAttribute("r", "0.08");
+      glint1.setAttribute("fill", "white");
+      this.dom.boardSvg.appendChild(glint1);
       
+      // Right Eye
       const eye2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       eye2.setAttribute("cx", ex2);
       eye2.setAttribute("cy", ey2);
-      eye2.setAttribute("r", "0.32");
-      eye2.setAttribute("fill", "#ffff00");
+      eye2.setAttribute("r", "0.38");
+      eye2.setAttribute("fill", "#801a0e");
+      eye2.setAttribute("stroke", "#211510");
+      eye2.setAttribute("stroke-width", "0.08");
       this.dom.boardSvg.appendChild(eye2);
 
-      // 5. Overlay Face Image if face[X].png exists in root
+      const pupil2 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+      pupil2.setAttribute("cx", ex2);
+      pupil2.setAttribute("cy", ey2);
+      pupil2.setAttribute("rx", "0.08");
+      pupil2.setAttribute("ry", "0.24");
+      pupil2.setAttribute("fill", "black");
+      pupil2.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex2}, ${ey2})`);
+      this.dom.boardSvg.appendChild(pupil2);
+
+      const glint2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+      glint2.setAttribute("cx", ex2 + 0.12 * fx - 0.08 * jx);
+      glint2.setAttribute("cy", ey2 + 0.12 * fy - 0.08 * jy);
+      glint2.setAttribute("r", "0.08");
+      glint2.setAttribute("fill", "white");
+      this.dom.boardSvg.appendChild(glint2);
+
+      // 9. Overlay Face Image if face[X].png exists in root
       const faceUrl = `face${snakeIdx}.png`;
       const clipPathId = `face-clip-${start}`;
       
@@ -653,6 +754,12 @@ class UIController {
         faceImage.setAttribute("style", "opacity: 1;");
         eye1.setAttribute("style", "display: none;");
         eye2.setAttribute("style", "display: none;");
+        pupil1.setAttribute("style", "display: none;");
+        pupil2.setAttribute("style", "display: none;");
+        glint1.setAttribute("style", "display: none;");
+        glint2.setAttribute("style", "display: none;");
+        spot1.setAttribute("style", "display: none;");
+        spot2.setAttribute("style", "display: none;");
         head.setAttribute("style", "fill: rgba(0,0,0,0.5); stroke: var(--neon-magenta); stroke-width: 0.35;");
       });
       

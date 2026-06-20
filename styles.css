@@ -1080,23 +1080,27 @@ input:checked + .slider:before {
 }
 
 /* Enhancing Snakes to look real with flickering forked tongues */
+.svg-snake-body {
+  stroke-linecap: round;
+  fill: none;
+}
+
 .svg-snake-scales {
   stroke-linecap: round;
   fill: none;
-  stroke-dasharray: 2 4;
-  animation: slither 35s linear infinite;
+  opacity: 0.45;
 }
 
 .svg-snake-head-viper {
-  fill: url(#snakeGrad);
-  filter: drop-shadow(0 0 5px rgba(255, 0, 127, 0.6));
-  stroke: rgba(255, 255, 255, 0.3);
-  stroke-width: 0.2;
+  fill: url(#realSnakeHeadGrad);
+  filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.4));
+  stroke: #211510;
+  stroke-width: 0.28;
 }
 
 .svg-snake-tongue {
-  stroke: #ff0044;
-  stroke-width: 0.38;
+  stroke: #c81d32;
+  stroke-width: 0.35;
   fill: none;
   stroke-linecap: round;
   animation: tongueFlicker 2.0s ease-in-out infinite;
