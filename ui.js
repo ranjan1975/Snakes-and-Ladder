@@ -150,7 +150,7 @@ class UIController {
   }
 
   renderAvatarHelper(avatar) {
-    if (avatar && avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+    if (avatar && (avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i) || avatar.startsWith('data:image/'))) {
       return `<img src="${avatar}" style="width: 22px; height: 22px; object-fit: cover; border-radius: 50%; vertical-align: middle; border: 1px solid rgba(255,255,255,0.4);">`;
     }
     return avatar;
@@ -1415,7 +1415,7 @@ class UIController {
     const curPlayer = (this.isAnimating && this.animatingPlayer) ? this.animatingPlayer : this.game.getCurrentPlayer();
     if (!curPlayer) return;
 
-    if (curPlayer.avatar && curPlayer.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
+    if (curPlayer.avatar && (curPlayer.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i) || curPlayer.avatar.startsWith('data:image/'))) {
       this.dom.currentPlayerAvatar.innerHTML = `<img src="${curPlayer.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
       this.dom.currentPlayerAvatar.style.padding = '0';
       this.dom.currentPlayerAvatar.style.background = 'transparent';
