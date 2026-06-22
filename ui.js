@@ -22,6 +22,7 @@ class UIController {
     
     // Default config values for ladders shifting
     this.defaultLadders = { ...GameConfig.ladders };
+    this.defaultSnakes = { ...GameConfig.snakes };
     this.laddersShiftIntervalId = null;
     this.ladderPositions = [];
     this.snakeResetTimeouts = {};
@@ -1297,7 +1298,7 @@ class UIController {
           snakeIdx,
           start,
           end,
-          defaultEnd: end,
+          defaultEnd: this.defaultSnakes[start] || end,
           p0,
           p1,
           cx1,
@@ -1332,6 +1333,9 @@ class UIController {
       if (this.defaultLadders) {
         GameConfig.ladders = { ...this.defaultLadders };
         this.ladderPositions = []; // Clear animated coordinates to force redraw
+      }
+      if (this.defaultSnakes) {
+        GameConfig.snakes = { ...this.defaultSnakes };
       }
       // Clear all active snake reset timeouts
       if (this.snakeResetTimeouts) {

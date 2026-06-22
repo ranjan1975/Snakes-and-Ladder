@@ -377,6 +377,16 @@ class SoundController {
   playDefeat() {
     if (!this.enabled) return;
     this.stopMusic();
+    
+    const defeatAudio = new Audio('Defeat.mp3');
+    defeatAudio.volume = 0.5;
+    defeatAudio.play().catch(err => {
+      console.warn("Error playing Defeat.mp3, falling back to synthesizer:", err);
+      this.playDefeatSynth();
+    });
+  }
+
+  playDefeatSynth() {
     this.init();
     
     // Melancholic, slow descending minor arpeggio
