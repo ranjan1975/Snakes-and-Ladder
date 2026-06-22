@@ -28,6 +28,370 @@ const GameConfig = {
 
 const QuestionBank = [
   {
+    question: "Who played the lead role of Cobb in the 2010 sci-fi film 'Inception'?",
+    options: ["Brad Pitt", "Leonardo DiCaprio", "Johnny Depp", "Christian Bale"],
+    correct: 1,
+    category: "Cinema",
+    trivia: "Leonardo DiCaprio starred as Cobb, a professional thief who steals secrets through dream-sharing technology."
+  },
+  {
+    question: "Which actor played Tony Stark / Iron Man in the Marvel Cinematic Universe?",
+    options: ["Chris Evans", "Robert Downey Jr.", "Chris Hemsworth", "Mark Ruffalo"],
+    correct: 1,
+    category: "Cinema",
+    trivia: "Robert Downey Jr. kicked off the Marvel Cinematic Universe with his iconic portrayal of Iron Man in 2008."
+  },
+  {
+    question: "Who starred as Neo in the iconic 1999 sci-fi film 'The Matrix'?",
+    options: ["Keanu Reeves", "Tom Cruise", "Will Smith", "Brad Pitt"],
+    correct: 0,
+    category: "Cinema",
+    trivia: "Keanu Reeves played Thomas Anderson, alias Neo, the hacker who discovers the truth about the Matrix."
+  },
+  {
+    question: "Who won the Academy Award for Best Actress for her lead role in the film 'La La Land'?",
+    options: ["Jennifer Lawrence", "Emma Stone", "Scarlett Johansson", "Natalie Portman"],
+    correct: 1,
+    category: "Cinema",
+    trivia: "Emma Stone won her first Oscar for playing Mia, an aspiring actress, in the 2016 musical romance."
+  },
+  {
+    question: "Who played the character of Jack Dawson in the 1997 blockbuster movie 'Titanic'?",
+    options: ["Matt Damon", "Ben Affleck", "Leonardo DiCaprio", "Johnny Depp"],
+    correct: 2,
+    category: "Cinema",
+    trivia: "Leonardo DiCaprio starred alongside Kate Winslet in James Cameron's record-breaking film Titanic."
+  },
+  {
+    question: "Which actor portrayed the Joker in the 2008 film 'The Dark Knight'?",
+    options: ["Joaquin Phoenix", "Heath Ledger", "Jared Leto", "Jack Nicholson"],
+    correct: 1,
+    category: "Cinema",
+    trivia: "Heath Ledger won a posthumous Academy Award for his legendary performance as the Joker."
+  },
+  {
+    question: "Who played the lead role of Captain Jack Sparrow in the 'Pirates of the Caribbean' series?",
+    options: ["Orlando Bloom", "Johnny Depp", "Geoffrey Rush", "Jude Law"],
+    correct: 1,
+    category: "Cinema",
+    trivia: "Johnny Depp received an Oscar nomination for his legendary portrayal of Captain Jack Sparrow in 2003."
+  },
+  {
+    question: "Which actress starred as Katniss Everdeen in 'The Hunger Games' film series?",
+    options: ["Jennifer Lawrence", "Emma Watson", "Kristen Stewart", "Shailene Woodley"],
+    correct: 0,
+    category: "Cinema",
+    trivia: "Jennifer Lawrence achieved international stardom portraying Katniss Everdeen in the Hunger Games trilogy."
+  },
+  {
+    question: "Who played the lead role of astronaut Cooper in the 2014 film 'Interstellar'?",
+    options: ["Matt Damon", "Matthew McConaughey", "Brad Pitt", "Christian Bale"],
+    correct: 1,
+    category: "Cinema",
+    trivia: "Matthew McConaughey starred as Cooper, a former NASA pilot who travels through a wormhole to find a new home for humanity."
+  },
+  {
+    question: "Which actor played the character of Wolverine in the X-Men film franchise?",
+    options: ["Hugh Jackman", "Christian Bale", "Robert Downey Jr.", "Ryan Reynolds"],
+    correct: 0,
+    category: "Cinema",
+    trivia: "Hugh Jackman played Wolverine for 17 years, setting a Guinness World Record for the longest career as a live-action Marvel character."
+  },
+  {
+    question: "Who starred as Barbie in the 2023 live-action 'Barbie' movie?",
+    options: ["Margot Robbie", "Emma Stone", "Florence Pugh", "Saoirse Ronan"],
+    correct: 0,
+    category: "Cinema",
+    trivia: "Margot Robbie produced and starred in the Greta Gerwig-directed blockbuster Barbie."
+  },
+  {
+    question: "Which actor played the lead role in the biographical drama 'Oppenheimer' (2023)?",
+    options: ["Cillian Murphy", "Robert Downey Jr.", "Matt Damon", "Emily Blunt"],
+    correct: 0,
+    category: "Cinema",
+    trivia: "Cillian Murphy won the Academy Award for Best Actor for his portrayal of J. Robert Oppenheimer."
+  },
+  {
+    question: "What is the capital city of Australia?",
+    options: ["Sydney", "Melbourne", "Canberra", "Brisbane"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Canberra was selected as the capital in 1908 as a compromise between rivals Sydney and Melbourne."
+  },
+  {
+    question: "What is the capital city of Canada?",
+    options: ["Toronto", "Vancouver", "Ottawa", "Montreal"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Ottawa was chosen as Canada's capital by Queen Victoria in 1857 due to its strategic and secure location."
+  },
+  {
+    question: "Which city is the capital of Japan?",
+    options: ["Kyoto", "Osaka", "Hiroshima", "Tokyo"],
+    correct: 3,
+    category: "Geography",
+    trivia: "Tokyo became the official capital after the Emperor moved his seat from Kyoto to Edo (renamed Tokyo) in 1869."
+  },
+  {
+    question: "What is the capital city of Brazil?",
+    options: ["Rio de Janeiro", "São Paulo", "Brasília", "Salvador"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Brasília is a planned city, inaugurated in 1960 to move the capital from Rio de Janeiro to the interior."
+  },
+  {
+    question: "Which of these cities is the capital of Switzerland?",
+    options: ["Zurich", "Geneva", "Bern", "Basel"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Bern is the federal city and de facto capital of Switzerland, founded in the 12th century."
+  },
+  {
+    question: "What is the capital of South Africa?",
+    options: ["Johannesburg", "Durban", "Pretoria, Cape Town & Bloemfontein", "Nairobi"],
+    correct: 2,
+    category: "Geography",
+    trivia: "South Africa is unique in having three capital cities: Pretoria (executive), Cape Town (legislative), and Bloemfontein (judicial)."
+  },
+  {
+    question: "Which city is the capital of Egypt?",
+    options: ["Alexandria", "Cairo", "Giza", "Luxor"],
+    correct: 1,
+    category: "Geography",
+    trivia: "Cairo is the capital of Egypt and the largest metropolitan area in the Arab world."
+  },
+  {
+    question: "What is the capital of Spain?",
+    options: ["Barcelona", "Seville", "Valencia", "Madrid"],
+    correct: 3,
+    category: "Geography",
+    trivia: "Madrid is the capital and largest city of Spain, serving as its political and cultural center since 1561."
+  },
+  {
+    question: "What is the capital city of New Zealand?",
+    options: ["Auckland", "Wellington", "Christchurch", "Queenstown"],
+    correct: 1,
+    category: "Geography",
+    trivia: "Wellington is the world's southernmost capital city of a sovereign state."
+  },
+  {
+    question: "What is the capital of Argentina?",
+    options: ["Santiago", "Lima", "Buenos Aires", "Bogota"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Buenos Aires is situated on the western shore of the estuary of the Río de la Plata."
+  },
+  {
+    question: "According to the United Nations, how many official member states are there in the world?",
+    options: ["185", "193", "201", "210"],
+    correct: 1,
+    category: "Geography",
+    trivia: "There are 193 member states of the United Nations, plus 2 non-member observer states: the Holy See and Palestine."
+  },
+  {
+    question: "Which is currently the most populated country in the world?",
+    options: ["China", "India", "United States", "Indonesia"],
+    correct: 1,
+    category: "Geography",
+    trivia: "India surpassed China as the world's most populous country in mid-2023, according to UN estimates."
+  },
+  {
+    question: "Which country is the third most populated in the world?",
+    options: ["Brazil", "Pakistan", "United States", "Nigeria"],
+    correct: 2,
+    category: "Geography",
+    trivia: "The United States is the third most populous nation, trailing behind India and China."
+  },
+  {
+    question: "Which continent contains the highest number of countries?",
+    options: ["Asia", "Africa", "Europe", "North America"],
+    correct: 1,
+    category: "Geography",
+    trivia: "Africa has 54 fully recognized sovereign countries, more than any other continent."
+  },
+  {
+    question: "Which country is the largest in the world by land area?",
+    options: ["Canada", "China", "United States", "Russia"],
+    correct: 3,
+    category: "Geography",
+    trivia: "Russia spans over 17 million square kilometers, covering more than one-eighth of Earth's inhabited land area."
+  },
+  {
+    question: "Which country has the largest population in Europe (excluding Russia)?",
+    options: ["France", "Germany", "United Kingdom", "Italy"],
+    correct: 1,
+    category: "Geography",
+    trivia: "Germany has a population of over 83 million people, making it the most populous EU state."
+  },
+  {
+    question: "Which island nation is the world's fourth most populous country?",
+    options: ["Japan", "Philippines", "Indonesia", "United Kingdom"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Indonesia consists of over 17,000 islands and has a population of more than 275 million people."
+  },
+  {
+    question: "Which is the most populous country in South America?",
+    options: ["Argentina", "Colombia", "Brazil", "Peru"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Brazil accounts for nearly half of South America's total population and land area."
+  },
+  {
+    question: "Which is the most populous country in Africa?",
+    options: ["Egypt", "Ethiopia", "Nigeria", "South Africa"],
+    correct: 2,
+    category: "Geography",
+    trivia: "Nigeria has over 220 million inhabitants, making it the sixth most populous country in the world."
+  },
+  {
+    question: "Approximately what is the total current human population of the Earth?",
+    options: ["6 Billion", "7 Billion", "8 Billion", "9 Billion"],
+    correct: 2,
+    category: "Geography",
+    trivia: "The world's human population officially reached the 8 billion milestone in November 2022."
+  },
+  {
+    question: "Who was the first President of the United States?",
+    options: ["Thomas Jefferson", "George Washington", "Abraham Lincoln", "John Adams"],
+    correct: 1,
+    category: "History",
+    trivia: "George Washington served as President from 1789 to 1797 and is revered as the 'Father of His Country'."
+  },
+  {
+    question: "Who was the first female Prime Minister of the United Kingdom?",
+    options: ["Theresa May", "Margaret Thatcher", "Liz Truss", "Angela Merkel"],
+    correct: 1,
+    category: "History",
+    trivia: "Margaret Thatcher, known as the 'Iron Lady', served as UK Prime Minister from 1979 to 1990."
+  },
+  {
+    question: "Who is the Prime Minister of India as of 2024?",
+    options: ["Narendra Modi", "Rahul Gandhi", "Manmohan Singh", "Amit Shah"],
+    correct: 0,
+    category: "History",
+    trivia: "Narendra Modi assumed office in 2014 and led the BJP to multiple general election victories."
+  },
+  {
+    question: "Who served as the President of South Africa from 1994 to 1999 after spending 27 years in prison?",
+    options: ["F. W. de Klerk", "Nelson Mandela", "Thabo Mbeki", "Jacob Zuma"],
+    correct: 1,
+    category: "History",
+    trivia: "Nelson Mandela led the fight against apartheid and became South Africa's first black president in a democratic election."
+  },
+  {
+    question: "Who became the President of France in 2017, becoming the youngest president in French history?",
+    options: ["François Hollande", "Nicolas Sarkozy", "Emmanuel Macron", "Marine Le Pen"],
+    correct: 2,
+    category: "History",
+    trivia: "Emmanuel Macron was elected President of France at the age of 39."
+  },
+  {
+    question: "Who served as the long-running Chancellor of Germany from 2005 to 2021?",
+    options: ["Gerhard Schröder", "Helmut Kohl", "Angela Merkel", "Olaf Scholz"],
+    correct: 2,
+    category: "History",
+    trivia: "Angela Merkel was Germany's first female Chancellor and one of the longest-serving leaders in European history."
+  },
+  {
+    question: "Who was the Prime Minister of the United Kingdom during most of World War II?",
+    options: ["Neville Chamberlain", "Winston Churchill", "Clement Attlee", "Franklin D. Roosevelt"],
+    correct: 1,
+    category: "History",
+    trivia: "Winston Churchill's speeches and leadership rallied British resistance during World War II."
+  },
+  {
+    question: "Who is the President of China as of 2024?",
+    options: ["Xi Jinping", "Hu Jintao", "Jiang Zemin", "Mao Zedong"],
+    correct: 0,
+    category: "History",
+    trivia: "Xi Jinping assumed the office of President of the People's Republic of China in 2013."
+  },
+  {
+    question: "Which US President signed the Emancipation Proclamation in 1863?",
+    options: ["George Washington", "Thomas Jefferson", "Abraham Lincoln", "Theodore Roosevelt"],
+    correct: 2,
+    category: "History",
+    trivia: "Abraham Lincoln led the United States during the American Civil War and ended slavery."
+  },
+  {
+    question: "Who is the President of the United States as of 2024?",
+    options: ["Donald Trump", "Joe Biden", "Barack Obama", "George W. Bush"],
+    correct: 1,
+    category: "History",
+    trivia: "Joe Biden took office as the 46th President of the United States on January 20, 2021."
+  },
+  {
+    question: "Which planet in our solar system is known as the Red Planet?",
+    options: ["Venus", "Mars", "Jupiter", "Saturn"],
+    correct: 1,
+    category: "Science",
+    trivia: "Mars appears red due to the iron oxide (rust) on its surface."
+  },
+  {
+    question: "Which gas do plants absorb from the atmosphere for photosynthesis?",
+    options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"],
+    correct: 2,
+    category: "Science",
+    trivia: "Plants use sunlight, water, and carbon dioxide to produce oxygen and sugars."
+  },
+  {
+    question: "Who wrote the famous play 'Hamlet'?",
+    options: ["Charles Dickens", "William Shakespeare", "Mark Twain", "Jane Austen"],
+    correct: 1,
+    category: "General Knowledge",
+    trivia: "Hamlet was written by Shakespeare around 1599–1601 and is his longest play."
+  },
+  {
+    question: "What is the primary gas that makes up Earth's atmosphere?",
+    options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"],
+    correct: 1,
+    category: "Science",
+    trivia: "Earth's atmosphere is composed of about 78% Nitrogen and 21% Oxygen."
+  },
+  {
+    question: "What is the currency of Japan?",
+    options: ["Won", "Yen", "Yuan", "Ringgit"],
+    correct: 1,
+    category: "General Knowledge",
+    trivia: "The Japanese Yen is the third most traded currency in the foreign exchange market."
+  },
+  {
+    question: "Which is the largest ocean on Earth?",
+    options: ["Atlantic Ocean", "Indian Ocean", "Southern Ocean", "Pacific Ocean"],
+    correct: 3,
+    category: "Geography",
+    trivia: "The Pacific Ocean is the largest and deepest of Earth's oceanic divisions, covering 30% of the globe."
+  },
+  {
+    question: "What is the hardest natural substance on Earth?",
+    options: ["Gold", "Iron", "Diamond", "Quartz"],
+    correct: 2,
+    category: "Science",
+    trivia: "Diamond is carbon arranged in a face-centered cubic structure, making it incredibly hard."
+  },
+  {
+    question: "Which element has the chemical symbol 'O' on the Periodic Table?",
+    options: ["Gold", "Silver", "Oxygen", "Iron"],
+    correct: 2,
+    category: "Science",
+    trivia: "Oxygen is highly reactive and forms oxides with almost all other elements."
+  },
+  {
+    question: "What is the boiling point of water at standard atmospheric pressure?",
+    options: ["50°C", "100°C", "150°C", "200°C"],
+    correct: 1,
+    category: "Science",
+    trivia: "Water boils at 100°C (212°F) under standard sea-level atmospheric conditions."
+  },
+  {
+    question: "Which organ in the human body is primarily responsible for pumping blood?",
+    options: ["Lungs", "Brain", "Liver", "Heart"],
+    correct: 3,
+    category: "Science",
+    trivia: "The human heart beats about 100,000 times a day to pump blood throughout the body."
+  },
+  {
     question: "Which company developed the Gemini AI model?",
     options: ["OpenAI", "Google", "Microsoft", "Meta"],
     correct: 1,
@@ -40,27 +404,6 @@ const QuestionBank = [
     correct: 1,
     category: "Technology",
     trivia: "Artificial Intelligence was coined by John McCarthy in 1956 at the Dartmouth Conference."
-  },
-  {
-    question: "Which country hosted the 2024 Summer Olympic Games?",
-    options: ["Japan", "United Kingdom", "France", "United States"],
-    correct: 2,
-    category: "Current Affairs",
-    trivia: "Paris, France hosted the 2024 Summer Olympics, marking the third time the city hosted the games."
-  },
-  {
-    question: "What is the primary programming language used to structure web pages?",
-    options: ["Python", "C++", "Java", "HTML"],
-    correct: 3,
-    category: "Technology",
-    trivia: "HTML stands for HyperText Markup Language, first created by Tim Berners-Lee in 1991."
-  },
-  {
-    question: "Which of the following is a key technology behind modern AI chatbots like ChatGPT and Gemini?",
-    options: ["Blockchains", "SQL Databases", "Large Language Models (LLMs)", "Virtual Private Networks (VPNs)"],
-    correct: 2,
-    category: "Technology",
-    trivia: "LLMs are neural networks trained on massive text datasets to predict and generate human-like text."
   },
   {
     question: "What does URL stand for in web browsing?",
@@ -77,46 +420,11 @@ const QuestionBank = [
     trivia: "SQL is the standard language used to manage and manipulate relational databases."
   },
   {
-    question: "Who is the CEO of SpaceX and Tesla?",
-    options: ["Jeff Bezos", "Bill Gates", "Elon Musk", "Mark Zuckerberg"],
-    correct: 2,
-    category: "Current Affairs",
-    trivia: "Elon Musk founded SpaceX in 2002 and joined Tesla as an early investor and CEO."
-  },
-  {
-    question: "Which planet in our solar system is known as the Red Planet?",
-    options: ["Venus", "Mars", "Jupiter", "Saturn"],
-    correct: 1,
-    category: "General Knowledge",
-    trivia: "Mars appears red due to the iron oxide (rust) on its surface."
-  },
-  {
     question: "Which AI concept mimics the structure and function of the human brain?",
     options: ["Quantum Computing", "Relational Databases", "Artificial Neural Networks", "Decentralized Ledgers"],
     correct: 2,
     category: "Technology",
-    trivia: "Neural networks consist of layers of interconnected nodes (neurons) that process data."
-  },
-  {
-    question: "What is the name of Google's flagship generative AI conversational agent?",
-    options: ["Claude", "Copilot", "Gemini", "ChatGPT"],
-    correct: 2,
-    category: "Technology",
-    trivia: "Google rebranded its AI agent Bard to Gemini in early 2024 to match its advanced model family."
-  },
-  {
-    question: "What is the largest country in the world by land area?",
-    options: ["Canada", "China", "United States", "Russia"],
-    correct: 3,
-    category: "General Knowledge",
-    trivia: "Russia spans over 17 million square kilometers, covering more than one-eighth of Earth's inhabited land area."
-  },
-  {
-    question: "Which technology is used to create secure, decentralized digital transaction ledgers?",
-    options: ["Cloud Storage", "Blockchain", "Virtualization", "Fiber Optics"],
-    correct: 1,
-    category: "Technology",
-    trivia: "Blockchain is the underlying technology behind cryptocurrencies like Bitcoin."
+    trivia: "Neural networks consist of layers of interconnected nodes (neurons) that process and learn from data."
   },
   {
     question: "What does CPU stand for?",
@@ -126,20 +434,6 @@ const QuestionBank = [
     trivia: "The CPU is often referred to as the 'brain' of the computer, executing instructions of computer programs."
   },
   {
-    question: "Which programming language was created by Guido van Rossum and released in 1991?",
-    options: ["Ruby", "JavaScript", "Python", "PHP"],
-    correct: 2,
-    category: "Technology",
-    trivia: "Python was named after the British comedy group 'Monty Python'."
-  },
-  {
-    question: "What is the currency of Japan?",
-    options: ["Won", "Yen", "Yuan", "Ringgit"],
-    correct: 1,
-    category: "General Knowledge",
-    trivia: "The Japanese Yen is the third most traded currency in the foreign exchange market."
-  },
-  {
     question: "What does RAM stand for in computer hardware?",
     options: ["Read Access Memory", "Random Access Memory", "Rapid Action Module", "Real-time Active Memory"],
     correct: 1,
@@ -147,60 +441,11 @@ const QuestionBank = [
     trivia: "RAM is volatile memory used to temporarily store data that the CPU needs to access quickly."
   },
   {
-    question: "Which gas do plants absorb from the atmosphere for photosynthesis?",
-    options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"],
-    correct: 2,
-    category: "General Knowledge",
-    trivia: "Plants use sunlight, water, and carbon dioxide to produce oxygen and energy in the form of sugar."
-  },
-  {
-    question: "Who wrote the famous play 'Hamlet'?",
-    options: ["Charles Dickens", "William Shakespeare", "Mark Twain", "Jane Austen"],
-    correct: 1,
-    category: "General Knowledge",
-    trivia: "Hamlet was written by Shakespeare around 1599–1601 and is his longest play."
-  },
-  {
     question: "Which protocol is used to encrypt and secure communication between a web browser and a website?",
     options: ["HTTP", "FTP", "HTTPS", "SMTP"],
     correct: 2,
     category: "Technology",
-    trivia: "HTTPS stands for Hypertext Transfer Protocol Secure and uses SSL/TLS to encrypt data."
-  },
-  {
-    question: "What is the primary gas that makes up Earth's atmosphere?",
-    options: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Argon"],
-    correct: 1,
-    category: "General Knowledge",
-    trivia: "Earth's atmosphere is composed of about 78% Nitrogen and 21% Oxygen."
-  },
-  {
-    question: "Which technology company developed the Windows operating system?",
-    options: ["Apple", "IBM", "Google", "Microsoft"],
-    correct: 3,
-    category: "Technology",
-    trivia: "Microsoft introduced Windows in 1985 as a graphical operating system shell for MS-DOS."
-  },
-  {
-    question: "Which device is used to route data packets across different computer networks?",
-    options: ["Switch", "Router", "Hub", "Modem"],
-    correct: 1,
-    category: "Technology",
-    trivia: "Routers operate at the network layer of the OSI model to forward traffic between networks."
-  },
-  {
-    question: "What is the term for a malicious software designed to lock access to a computer system until money is paid?",
-    options: ["Adware", "Ransomware", "Spyware", "Trojan"],
-    correct: 1,
-    category: "Technology",
-    trivia: "Ransomware attacks often encrypt files and demand payment in cryptocurrency to provide the decryption key."
-  },
-  {
-    question: "Which space agency successfully landed the Perseverance rover on Mars in 2021?",
-    options: ["ESA", "ISRO", "NASA", "JAXA"],
-    correct: 2,
-    category: "Current Affairs",
-    trivia: "NASA's Perseverance rover landed in the Jezero Crater on Mars on February 18, 2021."
+    trivia: "HTTPS stands for Hypertext Transfer Protocol Secure and uses TLS/SSL to encrypt data."
   }
 ];
 
