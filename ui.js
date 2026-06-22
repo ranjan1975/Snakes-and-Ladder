@@ -23,6 +23,8 @@ class UIController {
     // Default config values for ladders shifting
     this.defaultLadders = { ...GameConfig.ladders };
     this.laddersShiftIntervalId = null;
+    this.ladderPositions = [];
+    this.snakeResetTimeouts = {};
     
     // Canvas Face Cropper state variables
     this.cropImg = null;
@@ -245,7 +247,7 @@ class UIController {
     this.renderBoardCells();
     this.setupEventListeners();
     this.renderPlayerSetupList();
-    this.drawSnakesAndLadders();
+    this.drawSnakesAndLadders(true);
     this.startAdEcosystem(); // Start mock advertising platform
     this.startSnakeAnimation(); // Start tail wiggling animations
     
@@ -510,7 +512,7 @@ class UIController {
     // Recalculate token positions and redrawing SVGs on resize
     window.addEventListener('resize', () => {
       this.updateTokensUI(false);
-      this.drawSnakesAndLadders();
+      this.drawSnakesAndLadders(true);
     });
   }
 
@@ -694,87 +696,109 @@ class UIController {
       c = 9 - ((cellNum - 1) % 10);
     }
     
-    // Percentage coordinates (0-100)
-    const x = (c + 0.5) * 10;
-    const y = (9 - r + 0.5) * 10;
-    return { x, y };
-  }
-
-  drawSnakesAndLadders() {
-    if (this.snakeAnimations) {
-      this.snakeAnimations.forEach(anim => {
-        if (anim.resetTimeoutId) clearTimeout(anim.resetTimeoutId);
+    // P  drawSnakesAndLadders(forceRedrawSnakes = false) {
+    let defs = this.dom.boardSvg.querySelector('defs');
+    let laddersGroup = document.getElementById('ladders-group');
+    let snakesGroup = document.getElementById('snakes-group');
+    
+    const isFirstDraw = (!defs || !laddersGroup || !snakesGroup || forceRedrawSnakes);
+    
+    if (isFirstDraw) {
+      if (this.snakeResetTimeouts) {
+        Object.values(this.snakeResetTimeouts).forEach(tid => clearTimeout(tid));
+        this.snakeResetTimeouts = {};
+      }
+      this.snakeAnimations = [];
+      this.dom.boardSvg.innerHTML = '';
+      
+      // Create gradients and glow filters in SVG definition
+      defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
+      defs.innerHTML = `
+        <linearGradient id="snakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#ff007f" />
+          <stop offset="100%" stop-color="#7f00ff" />
+        </linearGradient>
+        <linearGradient id="realSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3ebd46" />
+          <stop offset="50%" stop-color="#23852a" />
+          <stop offset="100%" stop-color="#0e4a13" />
+        </linearGradient>
+        <linearGradient id="realSnakeHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#3ebd46" />
+          <stop offset="100%" stop-color="#0e4a13" />
+        </linearGradient>
+        <linearGradient id="woodLadderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" stop-color="#d6b280" />
+          <stop offset="100%" stop-color="#8c613c" />
+        </linearGradient>
+        <filter id="ladderShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0.3" dy="0.6" stdDeviation="0.5" flood-color="#000000" flood-opacity="0.45"/>
+        </filter>
+        
+        <filter id="glowCyan" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.2" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        
+        <filter id="glowRed" x="-20%" y="-20%" width="140%" height="140%">
+          <feGaussianBlur stdDeviation="1.5" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="snakeShadow" x="-30%" y="-30%" width="160%" height="160%">
+          <feDropShadow dx="0.5" dy="1.0" stdDeviation="0.9" flood-color="#000000" flood-opacity="0.65"/>
+        </filter>
+      `;
+      this.dom.boardSvg.appendChild(defs);
+      
+      laddersGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      laddersGroup.setAttribute("id", "ladders-group");
+      this.dom.boardSvg.appendChild(laddersGroup);
+      
+      snakesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      snakesGroup.setAttribute("id", "snakes-group");
+      this.dom.boardSvg.appendChild(snakesGroup);
+    }
+    
+    // Clear and draw Ladders inside laddersGroup
+    laddersGroup.innerHTML = '';
+    
+    if (!this.ladderPositions || this.ladderPositions.length === 0) {
+      this.ladderPositions = Object.entries(GameConfig.ladders).map(([startStr, endStr]) => {
+        const start = parseInt(startStr);
+        const end = parseInt(endStr);
+        return {
+          start: start,
+          end: end,
+          p0: this.getCellCoordinates(start),
+          p1: this.getCellCoordinates(end)
+        };
       });
     }
-    this.snakeAnimations = [];
-    this.dom.boardSvg.innerHTML = '';
-    
-    // Create gradients and glow filters in SVG definition
-    const defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
-    defs.innerHTML = `
-      <linearGradient id="snakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#ff007f" />
-        <stop offset="100%" stop-color="#7f00ff" />
-      </linearGradient>
-      <linearGradient id="realSnakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#3ebd46" />
-        <stop offset="50%" stop-color="#23852a" />
-        <stop offset="100%" stop-color="#0e4a13" />
-      </linearGradient>
-      <linearGradient id="realSnakeHeadGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#3ebd46" />
-        <stop offset="100%" stop-color="#0e4a13" />
-      </linearGradient>
-      <linearGradient id="woodLadderGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-        <stop offset="0%" stop-color="#d6b280" />
-        <stop offset="100%" stop-color="#8c613c" />
-      </linearGradient>
-      <filter id="ladderShadow" x="-20%" y="-20%" width="140%" height="140%">
-        <feDropShadow dx="0.3" dy="0.6" stdDeviation="0.5" flood-color="#000000" flood-opacity="0.45"/>
-      </filter>
-      
-      <filter id="glowCyan" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="1.2" result="blur" />
-        <feMerge>
-          <feMergeNode in="blur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-      
-      <filter id="glowRed" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur stdDeviation="1.5" result="blur" />
-        <feMerge>
-          <feMergeNode in="blur"/>
-          <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-      </filter>
-      <filter id="snakeShadow" x="-30%" y="-30%" width="160%" height="160%">
-        <feDropShadow dx="0.5" dy="1.0" stdDeviation="0.9" flood-color="#000000" flood-opacity="0.65"/>
-      </filter>
-    `;
-    this.dom.boardSvg.appendChild(defs);
 
-    // Draw Ladders (Realistic wooden/bamboo rails with crossbars, knots, and peg joints)
-    for (const [startStr, endStr] of Object.entries(GameConfig.ladders)) {
-      const start = parseInt(startStr);
-      const end = parseInt(endStr);
-      
-      const p0 = this.getCellCoordinates(start);
-      const p1 = this.getCellCoordinates(end);
+    for (const ladder of this.ladderPositions) {
+      const p0 = ladder.p0;
+      const p1 = ladder.p1;
       
       // Calculate perpendicular vector for side rails
       const dx = p1.x - p0.x;
       const dy = p1.y - p0.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
+      const dist = Math.sqrt(dx * dx + dy * dy) || 1.0;
       
       const nx = -dy / dist;
       const ny = dx / dist;
       
-      const w = 1.35; // Half width of ladder
+      const w = 0.95; // Sleeker half width of ladder (reduced from 1.35)
       
       // Create a group for the ladder to apply a unified 3D shadow
       const ladderGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       ladderGroup.setAttribute("filter", "url(#ladderShadow)");
+      ladderGroup.setAttribute("id", `ladder-${ladder.start}`);
       
       // Left Rail Base (Bamboo cylindrical look)
       const railL = document.createElementNS("http://www.w3.org/2000/svg", "line");
@@ -783,7 +807,7 @@ class UIController {
       railL.setAttribute("x2", p1.x + w * nx);
       railL.setAttribute("y2", p1.y + w * ny);
       railL.setAttribute("stroke", "url(#woodLadderGrad)");
-      railL.setAttribute("stroke-width", "1.3");
+      railL.setAttribute("stroke-width", "0.75"); // Thinned from 1.3
       railL.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railL);
       
@@ -794,7 +818,7 @@ class UIController {
       railLHighlight.setAttribute("x2", p1.x + w * nx);
       railLHighlight.setAttribute("y2", p1.y + w * ny);
       railLHighlight.setAttribute("stroke", "#f5e6cc");
-      railLHighlight.setAttribute("stroke-width", "0.35");
+      railLHighlight.setAttribute("stroke-width", "0.22"); // Thinned from 0.35
       railLHighlight.setAttribute("opacity", "0.45");
       railLHighlight.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railLHighlight);
@@ -806,7 +830,7 @@ class UIController {
       railR.setAttribute("x2", p1.x - w * nx);
       railR.setAttribute("y2", p1.y - w * ny);
       railR.setAttribute("stroke", "url(#woodLadderGrad)");
-      railR.setAttribute("stroke-width", "1.3");
+      railR.setAttribute("stroke-width", "0.75"); // Thinned from 1.3
       railR.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railR);
       
@@ -817,7 +841,7 @@ class UIController {
       railRHighlight.setAttribute("x2", p1.x - w * nx);
       railRHighlight.setAttribute("y2", p1.y - w * ny);
       railRHighlight.setAttribute("stroke", "#f5e6cc");
-      railRHighlight.setAttribute("stroke-width", "0.35");
+      railRHighlight.setAttribute("stroke-width", "0.22"); // Thinned from 0.35
       railRHighlight.setAttribute("opacity", "0.45");
       railRHighlight.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railRHighlight);
@@ -831,12 +855,12 @@ class UIController {
         const lkx = p0.x + w * nx + t * dx;
         const lky = p0.y + w * ny + t * dy;
         const knotL = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        knotL.setAttribute("x1", lkx - 0.7 * nx);
-        knotL.setAttribute("y1", lky - 0.7 * ny);
-        knotL.setAttribute("x2", lkx + 0.7 * nx);
-        knotL.setAttribute("y2", lky + 0.7 * ny);
+        knotL.setAttribute("x1", lkx - 0.5 * nx);
+        knotL.setAttribute("y1", lky - 0.5 * ny);
+        knotL.setAttribute("x2", lkx + 0.5 * nx);
+        knotL.setAttribute("y2", lky + 0.5 * ny);
         knotL.setAttribute("stroke", "#4a301e");
-        knotL.setAttribute("stroke-width", "0.32");
+        knotL.setAttribute("stroke-width", "0.2"); // Thinned from 0.32
         knotL.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(knotL);
         
@@ -844,12 +868,12 @@ class UIController {
         const rkx = p0.x - w * nx + t * dx;
         const rky = p0.y - w * ny + t * dy;
         const knotR = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        knotR.setAttribute("x1", rkx - 0.7 * nx);
-        knotR.setAttribute("y1", rky - 0.7 * ny);
-        knotR.setAttribute("x2", rkx + 0.7 * nx);
-        knotR.setAttribute("y2", rky + 0.7 * ny);
+        knotR.setAttribute("x1", rkx - 0.5 * nx);
+        knotR.setAttribute("y1", rky - 0.5 * ny);
+        knotR.setAttribute("x2", rkx + 0.5 * nx);
+        knotR.setAttribute("y2", rky + 0.5 * ny);
         knotR.setAttribute("stroke", "#4a301e");
-        knotR.setAttribute("stroke-width", "0.32");
+        knotR.setAttribute("stroke-width", "0.2"); // Thinned from 0.32
         knotR.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(knotR);
       }
@@ -864,25 +888,25 @@ class UIController {
         const rrx = p0.x - w * nx + t * dx;
         const rry = p0.y - w * ny + t * dy;
         
-        // Rung base (protruding 0.45 units past the rails)
+        // Rung base (protruding 0.3 units past the rails)
         const rung = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        rung.setAttribute("x1", rlx + 0.45 * nx);
-        rung.setAttribute("y1", rly + 0.45 * ny);
-        rung.setAttribute("x2", rrx - 0.45 * nx);
-        rung.setAttribute("y2", rry - 0.45 * ny);
+        rung.setAttribute("x1", rlx + 0.3 * nx);
+        rung.setAttribute("y1", rly + 0.3 * ny);
+        rung.setAttribute("x2", rrx - 0.3 * nx);
+        rung.setAttribute("y2", rry - 0.3 * ny);
         rung.setAttribute("stroke", "url(#woodLadderGrad)");
-        rung.setAttribute("stroke-width", "0.95");
+        rung.setAttribute("stroke-width", "0.55"); // Thinned from 0.95
         rung.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(rung);
         
         // Rung Highlight
         const rungHighlight = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        rungHighlight.setAttribute("x1", rlx + 0.45 * nx);
-        rungHighlight.setAttribute("y1", rly + 0.45 * ny);
-        rungHighlight.setAttribute("x2", rrx - 0.45 * nx);
-        rungHighlight.setAttribute("y2", rry - 0.45 * ny);
+        rungHighlight.setAttribute("x1", rlx + 0.3 * nx);
+        rungHighlight.setAttribute("y1", rly + 0.3 * ny);
+        rungHighlight.setAttribute("x2", rrx - 0.3 * nx);
+        rungHighlight.setAttribute("y2", rry - 0.3 * ny);
         rungHighlight.setAttribute("stroke", "#f5e6cc");
-        rungHighlight.setAttribute("stroke-width", "0.25");
+        rungHighlight.setAttribute("stroke-width", "0.18"); // Thinned from 0.25
         rungHighlight.setAttribute("opacity", "0.4");
         rungHighlight.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(rungHighlight);
@@ -891,401 +915,402 @@ class UIController {
         const pegL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         pegL.setAttribute("cx", rlx);
         pegL.setAttribute("cy", rly);
-        pegL.setAttribute("r", "0.24");
+        pegL.setAttribute("r", "0.16"); // Reduced from 0.24
         pegL.setAttribute("fill", "#362215");
         ladderGroup.appendChild(pegL);
         
         const pegR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         pegR.setAttribute("cx", rrx);
         pegR.setAttribute("cy", rry);
-        pegR.setAttribute("r", "0.24");
+        pegR.setAttribute("r", "0.16"); // Reduced from 0.24
         pegR.setAttribute("fill", "#362215");
         ladderGroup.appendChild(pegR);
       }
       
-      this.dom.boardSvg.appendChild(ladderGroup);
+      laddersGroup.appendChild(ladderGroup);
     }
 
+    if (isFirstDraw) {
+      // Helper function for snake body tapering width profiles (thinner neck, plump body, pointed tail)
+      const getWidthAtT = (t) => {
+        if (t < 0.15) {
+          const u = t / 0.15;
+          return 1.8 + 0.6 * Math.sin(u * Math.PI / 2);
+        } else if (t < 0.7) {
+          const u = (t - 0.15) / 0.55;
+          return 2.4 - 0.4 * u;
+        } else {
+          const u = (t - 0.7) / 0.3;
+          return 2.0 * Math.pow(1 - u, 1.5) + 0.1;
+        }
+      };
 
-    // Helper function for snake body tapering width profiles (thinner neck, plump body, pointed tail)
-    const getWidthAtT = (t) => {
-      if (t < 0.15) {
-        const u = t / 0.15;
-        return 1.8 + 0.6 * Math.sin(u * Math.PI / 2);
-      } else if (t < 0.7) {
-        const u = (t - 0.15) / 0.55;
-        return 2.4 - 0.4 * u;
-      } else {
-        const u = (t - 0.7) / 0.3;
-        return 2.0 * Math.pow(1 - u, 1.5) + 0.1;
-      }
-    };
-
-    // Draw Snakes (Curved wavy body with scaly overlays, python head, and flickering tongue)
-    let snakeIdx = 0;
-    for (const [startStr, endStr] of Object.entries(GameConfig.snakes)) {
-      snakeIdx++;
-      const start = parseInt(startStr);
-      const end = parseInt(endStr);
-      
-      const p0 = this.getCellCoordinates(start); // Head (Higher tile)
-      const p1 = this.getCellCoordinates(end);   // Tail (Lower tile)
-      
-      const dx = p1.x - p0.x;
-      const dy = p1.y - p0.y;
-      const dist = Math.sqrt(dx * dx + dy * dy);
-      
-      const nx = -dy / dist;
-      const ny = dx / dist;
-      
-      // Control points to create wavy slither S-curve
-      const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
-      const cx1 = p0.x + 0.33 * dx + waveAmp * nx;
-      const cy1 = p0.y + 0.33 * dy + waveAmp * ny;
-      const cx2 = p0.x + 0.66 * dx - waveAmp * nx;
-      const cy2 = p0.y + 0.66 * dy - waveAmp * ny;
-      
-      const pathData = `M ${p0.x} ${p0.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x} ${p1.y}`;
-      const c1 = { x: cx1, y: cy1 };
-      const c2 = { x: cx2, y: cy2 };
-
-      const shadowLines = [];
-      const maskLines = [];
-
-      // 1. Drop Shadow Group (tapered shadow using overlapping line segments)
-      const shadowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      shadowGroup.setAttribute("filter", "url(#snakeShadow)");
-      
-      const numSegments = 40;
-      for (let i = 0; i < numSegments; i++) {
-        const tA = i / numSegments;
-        const tB = (i + 1) / numSegments;
-        const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
-        const ptB = this.getBezierPoint(tB, p0, c1, c2, p1);
-        const tMid = (tA + tB) / 2;
-        const w = getWidthAtT(tMid);
+      // Draw Snakes (Curved wavy body with scaly overlays, python head, and flickering tongue)
+      let snakeIdx = 0;
+      for (const [startStr, endStr] of Object.entries(GameConfig.snakes)) {
+        snakeIdx++;
+        const start = parseInt(startStr);
+        const end = parseInt(endStr);
         
-        const sLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        sLine.setAttribute("x1", ptA.x);
-        sLine.setAttribute("y1", ptA.y);
-        sLine.setAttribute("x2", ptB.x);
-        sLine.setAttribute("y2", ptB.y);
-        sLine.setAttribute("stroke", "#000000");
-        sLine.setAttribute("stroke-width", w + 0.4);
-        sLine.setAttribute("stroke-linecap", "round");
-        shadowGroup.appendChild(sLine);
-        shadowLines.push(sLine);
-      }
-      this.dom.boardSvg.appendChild(shadowGroup);
-
-      // Create unique mask for tapering the body textures
-      const maskId = `snake-mask-${start}`;
-      const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
-      mask.setAttribute("id", maskId);
-      
-      for (let i = 0; i < numSegments; i++) {
-        const tA = i / numSegments;
-        const tB = (i + 1) / numSegments;
-        const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
-        const ptB = this.getBezierPoint(tB, p0, c1, c2, p1);
-        const tMid = (tA + tB) / 2;
-        const w = getWidthAtT(tMid);
+        const p0 = this.getCellCoordinates(start); // Head (Higher tile)
+        const p1 = this.getCellCoordinates(end);   // Tail (Lower tile)
         
-        const mLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        mLine.setAttribute("x1", ptA.x);
-        mLine.setAttribute("y1", ptA.y);
-        mLine.setAttribute("x2", ptB.x);
-        mLine.setAttribute("y2", ptB.y);
-        mLine.setAttribute("stroke", "#ffffff");
-        mLine.setAttribute("stroke-width", w);
-        mLine.setAttribute("stroke-linecap", "round");
-        mask.appendChild(mLine);
-        maskLines.push(mLine);
+        const dx = p1.x - p0.x;
+        const dy = p1.y - p0.y;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        
+        const nx = -dy / dist;
+        const ny = dx / dist;
+        
+        // Control points to create wavy slither S-curve
+        const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
+        const cx1 = p0.x + 0.33 * dx + waveAmp * nx;
+        const cy1 = p0.y + 0.33 * dy + waveAmp * ny;
+        const cx2 = p0.x + 0.66 * dx - waveAmp * nx;
+        const cy2 = p0.y + 0.66 * dy - waveAmp * ny;
+        
+        const pathData = `M ${p0.x} ${p0.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x} ${p1.y}`;
+        const c1 = { x: cx1, y: cy1 };
+        const c2 = { x: cx2, y: cy2 };
+
+        const shadowLines = [];
+        const maskLines = [];
+
+        // 1. Drop Shadow Group (tapered shadow using overlapping line segments)
+        const shadowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        shadowGroup.setAttribute("filter", "url(#snakeShadow)");
+        
+        const numSegments = 40;
+        for (let i = 0; i < numSegments; i++) {
+          const tA = i / numSegments;
+          const tB = (i + 1) / numSegments;
+          const ptA = this.getBezierPoint(tA, p0, c1, c2, ptB);
+          const ptB_pt = this.getBezierPoint(tB, p0, c1, c2, p1);
+          const tMid = (tA + tB) / 2;
+          const w = getWidthAtT(tMid);
+          
+          const sLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          sLine.setAttribute("x1", ptA.x);
+          sLine.setAttribute("y1", ptA.y);
+          sLine.setAttribute("x2", ptB_pt.x);
+          sLine.setAttribute("y2", ptB_pt.y);
+          sLine.setAttribute("stroke", "#000000");
+          sLine.setAttribute("stroke-width", w + 0.4);
+          sLine.setAttribute("stroke-linecap", "round");
+          shadowGroup.appendChild(sLine);
+          shadowLines.push(sLine);
+        }
+        snakesGroup.appendChild(shadowGroup);
+
+        // Create unique mask for tapering the body textures
+        const maskId = `snake-mask-${start}`;
+        const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+        mask.setAttribute("id", maskId);
+        
+        for (let i = 0; i < numSegments; i++) {
+          const tA = i / numSegments;
+          const tB = (i + 1) / numSegments;
+          const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
+          const ptB_pt = this.getBezierPoint(tB, p0, c1, c2, p1);
+          const tMid = (tA + tB) / 2;
+          const w = getWidthAtT(tMid);
+          
+          const mLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          mLine.setAttribute("x1", ptA.x);
+          mLine.setAttribute("y1", ptA.y);
+          mLine.setAttribute("x2", ptB_pt.x);
+          mLine.setAttribute("y2", ptB_pt.y);
+          mLine.setAttribute("stroke", "#ffffff");
+          mLine.setAttribute("stroke-width", w);
+          mLine.setAttribute("stroke-linecap", "round");
+          mask.appendChild(mLine);
+          maskLines.push(mLine);
+        }
+        defs.appendChild(mask);
+
+        // 2. Snake Body Group (masked for tapered look)
+        const bodyGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        bodyGroup.setAttribute("mask", `url(#${maskId})`);
+
+        const bodyPaths = [];
+
+        // Snake Body base path (Thick gradient base)
+        const body = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        body.setAttribute("d", pathData);
+        body.setAttribute("class", "svg-snake-body");
+        body.setAttribute("stroke", "url(#realSnakeGrad)");
+        body.setAttribute("stroke-width", "3.2");
+        bodyGroup.appendChild(body);
+        bodyPaths.push(body);
+
+        // Mottled Underbelly Layer (cream highlighting on sides)
+        const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        underbelly.setAttribute("d", pathData);
+        underbelly.setAttribute("fill", "none");
+        underbelly.setAttribute("stroke", "#d8f0c2");
+        underbelly.setAttribute("stroke-width", "2.2");
+        underbelly.setAttribute("stroke-dasharray", "8 5");
+        underbelly.setAttribute("opacity", "0.35");
+        bodyGroup.appendChild(underbelly);
+        bodyPaths.push(underbelly);
+
+        // Dark Transverse Bands (Dark brown stripes crossing the body)
+        const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        bands.setAttribute("d", pathData);
+        bands.setAttribute("fill", "none");
+        bands.setAttribute("stroke", "#09220c");
+        bands.setAttribute("stroke-width", "3.2");
+        bands.setAttribute("stroke-dasharray", "1.5 3.0");
+        bodyGroup.appendChild(bands);
+        bodyPaths.push(bands);
+
+        // Snake Scales Overlay (Diamond texture specular highlights)
+        const scales = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        scales.setAttribute("d", pathData);
+        scales.setAttribute("class", "svg-snake-scales");
+        scales.setAttribute("stroke", "rgba(255, 255, 255, 0.28)");
+        scales.setAttribute("stroke-width", "2.6");
+        scales.setAttribute("stroke-dasharray", "0.3 0.9");
+        bodyGroup.appendChild(scales);
+        bodyPaths.push(scales);
+
+        // Specular Spinal Highlight (3D cylinder sheen)
+        const spine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        spine.setAttribute("d", pathData);
+        spine.setAttribute("fill", "none");
+        spine.setAttribute("stroke", "rgba(255, 255, 255, 0.22)");
+        spine.setAttribute("stroke-width", "0.5");
+        bodyGroup.appendChild(spine);
+        bodyPaths.push(spine);
+
+        snakesGroup.appendChild(bodyGroup);
+
+        // --- Python Head Math & Construction ---
+        // Direction vector pointing from head center towards body
+        const hdx = cx1 - p0.x;
+        const hdy = cy1 - p0.y;
+        const hdist = Math.sqrt(hdx * hdx + hdy * hdy);
+        const bx_dir = hdx / hdist;
+        const by_dir = hdy / hdist;
+        
+        // Direction head is facing (outward nose direction)
+        const fx = -bx_dir;
+        const fy = -by_dir;
+        
+        // Perpendicular normal vector (jaw spread)
+        const jx = -by_dir;
+        const jy = bx_dir;
+
+        // Coordinate vertices for triangular head
+        const noseX = p0.x + 1.8 * fx;
+        const noseY = p0.y + 1.8 * fy;
+        
+        const leftJawX = p0.x + 0.4 * bx_dir + 1.25 * jx;
+        const leftJawY = p0.y + 0.4 * by_dir + 1.25 * jy;
+        
+        const rightJawX = p0.x + 0.4 * bx_dir - 1.25 * jx;
+        const rightJawY = p0.y + 0.4 * by_dir - 1.25 * jy;
+        
+        const neckX = p0.x + 1.2 * bx_dir;
+        const neckY = p0.y + 1.2 * by_dir;
+
+        // Angle of head rotation in degrees
+        const angleRad = Math.atan2(fy, fx);
+        const angleDeg = angleRad * (180 / Math.PI);
+
+        // 7. Draw Python Head Base
+        const head = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        head.setAttribute("points", `${noseX},${noseY} ${leftJawX},${leftJawY} ${neckX},${neckY} ${rightJawX},${rightJawY}`);
+        head.setAttribute("class", "svg-snake-head-viper");
+        snakesGroup.appendChild(head);
+
+        // --- Forked Tongue Math ---
+        const tx = p0.x + 1.6 * fx; // Tongue base (at nose)
+        const ty = p0.y + 1.6 * fy;
+        
+        const sx = p0.x + 3.1 * fx; // Split point
+        const sy = p0.y + 3.1 * fy;
+        
+        const ltx = sx + 0.9 * fx + 0.65 * jx; // Left tip
+        const lty = sy + 0.9 * fy + 0.65 * jy;
+        
+        const rtx = sx + 0.9 * fx - 0.65 * jx; // Right tip
+        const rty = sy + 0.9 * fy - 0.65 * jy;
+
+        // 8. Draw Forked Tongue with CSS Origin flicker animation (randomized delay to avoid simultaneous flickering)
+        const tongue = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        tongue.setAttribute("d", `M ${tx} ${ty} L ${sx} ${sy} L ${ltx} ${lty} M ${sx} ${sy} L ${rtx} ${rty}`);
+        tongue.setAttribute("class", "svg-snake-tongue");
+        const delay = (Math.random() * 2.0).toFixed(2);
+        tongue.setAttribute("style", `transform-origin: ${tx}% ${ty}%; animation-delay: -${delay}s;`);
+        snakesGroup.appendChild(tongue);
+
+        // Eye positions
+        const ex1 = p0.x + 0.85 * fx + 0.58 * jx;
+        const ey1 = p0.y + 0.85 * fy + 0.58 * jy;
+        const ex2 = p0.x + 0.85 * fx - 0.58 * jx;
+        const ey2 = p0.y + 0.85 * fy - 0.58 * jy;
+
+        // Group for all python head markings and eyes
+        const detailsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+        detailsGroup.setAttribute("id", `head-details-${start}`);
+
+        // Symmetrical golden-tan cheek/wing patches
+        const leftPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        const lp1x = p0.x - 0.9 * fx + 0.6 * jx;
+        const lp1y = p0.y - 0.9 * fy + 0.6 * jy;
+        const lp2x = p0.x - 0.3 * fx + 1.05 * jx;
+        const lp2y = p0.y - 0.3 * fy + 1.05 * jy;
+        const lp3x = p0.x + 0.8 * fx + 0.4 * jx;
+        const lp3y = p0.y + 0.8 * fy + 0.4 * jy;
+        const lp4x = p0.x + 0.1 * fx + 0.2 * jx;
+        const lp4y = p0.y + 0.1 * fy + 0.2 * jy;
+        leftPatch.setAttribute("points", `${lp1x},${lp1y} ${lp2x},${lp2y} ${lp3x},${lp3y} ${lp4x},${lp4y}`);
+        leftPatch.setAttribute("fill", "#8fd696");
+        leftPatch.setAttribute("stroke", "#1b4f1f");
+        leftPatch.setAttribute("stroke-width", "0.1");
+        detailsGroup.appendChild(leftPatch);
+
+        const rightPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        const rp1x = p0.x - 0.9 * fx - 0.6 * jx;
+        const rp1y = p0.y - 0.9 * fy - 0.6 * jy;
+        const rp2x = p0.x - 0.3 * fx - 1.05 * jx;
+        const rp2y = p0.y - 0.3 * fy - 1.05 * jy;
+        const rp3x = p0.x + 0.8 * fx - 0.4 * jx;
+        const rp3y = p0.y + 0.8 * fy - 0.4 * jy;
+        const rp4x = p0.x + 0.1 * fx - 0.2 * jx;
+        const rp4y = p0.y + 0.1 * fy - 0.2 * jy;
+        rightPatch.setAttribute("points", `${rp1x},${rp1y} ${rp2x},${rp2y} ${rp3x},${rp3y} ${rp4x},${rp4y}`);
+        rightPatch.setAttribute("fill", "#8fd696");
+        rightPatch.setAttribute("stroke", "#1b4f1f");
+        rightPatch.setAttribute("stroke-width", "0.1");
+        detailsGroup.appendChild(rightPatch);
+
+        // Central dark spearhead stripe
+        const spearhead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+        const sp1x = p0.x - 1.15 * fx;
+        const sp1y = p0.y - 1.15 * fy;
+        const sp2x = p0.x - 0.4 * fx + 0.18 * jx;
+        const sp2y = p0.y - 0.4 * fy + 0.18 * jy;
+        const sp3x = p0.x + 1.4 * fx;
+        const sp3y = p0.y + 1.4 * fy;
+        const sp4x = p0.x - 0.4 * fx - 0.18 * jx;
+        const sp4y = p0.y - 0.4 * fy - 0.18 * jy;
+        spearhead.setAttribute("points", `${sp1x},${sp1y} ${sp2x},${sp2y} ${sp3x},${sp3y} ${sp4x},${sp4y}`);
+        spearhead.setAttribute("fill", "#123c15");
+        spearhead.setAttribute("stroke", "#08210b");
+        spearhead.setAttribute("stroke-width", "0.08");
+        detailsGroup.appendChild(spearhead);
+
+        // Post-ocular dark stripe (Eye to jaw corner)
+        const leftPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        leftPostOcular.setAttribute("x1", ex1);
+        leftPostOcular.setAttribute("y1", ey1);
+        leftPostOcular.setAttribute("x2", leftJawX);
+        leftPostOcular.setAttribute("y2", leftJawY);
+        leftPostOcular.setAttribute("stroke", "#123c15");
+        leftPostOcular.setAttribute("stroke-width", "0.18");
+        leftPostOcular.setAttribute("stroke-linecap", "round");
+        detailsGroup.appendChild(leftPostOcular);
+
+        const rightPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        rightPostOcular.setAttribute("x1", ex2);
+        rightPostOcular.setAttribute("y1", ey2);
+        rightPostOcular.setAttribute("x2", rightJawX);
+        rightPostOcular.setAttribute("y2", rightJawY);
+        rightPostOcular.setAttribute("stroke", "#123c15");
+        rightPostOcular.setAttribute("stroke-width", "0.18");
+        rightPostOcular.setAttribute("stroke-linecap", "round");
+        detailsGroup.appendChild(rightPostOcular);
+
+        // Mottled spots on head edges
+        const spot1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        spot1.setAttribute("cx", p0.x + 0.3 * fx);
+        spot1.setAttribute("cy", p0.y + 0.3 * fy);
+        spot1.setAttribute("r", "0.55");
+        spot1.setAttribute("fill", "#08210b");
+        detailsGroup.appendChild(spot1);
+
+        const spot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        spot2.setAttribute("cx", p0.x + 0.6 * bx_dir);
+        spot2.setAttribute("cy", p0.y + 0.6 * by_dir);
+        spot2.setAttribute("r", "0.45");
+        spot2.setAttribute("fill", "#08210b");
+        detailsGroup.appendChild(spot2);
+
+        // Left Eye
+        const eye1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        eye1.setAttribute("cx", ex1);
+        eye1.setAttribute("cy", ey1);
+        eye1.setAttribute("r", "0.38");
+        eye1.setAttribute("fill", "#f39c12");
+        eye1.setAttribute("stroke", "#08210b");
+        eye1.setAttribute("stroke-width", "0.08");
+        detailsGroup.appendChild(eye1);
+
+        const pupil1 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+        pupil1.setAttribute("cx", ex1);
+        pupil1.setAttribute("cy", ey1);
+        pupil1.setAttribute("rx", "0.06");
+        pupil1.setAttribute("ry", "0.22");
+        pupil1.setAttribute("fill", "black");
+        pupil1.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex1}, ${ey1})`);
+        detailsGroup.appendChild(pupil1);
+
+        const glint1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        glint1.setAttribute("cx", ex1 + 0.12 * fx + 0.08 * jx);
+        glint1.setAttribute("cy", ey1 + 0.12 * fy + 0.08 * jy);
+        glint1.setAttribute("r", "0.08");
+        glint1.setAttribute("fill", "white");
+        detailsGroup.appendChild(glint1);
+        
+        // Right Eye
+        const eye2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        eye2.setAttribute("cx", ex2);
+        eye2.setAttribute("cy", ey2);
+        eye2.setAttribute("r", "0.38");
+        eye2.setAttribute("fill", "#f39c12");
+        eye2.setAttribute("stroke", "#08210b");
+        eye2.setAttribute("stroke-width", "0.08");
+        detailsGroup.appendChild(eye2);
+
+        const pupil2 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+        pupil2.setAttribute("cx", ex2);
+        pupil2.setAttribute("cy", ey2);
+        pupil2.setAttribute("rx", "0.06");
+        pupil2.setAttribute("ry", "0.22");
+        pupil2.setAttribute("fill", "black");
+        pupil2.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex2}, ${ey2})`);
+        detailsGroup.appendChild(pupil2);
+
+        const glint2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+        glint2.setAttribute("cx", ex2 + 0.12 * fx - 0.08 * jx);
+        glint2.setAttribute("cy", ey2 + 0.12 * fy - 0.08 * jy);
+        glint2.setAttribute("r", "0.08");
+        glint2.setAttribute("fill", "white");
+        detailsGroup.appendChild(glint2);
+
+        snakesGroup.appendChild(detailsGroup);
+
+        // Save animation references
+        this.snakeAnimations.push({
+          snakeIdx,
+          start,
+          end,
+          defaultEnd: end,
+          p0,
+          p1,
+          cx1,
+          cy1,
+          cx2,
+          cy2,
+          nx,
+          ny,
+          bodyPaths,
+          shadowLines,
+          maskLines
+        });
       }
-      defs.appendChild(mask);
-
-      // 2. Snake Body Group (masked for tapered look)
-      const bodyGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      bodyGroup.setAttribute("mask", `url(#${maskId})`);
-
-      const bodyPaths = [];
-
-      // Snake Body base path (Thick gradient base)
-      const body = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      body.setAttribute("d", pathData);
-      body.setAttribute("class", "svg-snake-body");
-      body.setAttribute("stroke", "url(#realSnakeGrad)");
-      body.setAttribute("stroke-width", "3.2");
-      bodyGroup.appendChild(body);
-      bodyPaths.push(body);
-
-      // Mottled Underbelly Layer (cream highlighting on sides)
-      const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      underbelly.setAttribute("d", pathData);
-      underbelly.setAttribute("fill", "none");
-      underbelly.setAttribute("stroke", "#d8f0c2");
-      underbelly.setAttribute("stroke-width", "2.2");
-      underbelly.setAttribute("stroke-dasharray", "8 5");
-      underbelly.setAttribute("opacity", "0.35");
-      bodyGroup.appendChild(underbelly);
-      bodyPaths.push(underbelly);
-
-      // Dark Transverse Bands (Dark brown stripes crossing the body)
-      const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      bands.setAttribute("d", pathData);
-      bands.setAttribute("fill", "none");
-      bands.setAttribute("stroke", "#09220c");
-      bands.setAttribute("stroke-width", "3.2");
-      bands.setAttribute("stroke-dasharray", "1.5 3.0");
-      bodyGroup.appendChild(bands);
-      bodyPaths.push(bands);
-
-      // Snake Scales Overlay (Diamond texture specular highlights)
-      const scales = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      scales.setAttribute("d", pathData);
-      scales.setAttribute("class", "svg-snake-scales");
-      scales.setAttribute("stroke", "rgba(255, 255, 255, 0.28)");
-      scales.setAttribute("stroke-width", "2.6");
-      scales.setAttribute("stroke-dasharray", "0.3 0.9");
-      bodyGroup.appendChild(scales);
-      bodyPaths.push(scales);
-
-      // Specular Spinal Highlight (3D cylinder sheen)
-      const spine = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      spine.setAttribute("d", pathData);
-      spine.setAttribute("fill", "none");
-      spine.setAttribute("stroke", "rgba(255, 255, 255, 0.22)");
-      spine.setAttribute("stroke-width", "0.5");
-      bodyGroup.appendChild(spine);
-      bodyPaths.push(spine);
-
-      this.dom.boardSvg.appendChild(bodyGroup);
-
-      // --- Python Head Math & Construction ---
-      // Direction vector pointing from head center towards body
-      const hdx = cx1 - p0.x;
-      const hdy = cy1 - p0.y;
-      const hdist = Math.sqrt(hdx * hdx + hdy * hdy);
-      const bx_dir = hdx / hdist;
-      const by_dir = hdy / hdist;
-      
-      // Direction head is facing (outward nose direction)
-      const fx = -bx_dir;
-      const fy = -by_dir;
-      
-      // Perpendicular normal vector (jaw spread)
-      const jx = -by_dir;
-      const jy = bx_dir;
-
-      // Coordinate vertices for triangular head
-      const noseX = p0.x + 1.8 * fx;
-      const noseY = p0.y + 1.8 * fy;
-      
-      const leftJawX = p0.x + 0.4 * bx_dir + 1.25 * jx;
-      const leftJawY = p0.y + 0.4 * by_dir + 1.25 * jy;
-      
-      const rightJawX = p0.x + 0.4 * bx_dir - 1.25 * jx;
-      const rightJawY = p0.y + 0.4 * by_dir - 1.25 * jy;
-      
-      const neckX = p0.x + 1.2 * bx_dir;
-      const neckY = p0.y + 1.2 * by_dir;
-
-      // Angle of head rotation in degrees
-      const angleRad = Math.atan2(fy, fx);
-      const angleDeg = angleRad * (180 / Math.PI);
-
-      // 7. Draw Python Head Base
-      const head = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-      head.setAttribute("points", `${noseX},${noseY} ${leftJawX},${leftJawY} ${neckX},${neckY} ${rightJawX},${rightJawY}`);
-      head.setAttribute("class", "svg-snake-head-viper");
-      this.dom.boardSvg.appendChild(head);
-
-      // --- Forked Tongue Math ---
-      const tx = p0.x + 1.6 * fx; // Tongue base (at nose)
-      const ty = p0.y + 1.6 * fy;
-      
-      const sx = p0.x + 3.1 * fx; // Split point
-      const sy = p0.y + 3.1 * fy;
-      
-      const ltx = sx + 0.9 * fx + 0.65 * jx; // Left tip
-      const lty = sy + 0.9 * fy + 0.65 * jy;
-      
-      const rtx = sx + 0.9 * fx - 0.65 * jx; // Right tip
-      const rty = sy + 0.9 * fy - 0.65 * jy;
-
-      // 8. Draw Forked Tongue with CSS Origin flicker animation (randomized delay to avoid simultaneous flickering)
-      const tongue = document.createElementNS("http://www.w3.org/2000/svg", "path");
-      tongue.setAttribute("d", `M ${tx} ${ty} L ${sx} ${sy} L ${ltx} ${lty} M ${sx} ${sy} L ${rtx} ${rty}`);
-      tongue.setAttribute("class", "svg-snake-tongue");
-      const delay = (Math.random() * 2.0).toFixed(2);
-      tongue.setAttribute("style", `transform-origin: ${tx}% ${ty}%; animation-delay: -${delay}s;`);
-      this.dom.boardSvg.appendChild(tongue);
-
-      // Eye positions
-      const ex1 = p0.x + 0.85 * fx + 0.58 * jx;
-      const ey1 = p0.y + 0.85 * fy + 0.58 * jy;
-      const ex2 = p0.x + 0.85 * fx - 0.58 * jx;
-      const ey2 = p0.y + 0.85 * fy - 0.58 * jy;
-
-      // Group for all python head markings and eyes
-      const detailsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      detailsGroup.setAttribute("id", `head-details-${start}`);
-
-      // Symmetrical golden-tan cheek/wing patches
-      const leftPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-      const lp1x = p0.x - 0.9 * fx + 0.6 * jx;
-      const lp1y = p0.y - 0.9 * fy + 0.6 * jy;
-      const lp2x = p0.x - 0.3 * fx + 1.05 * jx;
-      const lp2y = p0.y - 0.3 * fy + 1.05 * jy;
-      const lp3x = p0.x + 0.8 * fx + 0.4 * jx;
-      const lp3y = p0.y + 0.8 * fy + 0.4 * jy;
-      const lp4x = p0.x + 0.1 * fx + 0.2 * jx;
-      const lp4y = p0.y + 0.1 * fy + 0.2 * jy;
-      leftPatch.setAttribute("points", `${lp1x},${lp1y} ${lp2x},${lp2y} ${lp3x},${lp3y} ${lp4x},${lp4y}`);
-      leftPatch.setAttribute("fill", "#8fd696");
-      leftPatch.setAttribute("stroke", "#1b4f1f");
-      leftPatch.setAttribute("stroke-width", "0.1");
-      detailsGroup.appendChild(leftPatch);
-
-      const rightPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-      const rp1x = p0.x - 0.9 * fx - 0.6 * jx;
-      const rp1y = p0.y - 0.9 * fy - 0.6 * jy;
-      const rp2x = p0.x - 0.3 * fx - 1.05 * jx;
-      const rp2y = p0.y - 0.3 * fy - 1.05 * jy;
-      const rp3x = p0.x + 0.8 * fx - 0.4 * jx;
-      const rp3y = p0.y + 0.8 * fy - 0.4 * jy;
-      const rp4x = p0.x + 0.1 * fx - 0.2 * jx;
-      const rp4y = p0.y + 0.1 * fy - 0.2 * jy;
-      rightPatch.setAttribute("points", `${rp1x},${rp1y} ${rp2x},${rp2y} ${rp3x},${rp3y} ${rp4x},${rp4y}`);
-      rightPatch.setAttribute("fill", "#8fd696");
-      rightPatch.setAttribute("stroke", "#1b4f1f");
-      rightPatch.setAttribute("stroke-width", "0.1");
-      detailsGroup.appendChild(rightPatch);
-
-      // Central dark spearhead stripe
-      const spearhead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-      const sp1x = p0.x - 1.15 * fx;
-      const sp1y = p0.y - 1.15 * fy;
-      const sp2x = p0.x - 0.4 * fx + 0.18 * jx;
-      const sp2y = p0.y - 0.4 * fy + 0.18 * jy;
-      const sp3x = p0.x + 1.4 * fx;
-      const sp3y = p0.y + 1.4 * fy;
-      const sp4x = p0.x - 0.4 * fx - 0.18 * jx;
-      const sp4y = p0.y - 0.4 * fy - 0.18 * jy;
-      spearhead.setAttribute("points", `${sp1x},${sp1y} ${sp2x},${sp2y} ${sp3x},${sp3y} ${sp4x},${sp4y}`);
-      spearhead.setAttribute("fill", "#123c15");
-      spearhead.setAttribute("stroke", "#08210b");
-      spearhead.setAttribute("stroke-width", "0.08");
-      detailsGroup.appendChild(spearhead);
-
-      // Post-ocular dark stripe (Eye to jaw corner)
-      const leftPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      leftPostOcular.setAttribute("x1", ex1);
-      leftPostOcular.setAttribute("y1", ey1);
-      leftPostOcular.setAttribute("x2", leftJawX);
-      leftPostOcular.setAttribute("y2", leftJawY);
-      leftPostOcular.setAttribute("stroke", "#123c15");
-      leftPostOcular.setAttribute("stroke-width", "0.18");
-      leftPostOcular.setAttribute("stroke-linecap", "round");
-      detailsGroup.appendChild(leftPostOcular);
-
-      const rightPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      rightPostOcular.setAttribute("x1", ex2);
-      rightPostOcular.setAttribute("y1", ey2);
-      rightPostOcular.setAttribute("x2", rightJawX);
-      rightPostOcular.setAttribute("y2", rightJawY);
-      rightPostOcular.setAttribute("stroke", "#123c15");
-      rightPostOcular.setAttribute("stroke-width", "0.18");
-      rightPostOcular.setAttribute("stroke-linecap", "round");
-      detailsGroup.appendChild(rightPostOcular);
-
-      // Mottled spots on head edges
-      const spot1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      spot1.setAttribute("cx", p0.x + 0.3 * fx);
-      spot1.setAttribute("cy", p0.y + 0.3 * fy);
-      spot1.setAttribute("r", "0.55");
-      spot1.setAttribute("fill", "#08210b");
-      detailsGroup.appendChild(spot1);
-
-      const spot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      spot2.setAttribute("cx", p0.x + 0.6 * bx_dir);
-      spot2.setAttribute("cy", p0.y + 0.6 * by_dir);
-      spot2.setAttribute("r", "0.45");
-      spot2.setAttribute("fill", "#08210b");
-      detailsGroup.appendChild(spot2);
-
-      // Left Eye
-      const eye1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      eye1.setAttribute("cx", ex1);
-      eye1.setAttribute("cy", ey1);
-      eye1.setAttribute("r", "0.38");
-      eye1.setAttribute("fill", "#f39c12");
-      eye1.setAttribute("stroke", "#08210b");
-      eye1.setAttribute("stroke-width", "0.08");
-      detailsGroup.appendChild(eye1);
-
-      const pupil1 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-      pupil1.setAttribute("cx", ex1);
-      pupil1.setAttribute("cy", ey1);
-      pupil1.setAttribute("rx", "0.06");
-      pupil1.setAttribute("ry", "0.22");
-      pupil1.setAttribute("fill", "black");
-      pupil1.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex1}, ${ey1})`);
-      detailsGroup.appendChild(pupil1);
-
-      const glint1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      glint1.setAttribute("cx", ex1 + 0.12 * fx + 0.08 * jx);
-      glint1.setAttribute("cy", ey1 + 0.12 * fy + 0.08 * jy);
-      glint1.setAttribute("r", "0.08");
-      glint1.setAttribute("fill", "white");
-      detailsGroup.appendChild(glint1);
-      
-      // Right Eye
-      const eye2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      eye2.setAttribute("cx", ex2);
-      eye2.setAttribute("cy", ey2);
-      eye2.setAttribute("r", "0.38");
-      eye2.setAttribute("fill", "#f39c12");
-      eye2.setAttribute("stroke", "#08210b");
-      eye2.setAttribute("stroke-width", "0.08");
-      detailsGroup.appendChild(eye2);
-
-      const pupil2 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-      pupil2.setAttribute("cx", ex2);
-      pupil2.setAttribute("cy", ey2);
-      pupil2.setAttribute("rx", "0.06");
-      pupil2.setAttribute("ry", "0.22");
-      pupil2.setAttribute("fill", "black");
-      pupil2.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex2}, ${ey2})`);
-      detailsGroup.appendChild(pupil2);
-
-      const glint2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-      glint2.setAttribute("cx", ex2 + 0.12 * fx - 0.08 * jx);
-      glint2.setAttribute("cy", ey2 + 0.12 * fy - 0.08 * jy);
-      glint2.setAttribute("r", "0.08");
-      glint2.setAttribute("fill", "white");
-      detailsGroup.appendChild(glint2);
-
-      this.dom.boardSvg.appendChild(detailsGroup);
-
-      // Save animation references
-      this.snakeAnimations.push({
-        snakeIdx,
-        start,
-        end,
-        defaultEnd: end,
-        p0,
-        p1,
-        cx1,
-        cy1,
-        cx2,
-        cy2,
-        nx,
-        ny,
-        bodyPaths,
-        shadowLines,
-        maskLines
-      });
     }
   }
 
@@ -1306,6 +1331,12 @@ class UIController {
       }
       if (this.defaultLadders) {
         GameConfig.ladders = { ...this.defaultLadders };
+        this.ladderPositions = []; // Clear animated coordinates to force redraw
+      }
+      // Clear all active snake reset timeouts
+      if (this.snakeResetTimeouts) {
+        Object.values(this.snakeResetTimeouts).forEach(tid => clearTimeout(tid));
+        this.snakeResetTimeouts = {};
       }
     } else if (game.gameState === 'playing' || game.gameState === 'finished') {
       this.dom.setupScreen.classList.add('hidden');
@@ -1313,7 +1344,7 @@ class UIController {
       if (this.dom.rosterCard) this.dom.rosterCard.classList.remove('hidden');
       
       // Draw board elements for both players (including resets)
-      this.drawSnakesAndLadders();
+      this.drawSnakesAndLadders(true);
       
       // Create tokens if not exists
       if (this.dom.tokensContainer.childElementCount === 0) {
@@ -1326,10 +1357,10 @@ class UIController {
       if (game.gameState === 'playing') {
         this.sound.startMusic();
         
-        // Start 2-minute ladder shift timer
+        // Start 60-second ladder shift timer
         if (!this.isOnlineMode || this.onlineRoomType === 'host') {
           if (this.laddersShiftIntervalId) clearInterval(this.laddersShiftIntervalId);
-          this.laddersShiftIntervalId = setInterval(() => this.triggerLaddersShift(), 120000);
+          this.laddersShiftIntervalId = setInterval(() => this.triggerLaddersShift(), 60000);
         }
         
         // Trigger bot turn if current player is a bot
@@ -1768,15 +1799,16 @@ class UIController {
             await this.wait(400);
 
             // Clear any existing reset timeout for this snake
-            if (anim.resetTimeoutId) {
-              clearTimeout(anim.resetTimeoutId);
+            if (this.snakeResetTimeouts[startPos]) {
+              clearTimeout(this.snakeResetTimeouts[startPos]);
+              delete this.snakeResetTimeouts[startPos];
             }
             
             // Only host or local play schedules the 60-second timer to morph the snake back
             if (!this.isOnlineMode || this.onlineRoomType === 'host') {
-              anim.resetTimeoutId = setTimeout(() => {
+              this.snakeResetTimeouts[startPos] = setTimeout(() => {
                 this.morphSnakeBack(startPos);
-                anim.resetTimeoutId = null;
+                delete this.snakeResetTimeouts[startPos];
               }, 60000);
             }
           } else {
@@ -1925,16 +1957,15 @@ class UIController {
 
   triggerLaddersShift() {
     const newLadders = this.repositionLadders();
-    GameConfig.ladders = newLadders;
-    
-    // Draw the updated board elements
-    this.drawSnakesAndLadders();
     
     // Play climb sound effect as a transition cue
     this.sound.playLadderClimb();
     
     // Display a nice toast notification
-    this.showToast("⚡ Warning! The stairs have shifted to new positions! 🪜", "warning");
+    this.showToast("⚡ Warning! The stairs are shifting positions! 🪜", "warning");
+    
+    // Start the slow transition animation
+    this.animateLaddersTransition(newLadders);
     
     // Send to partner if online mode (host)
     if (this.isOnlineMode && this.onlineRoomType === 'host' && this.conn && this.conn.open) {
@@ -1943,6 +1974,84 @@ class UIController {
         ladders: newLadders
       });
     }
+  }
+
+  animateLaddersTransition(targetLadders) {
+    const newLaddersList = Object.entries(targetLadders).map(([startStr, endStr]) => {
+      const start = parseInt(startStr);
+      const end = parseInt(endStr);
+      return {
+        start: start,
+        end: end,
+        p0: this.getCellCoordinates(start),
+        p1: this.getCellCoordinates(end)
+      };
+    });
+    
+    if (!this.ladderPositions || this.ladderPositions.length !== newLaddersList.length) {
+      this.ladderPositions = Object.entries(GameConfig.ladders).map(([startStr, endStr]) => {
+        const start = parseInt(startStr);
+        const end = parseInt(endStr);
+        return {
+          start: start,
+          end: end,
+          p0: this.getCellCoordinates(start),
+          p1: this.getCellCoordinates(end)
+        };
+      });
+    }
+    
+    const startPositions = this.ladderPositions.map(ladder => ({
+      p0: { x: ladder.p0.x, y: ladder.p0.y },
+      p1: { x: ladder.p1.x, y: ladder.p1.y }
+    }));
+    
+    const duration = 2500; // 2.5 seconds slow transition
+    const startTime = performance.now();
+    
+    // Update GameConfig immediately
+    GameConfig.ladders = targetLadders;
+    
+    const animateFrame = (now) => {
+      const elapsed = now - startTime;
+      const progress = Math.min(elapsed / duration, 1);
+      
+      const ease = progress < 0.5 
+        ? 4 * progress * progress * progress 
+        : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+        
+      for (let i = 0; i < newLaddersList.length; i++) {
+        const startPos = startPositions[i];
+        const targetPos = newLaddersList[i];
+        const currentLadder = this.ladderPositions[i];
+        
+        currentLadder.p0 = {
+          x: startPos.p0.x + (targetPos.p0.x - startPos.p0.x) * ease,
+          y: startPos.p0.y + (targetPos.p0.y - startPos.p0.y) * ease
+        };
+        currentLadder.p1 = {
+          x: startPos.p1.x + (targetPos.p1.x - startPos.p1.x) * ease,
+          y: startPos.p1.y + (targetPos.p1.y - startPos.p1.y) * ease
+        };
+        
+        if (progress >= 1) {
+          currentLadder.start = targetPos.start;
+          currentLadder.end = targetPos.end;
+        }
+      }
+      
+      // Draw board elements (don't redraw snakes to avoid interrupting wiggle)
+      this.drawSnakesAndLadders(false);
+      
+      if (progress < 1) {
+        requestAnimationFrame(animateFrame);
+      } else {
+        GameConfig.ladders = targetLadders;
+        this.showToast("🪜 The stairs have finished shifting positions!", "info");
+      }
+    };
+    
+    requestAnimationFrame(animateFrame);
   }
 
   initHostPeer() {
@@ -2081,14 +2190,12 @@ class UIController {
         break;
         
       case 'SHIFT_LADDERS':
-        // Update GameConfig ladders mapping
-        GameConfig.ladders = data.ladders;
-        // Redraw board
-        this.drawSnakesAndLadders();
         // Play climb sound effect
         this.sound.playLadderClimb();
         // Toast message
-        this.showToast("⚡ Warning! The stairs have shifted to new positions! 🪜", "warning");
+        this.showToast("⚡ Warning! The stairs are shifting positions! 🪜", "warning");
+        // Start the slow transition animation
+        this.animateLaddersTransition(data.ladders);
         break;
         
       case 'RESTART_GAME':
