@@ -985,7 +985,7 @@ class UIController {
         for (let i = 0; i < numSegments; i++) {
           const tA = i / numSegments;
           const tB = (i + 1) / numSegments;
-          const ptA = this.getBezierPoint(tA, p0, c1, c2, ptB);
+          const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
           const ptB_pt = this.getBezierPoint(tB, p0, c1, c2, p1);
           const tMid = (tA + tB) / 2;
           const w = getWidthAtT(tMid);
