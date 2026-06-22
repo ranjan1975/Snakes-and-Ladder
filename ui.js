@@ -1386,7 +1386,7 @@ class UIController {
   }
 
   updateHUD() {
-    const curPlayer = this.game.getCurrentPlayer();
+    const curPlayer = (this.isAnimating && this.animatingPlayer) ? this.animatingPlayer : this.game.getCurrentPlayer();
     if (!curPlayer) return;
 
     if (curPlayer.avatar && curPlayer.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
@@ -1402,28 +1402,40 @@ class UIController {
     this.dom.currentPlayerAvatar.style.boxShadow = `0 0 20px ${curPlayer.color}`;
     this.dom.currentPlayerName.innerText = curPlayer.name;
     
+    // Calculate if it's the local user's turn
+    let isLocalUserTurn = false;
     if (this.isOnlineMode) {
-      const activeIdx = this.game.activePlayerIndex;
-      const isMyTurn = (this.onlineRoomType === 'host' && activeIdx === 0) ||
-                       (this.onlineRoomType === 'join' && activeIdx === 1);
-      if (isMyTurn) {
-        this.dom.currentPlayerStatus.innerHTML = `Your Turn! Click Dice to Roll`;
-        this.dom.rollBtn.disabled = false;
-        this.dom.rollBtn.innerText = "Roll Dice";
-      } else {
-        this.dom.currentPlayerStatus.innerHTML = `Waiting for ${curPlayer.name} to roll...`;
-        this.dom.rollBtn.disabled = true;
-        this.dom.rollBtn.innerText = "Waiting...";
-      }
+      const localId = this.onlineRoomType === 'host' ? 1 : 2;
+      isLocalUserTurn = (curPlayer.id === localId);
     } else {
-      if (curPlayer.isBot) {
-        this.dom.currentPlayerStatus.innerHTML = `🤖 Thinking...`;
-        this.dom.rollBtn.disabled = true;
-        this.dom.rollBtn.innerText = "Robot Rolling...";
+      isLocalUserTurn = !curPlayer.isBot;
+    }
+
+    if (this.isAnimating) {
+      this.dom.currentPlayerStatus.innerHTML = isLocalUserTurn ? `You are moving...` : `${curPlayer.name} is moving...`;
+      this.dom.rollBtn.disabled = true;
+      this.dom.rollBtn.innerText = "Moving...";
+    } else {
+      if (this.isOnlineMode) {
+        if (isLocalUserTurn) {
+          this.dom.currentPlayerStatus.innerHTML = `Your Turn! Click Dice to Roll`;
+          this.dom.rollBtn.disabled = false;
+          this.dom.rollBtn.innerText = "Roll Dice";
+        } else {
+          this.dom.currentPlayerStatus.innerHTML = `Waiting for ${curPlayer.name} to roll...`;
+          this.dom.rollBtn.disabled = true;
+          this.dom.rollBtn.innerText = "Waiting...";
+        }
       } else {
-        this.dom.currentPlayerStatus.innerHTML = `Your Turn! Click Dice to Roll`;
-        this.dom.rollBtn.disabled = false;
-        this.dom.rollBtn.innerText = "Roll Dice";
+        if (curPlayer.isBot) {
+          this.dom.currentPlayerStatus.innerHTML = `🤖 Thinking...`;
+          this.dom.rollBtn.disabled = true;
+          this.dom.rollBtn.innerText = "Robot Rolling...";
+        } else {
+          this.dom.currentPlayerStatus.innerHTML = `Your Turn! Click Dice to Roll`;
+          this.dom.rollBtn.disabled = false;
+          this.dom.rollBtn.innerText = "Roll Dice";
+        }
       }
     }
     
@@ -1437,15 +1449,6 @@ class UIController {
     // Update Dice Turn Indicator
     if (this.dom.diceTurnIndicator) {
       this.dom.diceTurnIndicator.classList.remove('hidden');
-      
-      let isLocalUserTurn = false;
-      if (this.isOnlineMode) {
-        const activeIdx = this.game.activePlayerIndex;
-        isLocalUserTurn = (this.onlineRoomType === 'host' && activeIdx === 0) ||
-                          (this.onlineRoomType === 'join' && activeIdx === 1);
-      } else {
-        isLocalUserTurn = !curPlayer.isBot;
-      }
       
       const arrowEl = this.dom.diceTurnIndicator.querySelector('.turn-pointer-arrow');
       const textEl = this.dom.diceTurnIndicator.querySelector('.turn-pointer-text');
@@ -1519,6 +1522,7 @@ class UIController {
 
   async rollAndExecute(forcedRoll = null) {
     this.isAnimating = true;
+    this.animatingPlayer = this.game.getCurrentPlayer();
     this.dom.rollBtn.disabled = true;
 
     // Trigger Dice Shake audio and CSS spin animation
@@ -1551,6 +1555,7 @@ class UIController {
       await this.animatePlayerPath(result);
       
       this.isAnimating = false;
+      this.animatingPlayer = null;
       this.updateHUD();
       
       if (this.game.gameState === 'finished') {
