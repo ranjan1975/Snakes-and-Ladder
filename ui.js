@@ -123,6 +123,7 @@ class UIController {
       cropModal: document.getElementById('crop-modal'),
       cropCanvas: document.getElementById('crop-canvas'),
       cropZoom: document.getElementById('crop-zoom'),
+      diceTurnIndicator: document.getElementById('dice-turn-indicator'),
       cropSaveBtn: document.getElementById('crop-save-btn'),
       cropCancelBtn: document.getElementById('crop-cancel-btn')
     };
@@ -1289,6 +1290,7 @@ class UIController {
       this.dom.setupScreen.classList.remove('hidden');
       this.dom.playScreen.classList.add('hidden');
       if (this.dom.rosterCard) this.dom.rosterCard.classList.add('hidden');
+      if (this.dom.diceTurnIndicator) this.dom.diceTurnIndicator.classList.add('hidden');
       this.dom.tokensContainer.innerHTML = '';
       this.dom.historyLog.innerHTML = '';
       this.sound.stopMusic();
@@ -1308,10 +1310,7 @@ class UIController {
       this.updateHUD();
       this.updateHistory(game.history);
       
-      if (game.gameState === 'finished') {
-        this.handleGameFinished(game.winner);
-        this.sound.stopMusic();
-      } else {
+      if (game.gameState === 'playing') {
         this.sound.startMusic();
         // Trigger bot turn if current player is a bot
         this.checkBotTurn();
@@ -1435,6 +1434,45 @@ class UIController {
       activeCell.style.boxShadow = `inset 0 0 12px ${curPlayer.color}50, 0 0 10px ${curPlayer.color}30`;
     }
 
+    // Update Dice Turn Indicator
+    if (this.dom.diceTurnIndicator) {
+      this.dom.diceTurnIndicator.classList.remove('hidden');
+      
+      let isLocalUserTurn = false;
+      if (this.isOnlineMode) {
+        const activeIdx = this.game.activePlayerIndex;
+        isLocalUserTurn = (this.onlineRoomType === 'host' && activeIdx === 0) ||
+                          (this.onlineRoomType === 'join' && activeIdx === 1);
+      } else {
+        isLocalUserTurn = !curPlayer.isBot;
+      }
+      
+      const arrowEl = this.dom.diceTurnIndicator.querySelector('.turn-pointer-arrow');
+      const textEl = this.dom.diceTurnIndicator.querySelector('.turn-pointer-text');
+      
+      if (isLocalUserTurn) {
+        this.dom.diceTurnIndicator.classList.add('your-turn');
+        this.dom.diceTurnIndicator.classList.remove('opponents-turn');
+        this.dom.diceTurnIndicator.style.color = curPlayer.color;
+        this.dom.diceTurnIndicator.style.textShadow = `0 0 10px ${curPlayer.color}`;
+        if (arrowEl) {
+          arrowEl.innerText = "👇";
+          arrowEl.style.display = "inline-block";
+        }
+        if (textEl) textEl.innerText = "YOUR TURN!";
+      } else {
+        this.dom.diceTurnIndicator.classList.remove('your-turn');
+        this.dom.diceTurnIndicator.classList.add('opponents-turn');
+        this.dom.diceTurnIndicator.style.color = "#888899";
+        this.dom.diceTurnIndicator.style.textShadow = "none";
+        if (arrowEl) {
+          arrowEl.innerText = "⏳";
+          arrowEl.style.display = "none";
+        }
+        if (textEl) textEl.innerText = "PLAYERS' TURN";
+      }
+    }
+
     // Update Roster list highlighting if match is running
     if (this.game.gameState !== 'setup') {
       this.renderHUDPlayersList();
@@ -1514,7 +1552,13 @@ class UIController {
       
       this.isAnimating = false;
       this.updateHUD();
-      this.checkBotTurn();
+      
+      if (this.game.gameState === 'finished') {
+        this.handleGameFinished(this.game.winner);
+        this.sound.stopMusic();
+      } else {
+        this.checkBotTurn();
+      }
     }, 1100); // Match CSS rolling keyframes
   }
 
@@ -2021,8 +2065,9 @@ class UIController {
     this.sound.playVictory();
     
     // Populate stats
-    if (winner.avatar && winner.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i)) {
-      this.dom.winnerAvatar.innerHTML = `<img src="${winner.avatar}" style="width: 100%; height: 100%; object-fit: cover; border-radius: 50%;">`;
+    const isImg = winner.avatar && (winner.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i) || winner.avatar.startsWith('data:image/'));
+    if (isImg) {
+      this.dom.winnerAvatar.innerHTML = `<img src="${winner.avatar}">`;
       this.dom.winnerAvatar.style.textShadow = 'none';
       this.dom.winnerAvatar.style.background = 'transparent';
     } else {
