@@ -20,6 +20,10 @@ class UIController {
     this.onlinePartnerData = null; // Store partner's config
     this.quizResultResolver = null; // Promise resolver for online snake quiz sync
     
+    // Default config values for ladders shifting
+    this.defaultLadders = { ...GameConfig.ladders };
+    this.laddersShiftIntervalId = null;
+    
     // Canvas Face Cropper state variables
     this.cropImg = null;
     this.cropX = 0;
@@ -1294,6 +1298,15 @@ class UIController {
       this.dom.tokensContainer.innerHTML = '';
       this.dom.historyLog.innerHTML = '';
       this.sound.stopMusic();
+      
+      // Clear ladder shift interval and restore defaults
+      if (this.laddersShiftIntervalId) {
+        clearInterval(this.laddersShiftIntervalId);
+        this.laddersShiftIntervalId = null;
+      }
+      if (this.defaultLadders) {
+        GameConfig.ladders = { ...this.defaultLadders };
+      }
     } else if (game.gameState === 'playing' || game.gameState === 'finished') {
       this.dom.setupScreen.classList.add('hidden');
       this.dom.playScreen.classList.remove('hidden');
@@ -1312,8 +1325,21 @@ class UIController {
       
       if (game.gameState === 'playing') {
         this.sound.startMusic();
+        
+        // Start 2-minute ladder shift timer
+        if (!this.isOnlineMode || this.onlineRoomType === 'host') {
+          if (this.laddersShiftIntervalId) clearInterval(this.laddersShiftIntervalId);
+          this.laddersShiftIntervalId = setInterval(() => this.triggerLaddersShift(), 120000);
+        }
+        
         // Trigger bot turn if current player is a bot
         this.checkBotTurn();
+      } else if (game.gameState === 'finished') {
+        // Clear ladder shift interval
+        if (this.laddersShiftIntervalId) {
+          clearInterval(this.laddersShiftIntervalId);
+          this.laddersShiftIntervalId = null;
+        }
       }
     }
   }
@@ -1845,6 +1871,80 @@ class UIController {
     this.showToast(`The snake at ${startPos} has returned to its default nest! 🐍`, 'info');
   }
 
+  repositionLadders() {
+    const snakeHeads = Object.keys(GameConfig.snakes).map(k => parseInt(k));
+    const snakeTails = Object.values(GameConfig.snakes).map(v => parseInt(v));
+    const prohibited = new Set([1, 100, ...snakeHeads, ...snakeTails]);
+    const numLadders = 8;
+    
+    for (let tryCount = 0; tryCount < 50; tryCount++) {
+      let newLadders = {};
+      let usedTiles = new Set();
+      let failed = false;
+      
+      for (let i = 0; i < numLadders; i++) {
+        let start = 0;
+        let end = 0;
+        let ladderAttempts = 0;
+        let success = false;
+        
+        while (ladderAttempts < 100) {
+          ladderAttempts++;
+          start = Math.floor(Math.random() * 90) + 2; // [2, 91]
+          if (prohibited.has(start) || usedTiles.has(start)) continue;
+          
+          const minLen = 5;
+          const maxLen = 30;
+          const len = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen;
+          end = start + len;
+          
+          if (end >= 100 || prohibited.has(end) || usedTiles.has(end)) continue;
+          
+          success = true;
+          break;
+        }
+        
+        if (!success) {
+          failed = true;
+          break;
+        }
+        
+        newLadders[start] = end;
+        usedTiles.add(start);
+        usedTiles.add(end);
+      }
+      
+      if (!failed) {
+        return newLadders;
+      }
+    }
+    
+    console.warn("Reposition generation failed after 50 attempts, returning defaults.");
+    return { ...this.defaultLadders };
+  }
+
+  triggerLaddersShift() {
+    const newLadders = this.repositionLadders();
+    GameConfig.ladders = newLadders;
+    
+    // Draw the updated board elements
+    this.drawSnakesAndLadders();
+    
+    // Play climb sound effect as a transition cue
+    this.sound.playLadderClimb();
+    
+    // Display a nice toast notification
+    this.showToast("⚡ Warning! The stairs have shifted to new positions! 🪜", "warning");
+    
+    // Send to partner if online mode (host)
+    if (this.isOnlineMode && this.onlineRoomType === 'host' && this.conn && this.conn.open) {
+      this.conn.send({
+        type: 'SHIFT_LADDERS',
+        ladders: newLadders
+      });
+    }
+  }
+
   initHostPeer() {
     this.dom.generateCodeBtn.disabled = true;
     this.dom.generateCodeBtn.innerText = "Connecting to PeerJS signal server...";
@@ -1978,6 +2078,17 @@ class UIController {
       case 'MORPH_BACK':
         // Receive snake tail morph reset command
         this.morphSnakeBack(data.startPos);
+        break;
+        
+      case 'SHIFT_LADDERS':
+        // Update GameConfig ladders mapping
+        GameConfig.ladders = data.ladders;
+        // Redraw board
+        this.drawSnakesAndLadders();
+        // Play climb sound effect
+        this.sound.playLadderClimb();
+        // Toast message
+        this.showToast("⚡ Warning! The stairs have shifted to new positions! 🪜", "warning");
         break;
         
       case 'RESTART_GAME':
