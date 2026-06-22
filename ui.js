@@ -20,6 +20,16 @@ class UIController {
     this.onlinePartnerData = null; // Store partner's config
     this.quizResultResolver = null; // Promise resolver for online snake quiz sync
     
+    // Canvas Face Cropper state variables
+    this.cropImg = null;
+    this.cropX = 0;
+    this.cropY = 0;
+    this.cropScale = 1;
+    this.isDraggingCrop = false;
+    this.dragStartX = 0;
+    this.dragStartY = 0;
+    this.cropCallback = null;
+    
     // Binding DOM element references
     this.dom = {
       setupScreen: document.getElementById('setup-screen'),
@@ -106,7 +116,15 @@ class UIController {
       adProgressBar: document.getElementById('ad-progress-bar'),
       adAdvertiserLogo: document.getElementById('ad-advertiser-logo'),
       adAdvertiserName: document.getElementById('ad-advertiser-name'),
-      adAdvertiserDesc: document.getElementById('ad-advertiser-desc')
+      adAdvertiserDesc: document.getElementById('ad-advertiser-desc'),
+      
+      // Players HUD & Crop Modal
+      rosterCard: document.getElementById('roster-card'),
+      cropModal: document.getElementById('crop-modal'),
+      cropCanvas: document.getElementById('crop-canvas'),
+      cropZoom: document.getElementById('crop-zoom'),
+      cropSaveBtn: document.getElementById('crop-save-btn'),
+      cropCancelBtn: document.getElementById('crop-cancel-btn')
     };
 
     // Predefined Avatars and Neon Colors
@@ -228,6 +246,9 @@ class UIController {
     
     // Wire game state triggers
     this.game.onStateChange = (game) => this.handleGameStateChange(game);
+    
+    // Wire Canvas Crop handlers
+    this.setupCropHandlers();
   }
 
   setupEventListeners() {
@@ -254,16 +275,20 @@ class UIController {
         if (this.onlineRoomType === 'host' && this.conn && this.conn.open && this.onlinePartnerData) {
           const hostProfile = {
             name: this.dom.onlinePlayerName.value.trim() || "Host",
-            color: this.onlineMyColor,
             avatar: this.dom.onlinePlayerAvatar.value === 'custom' ? this.onlineMyAvatarData : this.dom.onlinePlayerAvatar.value
           };
           
+          // Choose random unique colors at game start
+          const shuffledColors = [...this.colors].sort(() => 0.5 - Math.random());
+          const hostColor = shuffledColors[0];
+          const guestColor = shuffledColors[1];
+          
           this.game.reset();
           this.game.exactRollToWin = this.dom.exactRollToggle.checked;
-          this.game.addPlayer(hostProfile.name, hostProfile.color, hostProfile.avatar, false);
-          this.game.addPlayer(this.onlinePartnerData.name, this.onlinePartnerData.color, this.onlinePartnerData.avatar, false);
+          this.game.addPlayer(hostProfile.name, hostColor, hostProfile.avatar, false);
+          this.game.addPlayer(this.onlinePartnerData.name, guestColor, this.onlinePartnerData.avatar, false);
           
-          // Send START_GAME message to partner with full configurations
+          // Send START_GAME message to partner with pre-randomized configurations
           this.conn.send({
             type: 'START_GAME',
             players: this.game.players.map(p => ({
@@ -279,13 +304,19 @@ class UIController {
       } else {
         // Add configure players to game (Local Mode)
         this.game.reset();
+        
+        // Choose random unique colors at game start
+        const shuffledColors = [...this.colors].sort(() => 0.5 - Math.random());
+        
         for (let i = 0; i < this.setupConfig.playerCount; i++) {
           const pConf = this.setupConfig.players[i];
           const nameInput = document.getElementById(`setup-name-${i}`);
           const nameVal = nameInput ? nameInput.value.trim() : pConf.name;
           const botToggle = document.getElementById(`setup-bot-${i}`);
           const isBotVal = botToggle ? botToggle.checked : pConf.isBot;
-          this.game.addPlayer(nameVal || `Player ${i+1}`, pConf.color, pConf.avatar, isBotVal);
+          
+          const randColor = shuffledColors[i % shuffledColors.length];
+          this.game.addPlayer(nameVal || `Player ${i+1}`, randColor, pConf.avatar, isBotVal);
         }
         this.game.startGame();
       }
@@ -393,12 +424,10 @@ class UIController {
       this.dom.onlinePlayerAvatarFile.addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
-          const reader = new FileReader();
-          reader.onload = (event) => {
-            this.onlineMyAvatarData = event.target.result;
-            this.showToast("Custom photo uploaded! 📷", "info");
-          };
-          reader.readAsDataURL(file);
+          this.openCropModal(file, (croppedDataUrl) => {
+            this.onlineMyAvatarData = croppedDataUrl;
+            this.showToast("Face avatar saved for online profile! 📷", "info");
+          });
         } else {
           // Reset avatar select if cancelled
           this.dom.onlinePlayerAvatar.value = '🦊';
@@ -571,14 +600,11 @@ class UIController {
     fileInput.addEventListener('change', (e) => {
       const file = e.target.files[0];
       if (file) {
-        const reader = new FileReader();
-        reader.onload = (event) => {
-          const base64Url = event.target.result;
-          this.setupConfig.players[index].avatar = base64Url;
-          avatarBtn.innerHTML = this.renderAvatarHelper(base64Url);
-          this.showToast(`Face photo uploaded for Player ${index+1}! 📷`, 'info');
-        };
-        reader.readAsDataURL(file);
+        this.openCropModal(file, (croppedDataUrl) => {
+          this.setupConfig.players[index].avatar = croppedDataUrl;
+          avatarBtn.innerHTML = this.renderAvatarHelper(croppedDataUrl);
+          this.showToast(`Face avatar saved for Player ${index+1}! 📷`, 'info');
+        });
       }
     });
 
@@ -1262,12 +1288,14 @@ class UIController {
     if (game.gameState === 'setup') {
       this.dom.setupScreen.classList.remove('hidden');
       this.dom.playScreen.classList.add('hidden');
+      if (this.dom.rosterCard) this.dom.rosterCard.classList.add('hidden');
       this.dom.tokensContainer.innerHTML = '';
       this.dom.historyLog.innerHTML = '';
       this.sound.stopMusic();
     } else if (game.gameState === 'playing' || game.gameState === 'finished') {
       this.dom.setupScreen.classList.add('hidden');
       this.dom.playScreen.classList.remove('hidden');
+      if (this.dom.rosterCard) this.dom.rosterCard.classList.remove('hidden');
       
       // Draw board elements for both players (including resets)
       this.drawSnakesAndLadders();
@@ -1301,18 +1329,11 @@ class UIController {
       
       const isImg = p.avatar && (p.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i) || p.avatar.startsWith('data:image/'));
       
-      token.innerHTML = `
-        <div class="walking-character" id="char-${p.id}" style="color: ${p.color}">
-          <div class="char-head" style="color: ${p.color}; ${isImg ? `background-image: url(${p.avatar});` : ''}">
-            ${isImg ? '' : p.avatar}
-          </div>
-          <div class="char-body" style="color: ${p.color}"></div>
-          <div class="char-legs" style="color: ${p.color}">
-            <div class="char-leg left" style="color: ${p.color}"></div>
-            <div class="char-leg right" style="color: ${p.color}"></div>
-          </div>
-        </div>
-      `;
+      if (isImg) {
+        token.innerHTML = `<img src="${p.avatar}" class="token-image" alt="${p.name}">`;
+      } else {
+        token.innerHTML = p.avatar || '';
+      }
       this.dom.tokensContainer.appendChild(token);
     });
     this.updateTokensUI(false);
@@ -1412,6 +1433,11 @@ class UIController {
     const activeCell = document.getElementById(`cell-${curPlayer.position}`);
     if (activeCell) {
       activeCell.style.boxShadow = `inset 0 0 12px ${curPlayer.color}50, 0 0 10px ${curPlayer.color}30`;
+    }
+
+    // Update Roster list highlighting if match is running
+    if (this.game.gameState !== 'setup') {
+      this.renderHUDPlayersList();
     }
   }
 
@@ -1911,6 +1937,11 @@ class UIController {
         this.stopConfetti();
         this.game.reset();
         break;
+        
+      case 'CHANGE_COLOR':
+        // Opponent changed player color mid-game
+        this.changePlayerColor(data.playerIndex, data.color);
+        break;
     }
   }
 
@@ -2369,5 +2400,262 @@ class UIController {
   // Helper delays
   wait(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+
+  // --- Canvas Face Photo Cropper Modal methods ---
+  openCropModal(file, onCropComplete) {
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const img = new Image();
+      img.onload = () => {
+        this.cropImg = img;
+        this.cropCallback = onCropComplete;
+        
+        // Initial setup: center the image and set scale
+        const diameter = 180;
+        const scaleX = diameter / img.width;
+        const scaleY = diameter / img.height;
+        this.cropScale = Math.max(scaleX, scaleY, 0.2);
+        
+        this.cropX = 150 - (img.width * this.cropScale) / 2;
+        this.cropY = 150 - (img.height * this.cropScale) / 2;
+        
+        this.dom.cropZoom.min = (Math.min(scaleX, scaleY) * 0.5).toFixed(2);
+        this.dom.cropZoom.max = (Math.max(scaleX, scaleY) * 4.0).toFixed(2);
+        this.dom.cropZoom.value = this.cropScale.toFixed(2);
+        
+        this.dom.cropModal.classList.add('show');
+        this.drawCropCanvas();
+      };
+      img.src = event.target.result;
+    };
+    reader.readAsDataURL(file);
+  }
+
+  setupCropHandlers() {
+    const canvas = this.dom.cropCanvas;
+    const zoomSlider = this.dom.cropZoom;
+
+    zoomSlider.addEventListener('input', () => {
+      const oldScale = this.cropScale;
+      this.cropScale = parseFloat(zoomSlider.value);
+      
+      // Zoom center on canvas is 150, 150
+      const centerX = 150;
+      const centerY = 150;
+      this.cropX = centerX - ((centerX - this.cropX) * this.cropScale) / oldScale;
+      this.cropY = centerY - ((centerY - this.cropY) * this.cropScale) / oldScale;
+      
+      this.drawCropCanvas();
+    });
+
+    canvas.addEventListener('mousedown', (e) => {
+      if (!this.cropImg) return;
+      this.isDraggingCrop = true;
+      this.dragStartX = e.clientX;
+      this.dragStartY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!this.isDraggingCrop || !this.cropImg) return;
+      const dx = e.clientX - this.dragStartX;
+      const dy = e.clientY - this.dragStartY;
+      this.cropX += dx;
+      this.cropY += dy;
+      this.dragStartX = e.clientX;
+      this.dragStartY = e.clientY;
+      this.drawCropCanvas();
+    });
+
+    window.addEventListener('mouseup', () => {
+      this.isDraggingCrop = false;
+    });
+
+    // Touch events for mobile
+    canvas.addEventListener('touchstart', (e) => {
+      if (!this.cropImg || e.touches.length === 0) return;
+      this.isDraggingCrop = true;
+      this.dragStartX = e.touches[0].clientX;
+      this.dragStartY = e.touches[0].clientY;
+    });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (!this.isDraggingCrop || !this.cropImg || e.touches.length === 0) return;
+      e.preventDefault();
+      const dx = e.touches[0].clientX - this.dragStartX;
+      const dy = e.touches[0].clientY - this.dragStartY;
+      this.cropX += dx;
+      this.cropY += dy;
+      this.dragStartX = e.touches[0].clientX;
+      this.dragStartY = e.touches[0].clientY;
+      this.drawCropCanvas();
+    });
+
+    canvas.addEventListener('touchend', () => {
+      this.isDraggingCrop = false;
+    });
+
+    this.dom.cropSaveBtn.addEventListener('click', () => {
+      if (this.cropCallback && this.cropImg) {
+        // Draw cropped region to 120x120 canvas
+        const resCanvas = document.createElement('canvas');
+        resCanvas.width = 120;
+        resCanvas.height = 120;
+        const rCtx = resCanvas.getContext('2d');
+        
+        // Draw cropped area into circle mask
+        rCtx.beginPath();
+        rCtx.arc(60, 60, 60, 0, Math.PI * 2);
+        rCtx.clip();
+        
+        const radiusOnCanvas = 90;
+        const srcX = (150 - radiusOnCanvas - this.cropX) / this.cropScale;
+        const srcY = (150 - radiusOnCanvas - this.cropY) / this.cropScale;
+        const srcW = (radiusOnCanvas * 2) / this.cropScale;
+        const srcH = (radiusOnCanvas * 2) / this.cropScale;
+        
+        rCtx.drawImage(this.cropImg, srcX, srcY, srcW, srcH, 0, 0, 120, 120);
+        
+        const dataUrl = resCanvas.toDataURL('image/png');
+        this.cropCallback(dataUrl);
+      }
+      this.closeCropModal();
+    });
+
+    this.dom.cropCancelBtn.addEventListener('click', () => {
+      this.closeCropModal();
+    });
+  }
+
+  closeCropModal() {
+    this.dom.cropModal.classList.remove('show');
+    this.cropImg = null;
+    this.cropCallback = null;
+  }
+
+  drawCropCanvas() {
+    if (!this.cropImg) return;
+    const canvas = this.dom.cropCanvas;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.clearRect(0, 0, 300, 300);
+    
+    // Draw raw image scaled/translated
+    ctx.drawImage(
+      this.cropImg,
+      this.cropX,
+      this.cropY,
+      this.cropImg.width * this.cropScale,
+      this.cropImg.height * this.cropScale
+    );
+    
+    // Transparent cutout overlay
+    ctx.fillStyle = 'rgba(8, 5, 22, 0.75)';
+    ctx.beginPath();
+    ctx.rect(0, 0, 300, 300);
+    ctx.arc(150, 150, 90, 0, Math.PI * 2, true);
+    ctx.fill();
+    
+    // Draw neon cyan border
+    ctx.strokeStyle = '#00f2fe';
+    ctx.lineWidth = 2.5;
+    ctx.shadowColor = '#00f2fe';
+    ctx.shadowBlur = 8;
+    ctx.beginPath();
+    ctx.arc(150, 150, 90, 0, Math.PI * 2);
+    ctx.stroke();
+    
+    // Reset shadow
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+  }
+
+  // --- Players Roster Card HUD methods ---
+  renderHUDPlayersList() {
+    const listEl = document.getElementById('hud-players-list');
+    if (!listEl) return;
+    listEl.innerHTML = '';
+
+    this.game.players.forEach((player, idx) => {
+      const isCurrent = (this.game.activePlayerIndex === idx);
+      const isImg = player.avatar && (player.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i) || player.avatar.startsWith('data:image/'));
+
+      const playerRow = document.createElement('div');
+      playerRow.className = `hud-player-row ${isCurrent ? 'active' : ''}`;
+      playerRow.style.color = player.color;
+      playerRow.style.borderColor = player.color;
+      playerRow.innerHTML = `
+        <div class="hud-player-info">
+          <div class="hud-player-avatar-circle" style="color: ${player.color}; box-shadow: 0 0 8px ${player.color}; ${isImg ? `background-image: url(${player.avatar});` : ''}">
+            ${isImg ? '' : player.avatar}
+          </div>
+          <span class="hud-player-name">${player.name}</span>
+          <span class="hud-player-position">Tile ${player.position}</span>
+        </div>
+        
+        <!-- Color Selector -->
+        <div class="hud-player-color-picker-wrapper">
+          <button class="hud-color-trigger-btn" id="hud-color-trigger-${idx}" style="background-color: ${player.color}; box-shadow: 0 0 8px ${player.color};" title="Change Color"></button>
+          <div class="hud-color-dropdown hidden" id="hud-color-dropdown-${idx}">
+            ${this.colors.map(c => `<div class="hud-color-option" data-color="${c}" style="background-color: ${c};"></div>`).join('')}
+          </div>
+        </div>
+      `;
+
+      listEl.appendChild(playerRow);
+
+      const triggerBtn = playerRow.querySelector(`#hud-color-trigger-${idx}`);
+      const dropdown = playerRow.querySelector(`#hud-color-dropdown-${idx}`);
+
+      triggerBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        // Hide all other dropdowns
+        document.querySelectorAll('.hud-color-dropdown').forEach(d => {
+          if (d !== dropdown) d.classList.add('hidden');
+        });
+        dropdown.classList.toggle('hidden');
+      });
+
+      dropdown.querySelectorAll('.hud-color-option').forEach(opt => {
+        opt.addEventListener('click', (e) => {
+          e.stopPropagation();
+          const newColor = opt.dataset.color;
+          this.changePlayerColor(idx, newColor);
+          dropdown.classList.add('hidden');
+        });
+      });
+    });
+
+    // Close on body click
+    document.addEventListener('click', () => {
+      document.querySelectorAll('.hud-color-dropdown').forEach(d => d.classList.add('hidden'));
+    });
+  }
+
+  changePlayerColor(playerIndex, newColor) {
+    const player = this.game.players[playerIndex];
+    if (!player) return;
+
+    player.color = newColor;
+
+    // Update board token border and box-shadow color
+    const token = document.getElementById(`token-${player.id}`);
+    if (token) {
+      token.style.color = newColor;
+    }
+
+    // Refresh UI components
+    this.updateHUD();
+    this.renderHUDPlayersList();
+    this.updateTokensUI(false);
+
+    // Sync to remote opponent over PeerJS
+    if (this.isOnlineMode && this.conn && this.conn.open) {
+      this.conn.send({
+        type: 'CHANGE_COLOR',
+        playerIndex: playerIndex,
+        color: newColor
+      });
+    }
   }
 }
