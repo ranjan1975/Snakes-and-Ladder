@@ -46,7 +46,7 @@ class SoundController {
   async loadSnakeSound() {
     this.isLoadingSnakeSound = true;
     try {
-      const response = await fetch('Maar%20Daala.mp3');
+      const response = await fetch('snake%20bite.mp3');
       if (!response.ok) throw new Error(`HTTP error! status: ${response.status}`);
       const arrayBuffer = await response.arrayBuffer();
       this.snakeAudioBuffer = await this.ctx.decodeAudioData(arrayBuffer);
