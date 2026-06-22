@@ -687,7 +687,6 @@ class UIController {
     return `#${r}${g}${b}`;
   }
 
-  // Get cell center coordinate inside viewBox 0 0 100 100
   getCellCoordinates(cellNum) {
     const r = Math.floor((cellNum - 1) / 10);
     let c;
@@ -697,7 +696,13 @@ class UIController {
       c = 9 - ((cellNum - 1) % 10);
     }
     
-    // P  drawSnakesAndLadders(forceRedrawSnakes = false) {
+    // Percentage coordinates (0-100)
+    const x = (c + 0.5) * 10;
+    const y = (9 - r + 0.5) * 10;
+    return { x, y };
+  }
+
+  drawSnakesAndLadders(forceRedrawSnakes = false) {
     let defs = this.dom.boardSvg.querySelector('defs');
     let laddersGroup = document.getElementById('ladders-group');
     let snakesGroup = document.getElementById('snakes-group');
