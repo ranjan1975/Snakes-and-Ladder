@@ -2178,7 +2178,17 @@ class UIController {
   }
 
   handleGameFinished(winner) {
-    this.sound.playVictory();
+    let localIsWinner = true;
+    if (this.isOnlineMode) {
+      const localPlayerId = (this.onlineRoomType === 'host') ? 1 : 2;
+      localIsWinner = (winner.id === localPlayerId);
+    }
+    
+    if (localIsWinner) {
+      this.sound.playVictory();
+    } else {
+      this.sound.playDefeat();
+    }
     
     // Populate stats
     const isImg = winner.avatar && (winner.avatar.match(/\.(png|jpg|jpeg|gif|webp)$/i) || winner.avatar.startsWith('data:image/'));

@@ -9,6 +9,7 @@ class SoundController {
     this.isLoadingMoveSound = false;
     this.snakeAudioBuffer = null;
     this.isLoadingSnakeSound = false;
+    this.bgMusic = null;
   }
 
   init() {
@@ -299,6 +300,17 @@ class SoundController {
 
   playVictory() {
     if (!this.enabled) return;
+    this.stopMusic();
+    
+    const victoryAudio = new Audio('victory.mp3');
+    victoryAudio.volume = 0.5;
+    victoryAudio.play().catch(err => {
+      console.warn("Error playing victory.mp3, falling back to synthesizer:", err);
+      this.playVictorySynth();
+    });
+  }
+
+  playVictorySynth() {
     this.init();
     
     // Triumphant arpeggios
@@ -361,77 +373,82 @@ class SoundController {
       osc.stop(this.ctx.currentTime + 3.0);
     });
   }
-  playBackgroundNote(freq) {
-    if (!this.enabled || !this.ctx) return;
+
+  playDefeat() {
+    if (!this.enabled) return;
+    this.stopMusic();
+    this.init();
     
-    const osc = this.ctx.createOscillator();
-    const gain = this.ctx.createGain();
-    const filter = this.ctx.createBiquadFilter();
+    // Melancholic, slow descending minor arpeggio
+    const tempo = 0.25; 
+    const notes = [440.00, 349.23, 329.63, 293.66, 261.63, 220.00, 146.83]; // A4, F4, E4, D4, C4, A3, D3
     
-    osc.type = 'triangle';
-    osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+    notes.forEach((freq, idx) => {
+      const startTime = idx * tempo;
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime + startTime);
+      osc.frequency.linearRampToValueAtTime(freq * 0.9, this.ctx.currentTime + startTime + 0.5); // Descending sigh
+      
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(400, this.ctx.currentTime + startTime);
+      
+      gain.gain.setValueAtTime(0.001, this.ctx.currentTime + startTime);
+      gain.gain.linearRampToValueAtTime(0.06, this.ctx.currentTime + startTime + 0.05);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + startTime + 0.6);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.start(this.ctx.currentTime + startTime);
+      osc.stop(this.ctx.currentTime + startTime + 0.7);
+    });
     
-    // Warm low-pass filter to keep it as a soft pad rumble
-    filter.type = 'lowpass';
-    filter.frequency.setValueAtTime(260, this.ctx.currentTime);
-    filter.Q.setValueAtTime(1.0, this.ctx.currentTime);
-    
-    // Smooth volume envelope (low gain to stay in background)
-    gain.gain.setValueAtTime(0, this.ctx.currentTime);
-    gain.gain.linearRampToValueAtTime(0.016, this.ctx.currentTime + 0.15); // Soft attack
-    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.75); // Soft release
-    
-    osc.connect(filter);
-    filter.connect(gain);
-    gain.connect(this.ctx.destination);
-    
-    osc.start();
-    osc.stop(this.ctx.currentTime + 0.8);
+    // Low minor chord drone
+    const droneChord = [110.00, 130.81, 164.81]; // A2, C3, E3
+    droneChord.forEach(freq => {
+      const osc = this.ctx.createOscillator();
+      const gain = this.ctx.createGain();
+      const filter = this.ctx.createBiquadFilter();
+      
+      osc.type = 'sine';
+      osc.frequency.setValueAtTime(freq, this.ctx.currentTime);
+      
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(150, this.ctx.currentTime);
+      
+      gain.gain.setValueAtTime(0.001, this.ctx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.08, this.ctx.currentTime + 0.2);
+      gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 2.5);
+      
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(this.ctx.destination);
+      
+      osc.start();
+      osc.stop(this.ctx.currentTime + 2.6);
+    });
   }
 
   startMusic() {
     if (!this.enabled) return;
-    this.init();
-    if (this.bgMusicTimer) return; // Already running
-    
-    this.musicStep = 0;
-    this.musicActive = true;
-    
-    // Jazzy 7th chords arpeggio pattern (ii-V-I-IV style swing)
-    // Am7 -> D7 -> Gmaj7 -> Cmaj7
-    const pattern = [
-      // Am7 (ii) (A2, E3, C3, G3)
-      110.00, 164.81, 130.81, 196.00,
-      // D7 (V) (D2, F#3, A3, C4)
-      73.42,  185.00, 220.00, 261.63,
-      // Gmaj7 (I) (G2, B3, D4, F#4)
-      98.00,  246.94, 293.66, 369.99,
-      // Cmaj7 (IV) (C2, E3, G3, B3)
-      65.41,  164.81, 196.00, 246.94
-    ];
-    
-    const playNextNote = () => {
-      if (!this.musicActive || !this.enabled) return;
-      
-      const freq = pattern[this.musicStep];
-      this.playBackgroundNote(freq);
-      
-      // Swing rhythm: alternate between long and short beats (approx 65% and 35%)
-      const isSwingOffbeat = (this.musicStep % 2 === 1);
-      const delay = isSwingOffbeat ? 250 : 470; // Swing swing swing!
-      
-      this.musicStep = (this.musicStep + 1) % pattern.length;
-      this.bgMusicTimer = setTimeout(playNextNote, delay);
-    };
-    
-    playNextNote();
+    if (this.bgMusic) {
+      this.bgMusic.play().catch(err => console.log("Audio play blocked:", err));
+      return;
+    }
+    this.bgMusic = new Audio('Serpent Board Loop.mp3');
+    this.bgMusic.loop = true;
+    this.bgMusic.volume = 0.22;
+    this.bgMusic.play().catch(err => console.log("Audio play blocked:", err));
   }
 
   stopMusic() {
-    this.musicActive = false;
-    if (this.bgMusicTimer) {
-      clearTimeout(this.bgMusicTimer);
-      this.bgMusicTimer = null;
+    if (this.bgMusic) {
+      this.bgMusic.pause();
     }
   }
 
