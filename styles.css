@@ -554,6 +554,87 @@ input:checked + .slider:before {
 
 .turn-card {
   text-align: center;
+  padding: 15px;
+}
+
+.hud-card-title {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  margin: 0;
+}
+
+.turn-and-timer-wrapper {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.shift-timer-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 12px;
+}
+
+.shift-timer-display {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin: 4px 0;
+}
+
+.timer-icon {
+  font-size: 1.3rem;
+}
+
+.timer-val {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--neon-cyan);
+  text-shadow: 0 0 8px rgba(0, 242, 254, 0.4);
+  animation: timerPulse 2s infinite ease-in-out;
+  display: inline-block;
+}
+
+.timer-val.danger {
+  color: #ff3366;
+  text-shadow: 0 0 12px rgba(255, 51, 102, 0.6);
+  animation: timerPulseFast 0.5s infinite ease-in-out;
+}
+
+.shift-timer-desc {
+  font-size: 0.75rem;
+  color: var(--text-secondary);
+  transition: color 0.3s ease;
+}
+
+@keyframes timerPulse {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+  }
+}
+
+@keyframes timerPulseFast {
+  0%, 100% {
+    transform: scale(1);
+    opacity: 0.85;
+    text-shadow: 0 0 10px rgba(255, 51, 102, 0.5);
+  }
+  50% {
+    transform: scale(1.15);
+    opacity: 1;
+    text-shadow: 0 0 20px rgba(255, 51, 102, 0.9);
+  }
 }
 
 .turn-player-indicator {
@@ -980,7 +1061,32 @@ input:checked + .slider:before {
     width: 100%;
   }
 
-  .turn-card, .dice-card {
+  .turn-and-timer-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .turn-card {
+    padding: 6px !important;
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .shift-timer-card {
+    padding: 6px !important;
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2px;
+  }
+
+  .dice-card {
     padding: 10px;
     height: 110px;
     display: flex;
@@ -990,8 +1096,25 @@ input:checked + .slider:before {
     gap: 4px;
   }
 
-  .turn-card h3, .dice-card h3 {
+  .hud-card-title, .dice-card h3 {
     display: none;
+  }
+
+  .shift-timer-display {
+    margin: 0;
+    gap: 4px;
+  }
+
+  .timer-icon {
+    font-size: 1rem;
+  }
+
+  .timer-val {
+    font-size: 1.1rem;
+  }
+
+  .shift-timer-desc {
+    font-size: 0.6rem;
   }
 
   .turn-player-indicator {

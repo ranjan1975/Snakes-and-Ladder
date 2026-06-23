@@ -164,14 +164,28 @@
       <div class="hud-column">
         
         <!-- Active Player Turn -->
-        <div class="glass-panel turn-card">
-          <h3 style="font-size: 0.9rem; color: var(--text-secondary); text-transform: uppercase; letter-spacing: 1px;">Active Turn</h3>
-          <div class="turn-player-indicator">
-            <div class="turn-avatar" id="current-player-avatar">🧙‍♂️</div>
-            <div>
-              <div class="turn-name" id="current-player-name">Player 1</div>
-              <div class="turn-status" id="current-player-status">Your turn! Roll the dice.</div>
+        <!-- Turn & Relocation Timer Wrapper -->
+        <div class="turn-and-timer-wrapper">
+          <!-- Active Player Turn -->
+          <div class="glass-panel turn-card">
+            <h3 class="hud-card-title">Active Turn</h3>
+            <div class="turn-player-indicator">
+              <div class="turn-avatar" id="current-player-avatar">🧙‍♂️</div>
+              <div>
+                <div class="turn-name" id="current-player-name">Player 1</div>
+                <div class="turn-status" id="current-player-status">Your turn! Roll the dice.</div>
+              </div>
             </div>
+          </div>
+
+          <!-- Staircase Relocation Timer -->
+          <div class="glass-panel shift-timer-card" id="shift-timer-card">
+            <h3 class="hud-card-title">Stairway Relocation</h3>
+            <div class="shift-timer-display" id="shift-timer-display">
+              <span class="timer-icon">⏳</span>
+              <span class="timer-val brand-font" id="shift-timer-val">60s</span>
+            </div>
+            <div class="shift-timer-desc" id="shift-timer-desc">until stairways relocate...</div>
           </div>
         </div>
 

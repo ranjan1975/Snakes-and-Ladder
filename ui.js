@@ -20,10 +20,10 @@ class UIController {
     this.onlinePartnerData = null; // Store partner's config
     this.quizResultResolver = null; // Promise resolver for online snake quiz sync
     
-    // Default config values for ladders shifting
     this.defaultLadders = { ...GameConfig.ladders };
     this.defaultSnakes = { ...GameConfig.snakes };
-    this.laddersShiftIntervalId = null;
+    this.countdownIntervalId = null;
+    this.laddersShiftTimeRemaining = 60;
     this.ladderPositions = [];
     this.snakeResetTimeouts = {};
     
@@ -1335,11 +1335,8 @@ class UIController {
       this.dom.historyLog.innerHTML = '';
       this.sound.stopMusic();
       
-      // Clear ladder shift interval and restore defaults
-      if (this.laddersShiftIntervalId) {
-        clearInterval(this.laddersShiftIntervalId);
-        this.laddersShiftIntervalId = null;
-      }
+      // Clear stairway relocation countdown
+      this.stopLaddersShiftCountdown();
       if (this.defaultLadders) {
         GameConfig.ladders = { ...this.defaultLadders };
         this.ladderPositions = []; // Clear animated coordinates to force redraw
@@ -1371,20 +1368,14 @@ class UIController {
       if (game.gameState === 'playing') {
         this.sound.startMusic();
         
-        // Start 60-second ladder shift timer
-        if (!this.isOnlineMode || this.onlineRoomType === 'host') {
-          if (this.laddersShiftIntervalId) clearInterval(this.laddersShiftIntervalId);
-          this.laddersShiftIntervalId = setInterval(() => this.triggerLaddersShift(), 60000);
-        }
+        // Start stairway relocation countdown timer
+        this.startLaddersShiftCountdown();
         
         // Trigger bot turn if current player is a bot
         this.checkBotTurn();
       } else if (game.gameState === 'finished') {
-        // Clear ladder shift interval
-        if (this.laddersShiftIntervalId) {
-          clearInterval(this.laddersShiftIntervalId);
-          this.laddersShiftIntervalId = null;
-        }
+        // Stop countdown
+        this.stopLaddersShiftCountdown();
       }
     }
   }
@@ -1917,66 +1908,149 @@ class UIController {
     this.showToast(`The snake at ${startPos} has returned to its default nest! 🐍`, 'info');
   }
 
+  segmentsIntersect(a, b, c, d) {
+    const ccw = (p1, p2, p3) => {
+      return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
+    };
+    return ccw(a, c, d) !== ccw(b, c, d) && ccw(a, b, c) !== ccw(a, b, d);
+  }
+
   repositionLadders() {
     const snakeHeads = Object.keys(GameConfig.snakes).map(k => parseInt(k));
     const snakeTails = Object.values(GameConfig.snakes).map(v => parseInt(v));
     const prohibited = new Set([1, 100, ...snakeHeads, ...snakeTails]);
     const numLadders = 8;
     
-    for (let tryCount = 0; tryCount < 50; tryCount++) {
-      let newLadders = {};
-      let usedTiles = new Set();
-      let failed = false;
-      
-      for (let i = 0; i < numLadders; i++) {
-        let start = 0;
-        let end = 0;
-        let ladderAttempts = 0;
-        let success = false;
+    // Spacing thresholds for even distribution
+    const distanceThresholds = [20, 16, 12, 8, 0];
+    
+    for (const threshold of distanceThresholds) {
+      for (let tryCount = 0; tryCount < 40; tryCount++) {
+        let newLadders = {};
+        let usedTiles = new Set();
+        let list = [];
+        let failed = false;
         
-        while (ladderAttempts < 150) {
-          ladderAttempts++;
-          start = Math.floor(Math.random() * 90) + 2; // [2, 91]
-          if (prohibited.has(start) || usedTiles.has(start)) continue;
+        for (let i = 0; i < numLadders; i++) {
+          let start = 0;
+          let end = 0;
+          let ladderAttempts = 0;
+          let success = false;
           
-          const minLen = 5;
-          const maxLen = 30;
-          const len = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen;
-          end = start + len;
+          while (ladderAttempts < 200) {
+            ladderAttempts++;
+            start = Math.floor(Math.random() * 90) + 2; // [2, 91]
+            if (prohibited.has(start) || usedTiles.has(start)) continue;
+            
+            const minLen = 8;
+            const maxLen = 35;
+            const len = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen;
+            end = start + len;
+            
+            if (end >= 100 || prohibited.has(end) || usedTiles.has(end)) continue;
+            
+            // 1. Enforce 45-90 degrees angle from ground
+            const p0 = this.getCellCoordinates(start);
+            const p1 = this.getCellCoordinates(end);
+            const dx = p1.x - p0.x;
+            const dy = p0.y - p1.y;
+            const angleRad = Math.atan2(dy, Math.abs(dx));
+            const angleDeg = angleRad * (180 / Math.PI);
+            
+            if (angleDeg < 45 || angleDeg > 90) continue;
+            
+            // 2. Prevent overlapping / intersecting with existing ladders
+            let intersects = false;
+            for (const existing of list) {
+              if (this.segmentsIntersect(p0, p1, existing.p0, existing.p1)) {
+                intersects = true;
+                break;
+              }
+            }
+            if (intersects) continue;
+            
+            // 3. Spacing threshold (even distribution)
+            const mid = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+            let tooClose = false;
+            for (const existing of list) {
+              const mx = mid.x - existing.mid.x;
+              const my = mid.y - existing.mid.y;
+              const mdist = Math.sqrt(mx * mx + my * my);
+              if (mdist < threshold) {
+                tooClose = true;
+                break;
+              }
+            }
+            if (tooClose) continue;
+            
+            success = true;
+            list.push({ start, end, p0, p1, mid });
+            newLadders[start] = end;
+            usedTiles.add(start);
+            usedTiles.add(end);
+            break;
+          }
           
-          if (end >= 100 || prohibited.has(end) || usedTiles.has(end)) continue;
-          
-          // Enforce 40-90 degrees angle from ground
-          const p0 = this.getCellCoordinates(start);
-          const p1 = this.getCellCoordinates(end);
-          const dx = p1.x - p0.x;
-          const dy = p0.y - p1.y; // end is higher, so p1.y is smaller
-          const angleRad = Math.atan2(dy, Math.abs(dx));
-          const angleDeg = angleRad * (180 / Math.PI);
-          
-          if (angleDeg < 40 || angleDeg > 90) continue;
-          
-          success = true;
-          break;
+          if (!success) {
+            failed = true;
+            break;
+          }
         }
         
-        if (!success) {
-          failed = true;
-          break;
+        if (!failed) {
+          return newLadders;
         }
-        
-        newLadders[start] = end;
-        usedTiles.add(start);
-        usedTiles.add(end);
-      }
-      
-      if (!failed) {
-        return newLadders;
       }
     }
     
-    console.warn("Reposition generation failed after 50 attempts, returning defaults.");
+    console.warn("Reposition generation failed, returning defaults.");
     return { ...this.defaultLadders };
+  }
+
+  startLaddersShiftCountdown() {
+    this.stopLaddersShiftCountdown();
+    this.laddersShiftTimeRemaining = 60;
+    this.updateShiftTimerUI();
+    
+    this.countdownIntervalId = setInterval(() => {
+      this.laddersShiftTimeRemaining--;
+      if (this.laddersShiftTimeRemaining <= 0) {
+        this.laddersShiftTimeRemaining = 60;
+        if (!this.isOnlineMode || this.onlineRoomType === 'host') {
+          this.triggerLaddersShift();
+        }
+      }
+      this.updateShiftTimerUI();
+    }, 1000);
+  }
+
+  stopLaddersShiftCountdown() {
+    if (this.countdownIntervalId) {
+      clearInterval(this.countdownIntervalId);
+      this.countdownIntervalId = null;
+    }
+  }
+
+  updateShiftTimerUI() {
+    const timerValEl = document.getElementById('shift-timer-val');
+    const timerDescEl = document.getElementById('shift-timer-desc');
+    if (!timerValEl) return;
+    
+    timerValEl.innerText = `${this.laddersShiftTimeRemaining}s`;
+    
+    if (this.laddersShiftTimeRemaining <= 10) {
+      timerValEl.classList.add('danger');
+      if (timerDescEl) {
+        timerDescEl.innerText = "stairways relocating soon! ⚠️";
+        timerDescEl.style.color = "#ff3366";
+      }
+    } else {
+      timerValEl.classList.remove('danger');
+      if (timerDescEl) {
+        timerDescEl.innerText = "until stairways relocate...";
+        timerDescEl.style.color = "var(--text-secondary)";
+      }
+    }
   }
 
   triggerLaddersShift() {
@@ -2072,6 +2146,9 @@ class UIController {
       } else {
         GameConfig.ladders = targetLadders;
         this.showToast("🪜 The stairs have finished shifting positions!", "info");
+        // Reset countdown timer
+        this.laddersShiftTimeRemaining = 60;
+        this.updateShiftTimerUI();
       }
     };
     
