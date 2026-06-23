@@ -799,7 +799,12 @@ class UIController {
       const nx = -dy / dist;
       const ny = dx / dist;
       
-      const w = 0.95; // Sleeker half width of ladder (reduced from 1.35)
+      // Shorter ladders are sleeker, longer ladders are wider/stronger so they don't look feeble.
+      const w = 0.85 + 0.012 * dist; 
+      const railStroke = 0.6 + 0.007 * dist;
+      const highlightStroke = railStroke * 0.3;
+      const rungStroke = railStroke * 0.7;
+      const pegRadius = railStroke * 0.22;
       
       // Create a group for the ladder to apply a unified 3D shadow
       const ladderGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -813,7 +818,7 @@ class UIController {
       railL.setAttribute("x2", p1.x + w * nx);
       railL.setAttribute("y2", p1.y + w * ny);
       railL.setAttribute("stroke", "url(#woodLadderGrad)");
-      railL.setAttribute("stroke-width", "0.75"); // Thinned from 1.3
+      railL.setAttribute("stroke-width", railStroke.toFixed(3));
       railL.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railL);
       
@@ -824,7 +829,7 @@ class UIController {
       railLHighlight.setAttribute("x2", p1.x + w * nx);
       railLHighlight.setAttribute("y2", p1.y + w * ny);
       railLHighlight.setAttribute("stroke", "#f5e6cc");
-      railLHighlight.setAttribute("stroke-width", "0.22"); // Thinned from 0.35
+      railLHighlight.setAttribute("stroke-width", highlightStroke.toFixed(3));
       railLHighlight.setAttribute("opacity", "0.45");
       railLHighlight.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railLHighlight);
@@ -836,7 +841,7 @@ class UIController {
       railR.setAttribute("x2", p1.x - w * nx);
       railR.setAttribute("y2", p1.y - w * ny);
       railR.setAttribute("stroke", "url(#woodLadderGrad)");
-      railR.setAttribute("stroke-width", "0.75"); // Thinned from 1.3
+      railR.setAttribute("stroke-width", railStroke.toFixed(3));
       railR.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railR);
       
@@ -847,7 +852,7 @@ class UIController {
       railRHighlight.setAttribute("x2", p1.x - w * nx);
       railRHighlight.setAttribute("y2", p1.y - w * ny);
       railRHighlight.setAttribute("stroke", "#f5e6cc");
-      railRHighlight.setAttribute("stroke-width", "0.22"); // Thinned from 0.35
+      railRHighlight.setAttribute("stroke-width", highlightStroke.toFixed(3));
       railRHighlight.setAttribute("opacity", "0.45");
       railRHighlight.setAttribute("stroke-linecap", "round");
       ladderGroup.appendChild(railRHighlight);
@@ -866,7 +871,7 @@ class UIController {
         knotL.setAttribute("x2", lkx + 0.5 * nx);
         knotL.setAttribute("y2", lky + 0.5 * ny);
         knotL.setAttribute("stroke", "#4a301e");
-        knotL.setAttribute("stroke-width", "0.2"); // Thinned from 0.32
+        knotL.setAttribute("stroke-width", (railStroke * 0.27).toFixed(3));
         knotL.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(knotL);
         
@@ -879,7 +884,7 @@ class UIController {
         knotR.setAttribute("x2", rkx + 0.5 * nx);
         knotR.setAttribute("y2", rky + 0.5 * ny);
         knotR.setAttribute("stroke", "#4a301e");
-        knotR.setAttribute("stroke-width", "0.2"); // Thinned from 0.32
+        knotR.setAttribute("stroke-width", (railStroke * 0.27).toFixed(3));
         knotR.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(knotR);
       }
@@ -901,7 +906,7 @@ class UIController {
         rung.setAttribute("x2", rrx - 0.3 * nx);
         rung.setAttribute("y2", rry - 0.3 * ny);
         rung.setAttribute("stroke", "url(#woodLadderGrad)");
-        rung.setAttribute("stroke-width", "0.55"); // Thinned from 0.95
+        rung.setAttribute("stroke-width", rungStroke.toFixed(3));
         rung.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(rung);
         
@@ -912,7 +917,7 @@ class UIController {
         rungHighlight.setAttribute("x2", rrx - 0.3 * nx);
         rungHighlight.setAttribute("y2", rry - 0.3 * ny);
         rungHighlight.setAttribute("stroke", "#f5e6cc");
-        rungHighlight.setAttribute("stroke-width", "0.18"); // Thinned from 0.25
+        rungHighlight.setAttribute("stroke-width", (rungStroke * 0.3).toFixed(3));
         rungHighlight.setAttribute("opacity", "0.4");
         rungHighlight.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(rungHighlight);
@@ -921,14 +926,14 @@ class UIController {
         const pegL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         pegL.setAttribute("cx", rlx);
         pegL.setAttribute("cy", rly);
-        pegL.setAttribute("r", "0.16"); // Reduced from 0.24
+        pegL.setAttribute("r", pegRadius.toFixed(3));
         pegL.setAttribute("fill", "#362215");
         ladderGroup.appendChild(pegL);
         
         const pegR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         pegR.setAttribute("cx", rrx);
         pegR.setAttribute("cy", rry);
-        pegR.setAttribute("r", "0.16"); // Reduced from 0.24
+        pegR.setAttribute("r", pegRadius.toFixed(3));
         pegR.setAttribute("fill", "#362215");
         ladderGroup.appendChild(pegR);
       }
@@ -1929,7 +1934,7 @@ class UIController {
         let ladderAttempts = 0;
         let success = false;
         
-        while (ladderAttempts < 100) {
+        while (ladderAttempts < 150) {
           ladderAttempts++;
           start = Math.floor(Math.random() * 90) + 2; // [2, 91]
           if (prohibited.has(start) || usedTiles.has(start)) continue;
@@ -1940,6 +1945,16 @@ class UIController {
           end = start + len;
           
           if (end >= 100 || prohibited.has(end) || usedTiles.has(end)) continue;
+          
+          // Enforce 40-90 degrees angle from ground
+          const p0 = this.getCellCoordinates(start);
+          const p1 = this.getCellCoordinates(end);
+          const dx = p1.x - p0.x;
+          const dy = p0.y - p1.y; // end is higher, so p1.y is smaller
+          const angleRad = Math.atan2(dy, Math.abs(dx));
+          const angleDeg = angleRad * (180 / Math.PI);
+          
+          if (angleDeg < 40 || angleDeg > 90) continue;
           
           success = true;
           break;
