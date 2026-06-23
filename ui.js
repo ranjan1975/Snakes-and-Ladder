@@ -799,12 +799,12 @@ class UIController {
       const nx = -dy / dist;
       const ny = dx / dist;
       
-      // Shorter ladders are sleeker, longer ladders are wider/stronger so they don't look feeble.
-      const w = 0.85 + 0.012 * dist; 
-      const railStroke = 0.6 + 0.007 * dist;
-      const highlightStroke = railStroke * 0.3;
-      const rungStroke = railStroke * 0.7;
-      const pegRadius = railStroke * 0.22;
+      // Constant sleek width and thickness for uniform bamboo look
+      const w = 0.95; 
+      const railStroke = 0.75;
+      const highlightStroke = 0.22;
+      const rungStroke = 0.55;
+      const pegRadius = 0.16;
       
       // Create a group for the ladder to apply a unified 3D shadow
       const ladderGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
@@ -871,7 +871,7 @@ class UIController {
         knotL.setAttribute("x2", lkx + 0.5 * nx);
         knotL.setAttribute("y2", lky + 0.5 * ny);
         knotL.setAttribute("stroke", "#4a301e");
-        knotL.setAttribute("stroke-width", (railStroke * 0.27).toFixed(3));
+        knotL.setAttribute("stroke-width", "0.20");
         knotL.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(knotL);
         
@@ -884,7 +884,7 @@ class UIController {
         knotR.setAttribute("x2", rkx + 0.5 * nx);
         knotR.setAttribute("y2", rky + 0.5 * ny);
         knotR.setAttribute("stroke", "#4a301e");
-        knotR.setAttribute("stroke-width", (railStroke * 0.27).toFixed(3));
+        knotR.setAttribute("stroke-width", "0.20");
         knotR.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(knotR);
       }
@@ -906,7 +906,7 @@ class UIController {
         rung.setAttribute("x2", rrx - 0.3 * nx);
         rung.setAttribute("y2", rry - 0.3 * ny);
         rung.setAttribute("stroke", "url(#woodLadderGrad)");
-        rung.setAttribute("stroke-width", rungStroke.toFixed(3));
+        rung.setAttribute("stroke-width", "0.55");
         rung.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(rung);
         
@@ -917,7 +917,7 @@ class UIController {
         rungHighlight.setAttribute("x2", rrx - 0.3 * nx);
         rungHighlight.setAttribute("y2", rry - 0.3 * ny);
         rungHighlight.setAttribute("stroke", "#f5e6cc");
-        rungHighlight.setAttribute("stroke-width", (rungStroke * 0.3).toFixed(3));
+        rungHighlight.setAttribute("stroke-width", "0.18");
         rungHighlight.setAttribute("opacity", "0.4");
         rungHighlight.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(rungHighlight);
@@ -926,14 +926,14 @@ class UIController {
         const pegL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         pegL.setAttribute("cx", rlx);
         pegL.setAttribute("cy", rly);
-        pegL.setAttribute("r", pegRadius.toFixed(3));
+        pegL.setAttribute("r", "0.16");
         pegL.setAttribute("fill", "#362215");
         ladderGroup.appendChild(pegL);
         
         const pegR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
         pegR.setAttribute("cx", rrx);
         pegR.setAttribute("cy", rry);
-        pegR.setAttribute("r", pegRadius.toFixed(3));
+        pegR.setAttribute("r", "0.16");
         pegR.setAttribute("fill", "#362215");
         ladderGroup.appendChild(pegR);
       }
@@ -1368,8 +1368,10 @@ class UIController {
       if (game.gameState === 'playing') {
         this.sound.startMusic();
         
-        // Start stairway relocation countdown timer
-        this.startLaddersShiftCountdown();
+        // Start stairway relocation countdown timer if not already running
+        if (!this.countdownIntervalId) {
+          this.startLaddersShiftCountdown();
+        }
         
         // Trigger bot turn if current player is a bot
         this.checkBotTurn();
