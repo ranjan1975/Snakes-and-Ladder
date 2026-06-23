@@ -1939,19 +1939,28 @@ class UIController {
           let ladderAttempts = 0;
           let success = false;
           
-          while (ladderAttempts < 200) {
+          // Determine target length range for this ladder index
+          let minLen = 8;
+          let maxLen = 24;
+          if (i === 0) {
+            minLen = 75; maxLen = 85; // spans ~80 cells
+          } else if (i === 1) {
+            minLen = 45; maxLen = 55; // spans ~50 cells
+          } else if (i === 2) {
+            minLen = 25; maxLen = 35; // spans ~30 cells
+          }
+          
+          while (ladderAttempts < 300) {
             ladderAttempts++;
             start = Math.floor(Math.random() * 90) + 2; // [2, 91]
             if (prohibited.has(start) || usedTiles.has(start)) continue;
             
-            const minLen = 8;
-            const maxLen = 35;
             const len = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen;
             end = start + len;
             
             if (end >= 100 || prohibited.has(end) || usedTiles.has(end)) continue;
             
-            // 1. Enforce 45-90 degrees angle from ground
+            // 1. Enforce 40-75 degrees angle from ground
             const p0 = this.getCellCoordinates(start);
             const p1 = this.getCellCoordinates(end);
             const dx = p1.x - p0.x;
@@ -1959,7 +1968,7 @@ class UIController {
             const angleRad = Math.atan2(dy, Math.abs(dx));
             const angleDeg = angleRad * (180 / Math.PI);
             
-            if (angleDeg < 45 || angleDeg > 90) continue;
+            if (angleDeg < 40 || angleDeg > 75) continue;
             
             // 2. Prevent overlapping / intersecting with existing ladders
             let intersects = false;
@@ -1971,22 +1980,24 @@ class UIController {
             }
             if (intersects) continue;
             
-            // 3. Spacing threshold (even distribution)
-            const mid = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
-            let tooClose = false;
-            for (const existing of list) {
-              const mx = mid.x - existing.mid.x;
-              const my = mid.y - existing.mid.y;
-              const mdist = Math.sqrt(mx * mx + my * my);
-              if (mdist < threshold) {
-                tooClose = true;
-                break;
+            // 3. Spacing threshold (even distribution) - skip spacing check for the giant span-80 ladder as it crosses almost the whole board
+            if (i > 0) {
+              const mid = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+              let tooClose = false;
+              for (const existing of list) {
+                const mx = mid.x - existing.mid.x;
+                const my = mid.y - existing.mid.y;
+                const mdist = Math.sqrt(mx * mx + my * my);
+                if (mdist < threshold) {
+                  tooClose = true;
+                  break;
+                }
               }
+              if (tooClose) continue;
             }
-            if (tooClose) continue;
             
             success = true;
-            list.push({ start, end, p0, p1, mid });
+            list.push({ start, end, p0, p1, mid: { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 } });
             newLadders[start] = end;
             usedTiles.add(start);
             usedTiles.add(end);
