@@ -1914,3 +1914,103 @@ input:checked + .slider:before {
   0% { transform: translateY(0); }
   100% { transform: translateY(-5px); }
 }
+
+/* ==========================================================================
+   Sea Skin Theme & Modal Selectors
+   ========================================================================= */
+
+/* Skins Modal Option Cards */
+.skin-option {
+  border: 2px solid transparent !important;
+  background: rgba(255, 255, 255, 0.03) !important;
+  transition: all 0.3s ease !important;
+}
+
+.skin-option:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  border-color: rgba(255, 255, 255, 0.15) !important;
+}
+
+.skin-option.active {
+  background: rgba(0, 242, 254, 0.08) !important;
+  border-color: var(--neon-cyan) !important;
+  box-shadow: 0 0 15px rgba(0, 242, 254, 0.25) !important;
+}
+
+/* Sea Skin Background */
+body.skin-sea {
+  background-color: #030a16 !important;
+  background-image: 
+    radial-gradient(circle at 50% 0%, rgba(0, 180, 210, 0.35) 0%, transparent 60%),
+    radial-gradient(circle at 10% 45%, rgba(15, 60, 120, 0.2) 0%, transparent 50%),
+    radial-gradient(circle at 90% 85%, rgba(4, 25, 65, 0.45) 0%, transparent 50%) !important;
+}
+
+/* Sea Skin Logo Text */
+body.skin-sea .logo {
+  text-shadow: 0 0 10px rgba(0, 180, 216, 0.6) !important;
+}
+
+/* Sea Skin Board Wrapper */
+body.skin-sea .board-wrapper {
+  background: rgba(3, 16, 36, 0.7) !important;
+  border-color: rgba(0, 242, 254, 0.2) !important;
+  box-shadow: 
+    0 15px 45px rgba(0, 0, 0, 0.7),
+    0 0 35px rgba(0, 180, 216, 0.2) !important;
+}
+
+/* Sea Skin Grid Cell Overrides */
+body.skin-sea .board-cell {
+  background: rgba(2, 36, 56, 0.45) !important;
+  border-color: rgba(0, 242, 254, 0.04) !important;
+}
+
+body.skin-sea .board-cell.even-row {
+  background: rgba(1, 52, 77, 0.45) !important;
+}
+
+body.skin-sea .board-cell:hover {
+  background: rgba(0, 180, 216, 0.12) !important;
+  border-color: rgba(0, 242, 254, 0.3) !important;
+  box-shadow: inset 0 0 12px rgba(0, 242, 254, 0.2) !important;
+}
+
+body.skin-sea .board-cell[data-number="1"] {
+  border: 1.5px solid #00f2fe !important;
+  background: rgba(0, 242, 254, 0.12) !important;
+  box-shadow: inset 0 0 10px rgba(0, 242, 254, 0.25) !important;
+}
+
+body.skin-sea .board-cell[data-number="100"] {
+  border: 1.5px solid #ff007f !important;
+  background: rgba(255, 0, 127, 0.12) !important;
+  box-shadow: inset 0 0 10px rgba(255, 0, 127, 0.25) !important;
+}
+
+/* Sea skin glass panel/HUD styling */
+body.skin-sea .glass-panel {
+  background: rgba(3, 16, 36, 0.65) !important;
+  border-color: rgba(0, 180, 216, 0.1) !important;
+  box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.55) !important;
+}
+
+/* SVG Floating Jelly Octopus Animation */
+@keyframes floatOctopus {
+  0% { transform: translateY(0px) rotate(0deg); }
+  50% { transform: translateY(-0.6px) rotate(1deg); }
+  100% { transform: translateY(0px) rotate(0deg); }
+}
+
+.svg-octopus-body {
+  animation: floatOctopus 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.svg-octopus-eye {
+  animation: floatOctopus 3.2s ease-in-out infinite;
+  transform-box: fill-box;
+  transform-origin: center;
+}
+

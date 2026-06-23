@@ -22,6 +22,7 @@
   <header>
     <div class="logo brand-font">CYBER SNAKES</div>
     <div class="controls-top" style="display: flex; align-items: center; gap: 15px;">
+      <button class="btn" id="skins-toggle-btn" style="padding: 8px 14px; font-size: 0.85rem; background: rgba(0, 242, 254, 0.15); border: 1px solid rgba(0, 242, 254, 0.3);">Skins 🎭</button>
       <a href="ai-demo/index.html" class="btn" style="padding: 8px 14px; font-size: 0.85rem;">Test Neural Lab 🧪</a>
       <button class="btn btn-icon" id="sound-toggle" title="Toggle Sound">🔊</button>
     </div>
@@ -470,6 +471,32 @@
         <button class="btn btn-secondary" id="crop-cancel-btn" style="flex: 1; padding: 10px;">Cancel</button>
         <button class="btn btn-primary" id="crop-save-btn" style="flex: 1; padding: 10px;">Apply Crop 📷</button>
       </div>
+    </div>
+  </div>
+
+  <!-- Skins Dialog Modal -->
+  <div class="modal-overlay" id="skins-modal">
+    <div class="glass-panel modal-content" style="max-width: 450px; text-align: center;">
+      <h2 class="brand-font" style="margin-bottom: 20px; color: var(--neon-cyan); font-size: 1.6rem; text-shadow: 0 0 10px rgba(0, 242, 254, 0.4);">SELECT SKIN 🎭</h2>
+      <div style="display: flex; flex-direction: column; gap: 15px; margin-bottom: 20px;">
+        <!-- Option 1: Default -->
+        <div class="skin-option active" id="skin-default-card" style="display: flex; gap: 15px; background: rgba(255,255,255,0.05); border: 2px solid var(--neon-cyan); border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.3s;">
+          <div style="font-size: 2rem; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: rgba(0,242,254,0.1); border-radius: 8px;">🐍</div>
+          <div style="flex: 1; text-align: left;">
+            <div style="font-family: 'Outfit', sans-serif; font-weight: bold; font-size: 1.1rem; color: white;">Default Theme</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Cyber snakes, sleek bamboo ladders, and glowing digital grid.</div>
+          </div>
+        </div>
+        <!-- Option 2: Sea -->
+        <div class="skin-option" id="skin-sea-card" style="display: flex; gap: 15px; background: rgba(255,255,255,0.03); border: 2px solid transparent; border-radius: 12px; padding: 15px; cursor: pointer; transition: all 0.3s;">
+          <div style="font-size: 2rem; display: flex; align-items: center; justify-content: center; width: 50px; height: 50px; background: rgba(255,0,127,0.1); border-radius: 8px;">🐙</div>
+          <div style="flex: 1; text-align: left;">
+            <div style="font-family: 'Outfit', sans-serif; font-weight: bold; font-size: 1.1rem; color: white;">Deep Sea Theme</div>
+            <div style="font-size: 0.85rem; color: var(--text-secondary);">Transparent jelly octopuses, climbing ropes, and aquatic oceanic board.</div>
+          </div>
+        </div>
+      </div>
+      <button class="btn btn-primary" id="skins-close-btn" style="width: 100%; padding: 12px; font-size: 1rem;">Apply Skin & Close</button>
     </div>
   </div>
 

@@ -22,6 +22,9 @@ class UIController {
     
     this.defaultLadders = { ...GameConfig.ladders };
     this.defaultSnakes = { ...GameConfig.snakes };
+    this.currentSkin = 'default';
+    this.octopuses = null;
+    this.octopusAnimations = [];
     this.countdownIntervalId = null;
     this.laddersShiftTimeRemaining = 60;
     this.ladderPositions = [];
@@ -304,7 +307,9 @@ class UIController {
               color: p.color,
               avatar: p.avatar
             })),
-            exactRollToWin: this.game.exactRollToWin
+            exactRollToWin: this.game.exactRollToWin,
+            skin: this.currentSkin,
+            octopuses: this.octopuses
           });
           
           this.game.startGame();
@@ -509,6 +514,41 @@ class UIController {
         this.rescueAdSkipCallback();
       }
     });
+
+    // Skins Modal Toggle Button
+    const skinsToggleBtn = document.getElementById('skins-toggle-btn');
+    const skinsModal = document.getElementById('skins-modal');
+    const skinsCloseBtn = document.getElementById('skins-close-btn');
+    const skinDefaultCard = document.getElementById('skin-default-card');
+    const skinSeaCard = document.getElementById('skin-sea-card');
+    
+    if (skinsToggleBtn && skinsModal) {
+      skinsToggleBtn.addEventListener('click', () => {
+        skinsModal.classList.add('show');
+      });
+    }
+    
+    if (skinsCloseBtn && skinsModal) {
+      skinsCloseBtn.addEventListener('click', () => {
+        skinsModal.classList.remove('show');
+      });
+    }
+    
+    if (skinDefaultCard) {
+      skinDefaultCard.addEventListener('click', () => {
+        skinDefaultCard.classList.add('active');
+        if (skinSeaCard) skinSeaCard.classList.remove('active');
+        this.setSkin('default');
+      });
+    }
+    
+    if (skinSeaCard) {
+      skinSeaCard.addEventListener('click', () => {
+        skinSeaCard.classList.add('active');
+        if (skinDefaultCard) skinDefaultCard.classList.remove('active');
+        this.setSkin('sea');
+      });
+    }
 
     // Recalculate token positions and redrawing SVGs on resize
     window.addEventListener('resize', () => {
@@ -720,6 +760,21 @@ class UIController {
       // Create gradients and glow filters in SVG definition
       defs = document.createElementNS("http://www.w3.org/2000/svg", "defs");
       defs.innerHTML = `
+        <radialGradient id="octopusGrad" cx="50%" cy="40%" r="50%">
+          <stop offset="0%" stop-color="rgba(255, 255, 255, 0.95)" />
+          <stop offset="60%" stop-color="rgba(0, 242, 254, 0.65)" />
+          <stop offset="100%" stop-color="rgba(255, 0, 127, 0.45)" />
+        </radialGradient>
+        <filter id="octopusGlow" x="-30%" y="-30%" width="160%" height="160%">
+          <feGaussianBlur stdDeviation="0.8" result="blur" />
+          <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+          </feMerge>
+        </filter>
+        <filter id="ropeShadow" x="-20%" y="-20%" width="140%" height="140%">
+          <feDropShadow dx="0.2" dy="0.4" stdDeviation="0.3" flood-color="#000000" flood-opacity="0.5"/>
+        </filter>
         <linearGradient id="snakeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
           <stop offset="0%" stop-color="#ff007f" />
           <stop offset="100%" stop-color="#7f00ff" />
@@ -799,528 +854,722 @@ class UIController {
       const nx = -dy / dist;
       const ny = dx / dist;
       
-      // Constant sleek width and thickness for uniform bamboo look
-      const w = 0.95; 
-      const railStroke = 0.75;
-      const highlightStroke = 0.22;
-      const rungStroke = 0.55;
-      const pegRadius = 0.16;
-      
-      // Create a group for the ladder to apply a unified 3D shadow
+      // Create a group for the ladder/rope
       const ladderGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-      ladderGroup.setAttribute("filter", "url(#ladderShadow)");
       ladderGroup.setAttribute("id", `ladder-${ladder.start}`);
       
-      // Left Rail Base (Bamboo cylindrical look)
-      const railL = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      railL.setAttribute("x1", p0.x + w * nx);
-      railL.setAttribute("y1", p0.y + w * ny);
-      railL.setAttribute("x2", p1.x + w * nx);
-      railL.setAttribute("y2", p1.y + w * ny);
-      railL.setAttribute("stroke", "url(#woodLadderGrad)");
-      railL.setAttribute("stroke-width", railStroke.toFixed(3));
-      railL.setAttribute("stroke-linecap", "round");
-      ladderGroup.appendChild(railL);
-      
-      // Left Rail Highlight (Rounded sheen)
-      const railLHighlight = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      railLHighlight.setAttribute("x1", p0.x + w * nx);
-      railLHighlight.setAttribute("y1", p0.y + w * ny);
-      railLHighlight.setAttribute("x2", p1.x + w * nx);
-      railLHighlight.setAttribute("y2", p1.y + w * ny);
-      railLHighlight.setAttribute("stroke", "#f5e6cc");
-      railLHighlight.setAttribute("stroke-width", highlightStroke.toFixed(3));
-      railLHighlight.setAttribute("opacity", "0.45");
-      railLHighlight.setAttribute("stroke-linecap", "round");
-      ladderGroup.appendChild(railLHighlight);
-      
-      // Right Rail Base
-      const railR = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      railR.setAttribute("x1", p0.x - w * nx);
-      railR.setAttribute("y1", p0.y - w * ny);
-      railR.setAttribute("x2", p1.x - w * nx);
-      railR.setAttribute("y2", p1.y - w * ny);
-      railR.setAttribute("stroke", "url(#woodLadderGrad)");
-      railR.setAttribute("stroke-width", railStroke.toFixed(3));
-      railR.setAttribute("stroke-linecap", "round");
-      ladderGroup.appendChild(railR);
-      
-      // Right Rail Highlight
-      const railRHighlight = document.createElementNS("http://www.w3.org/2000/svg", "line");
-      railRHighlight.setAttribute("x1", p0.x - w * nx);
-      railRHighlight.setAttribute("y1", p0.y - w * ny);
-      railRHighlight.setAttribute("x2", p1.x - w * nx);
-      railRHighlight.setAttribute("y2", p1.y - w * ny);
-      railRHighlight.setAttribute("stroke", "#f5e6cc");
-      railRHighlight.setAttribute("stroke-width", highlightStroke.toFixed(3));
-      railRHighlight.setAttribute("opacity", "0.45");
-      railRHighlight.setAttribute("stroke-linecap", "round");
-      ladderGroup.appendChild(railRHighlight);
-      
-      // Add natural bamboo nodes/joints along the rails
-      const numKnots = Math.max(2, Math.floor(dist / 7.5));
-      for (let k = 1; k <= numKnots; k++) {
-        const t = k / (numKnots + 1);
+      if (this.currentSkin === 'sea') {
+        // Draw ropes
+        ladderGroup.setAttribute("filter", "url(#ropeShadow)");
         
-        // Left rail knot
-        const lkx = p0.x + w * nx + t * dx;
-        const lky = p0.y + w * ny + t * dy;
-        const knotL = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        knotL.setAttribute("x1", lkx - 0.5 * nx);
-        knotL.setAttribute("y1", lky - 0.5 * ny);
-        knotL.setAttribute("x2", lkx + 0.5 * nx);
-        knotL.setAttribute("y2", lky + 0.5 * ny);
-        knotL.setAttribute("stroke", "#4a301e");
-        knotL.setAttribute("stroke-width", "0.20");
-        knotL.setAttribute("stroke-linecap", "round");
-        ladderGroup.appendChild(knotL);
+        // 1. Core Rope Line
+        const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        baseRope.setAttribute("x1", p0.x);
+        baseRope.setAttribute("y1", p0.y);
+        baseRope.setAttribute("x2", p1.x);
+        baseRope.setAttribute("y2", p1.y);
+        baseRope.setAttribute("stroke", "#b89772");
+        baseRope.setAttribute("stroke-width", "0.95");
+        baseRope.setAttribute("stroke-linecap", "round");
+        ladderGroup.appendChild(baseRope);
         
-        // Right rail knot
-        const rkx = p0.x - w * nx + t * dx;
-        const rky = p0.y - w * ny + t * dy;
-        const knotR = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        knotR.setAttribute("x1", rkx - 0.5 * nx);
-        knotR.setAttribute("y1", rky - 0.5 * ny);
-        knotR.setAttribute("x2", rkx + 0.5 * nx);
-        knotR.setAttribute("y2", rky + 0.5 * ny);
-        knotR.setAttribute("stroke", "#4a301e");
-        knotR.setAttribute("stroke-width", "0.20");
-        knotR.setAttribute("stroke-linecap", "round");
-        ladderGroup.appendChild(knotR);
-      }
-      
-      // Rungs (Crossbars protruding slightly with pegged joints)
-      const numRungs = Math.max(3, Math.floor(dist / 5.5));
-      for (let i = 1; i < numRungs; i++) {
-        const t = i / numRungs;
+        // 2. Woven Strand overlay
+        const strandRope = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        strandRope.setAttribute("x1", p0.x);
+        strandRope.setAttribute("y1", p0.y);
+        strandRope.setAttribute("x2", p1.x);
+        strandRope.setAttribute("y2", p1.y);
+        strandRope.setAttribute("stroke", "#5c4028");
+        strandRope.setAttribute("stroke-width", "0.95");
+        strandRope.setAttribute("stroke-dasharray", "1.6 1.6");
+        strandRope.setAttribute("stroke-linecap", "round");
+        ladderGroup.appendChild(strandRope);
         
-        const rlx = p0.x + w * nx + t * dx;
-        const rly = p0.y + w * ny + t * dy;
-        const rrx = p0.x - w * nx + t * dx;
-        const rry = p0.y - w * ny + t * dy;
+        // 3. Highlight line
+        const highlightRope = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        highlightRope.setAttribute("x1", p0.x + 0.1 * nx);
+        highlightRope.setAttribute("y1", p0.y + 0.1 * ny);
+        highlightRope.setAttribute("x2", p1.x + 0.1 * nx);
+        highlightRope.setAttribute("y2", p1.y + 0.1 * ny);
+        highlightRope.setAttribute("stroke", "#ffeedd");
+        highlightRope.setAttribute("stroke-width", "0.22");
+        highlightRope.setAttribute("opacity", "0.45");
+        ladderGroup.appendChild(highlightRope);
         
-        // Rung base (protruding 0.3 units past the rails)
-        const rung = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        rung.setAttribute("x1", rlx + 0.3 * nx);
-        rung.setAttribute("y1", rly + 0.3 * ny);
-        rung.setAttribute("x2", rrx - 0.3 * nx);
-        rung.setAttribute("y2", rry - 0.3 * ny);
-        rung.setAttribute("stroke", "url(#woodLadderGrad)");
-        rung.setAttribute("stroke-width", "0.55");
-        rung.setAttribute("stroke-linecap", "round");
-        ladderGroup.appendChild(rung);
+        // 4. Knots along the rope
+        const numKnots = Math.max(2, Math.floor(dist / 8.5));
+        for (let k = 0; k <= numKnots; k++) {
+          const t = k / numKnots;
+          const kx = p0.x + t * dx;
+          const ky = p0.y + t * dy;
+          
+          const knotCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          knotCircle.setAttribute("cx", kx);
+          knotCircle.setAttribute("cy", ky);
+          knotCircle.setAttribute("r", "0.65");
+          knotCircle.setAttribute("fill", "#5c4028");
+          knotCircle.setAttribute("stroke", "#b89772");
+          knotCircle.setAttribute("stroke-width", "0.16");
+          ladderGroup.appendChild(knotCircle);
+        }
+      } else {
+        // Draw default cyberpunk bamboo ladders
+        ladderGroup.setAttribute("filter", "url(#ladderShadow)");
         
-        // Rung Highlight
-        const rungHighlight = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        rungHighlight.setAttribute("x1", rlx + 0.3 * nx);
-        rungHighlight.setAttribute("y1", rly + 0.3 * ny);
-        rungHighlight.setAttribute("x2", rrx - 0.3 * nx);
-        rungHighlight.setAttribute("y2", rry - 0.3 * ny);
-        rungHighlight.setAttribute("stroke", "#f5e6cc");
-        rungHighlight.setAttribute("stroke-width", "0.18");
-        rungHighlight.setAttribute("opacity", "0.4");
-        rungHighlight.setAttribute("stroke-linecap", "round");
-        ladderGroup.appendChild(rungHighlight);
+        // Constant sleek width and thickness for uniform bamboo look
+        const w = 0.95; 
+        const railStroke = 0.75;
+        const highlightStroke = 0.22;
+        const rungStroke = 0.55;
+        const pegRadius = 0.16;
         
-        // Peg/Tying joints (holes/pegs on both intersections)
-        const pegL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        pegL.setAttribute("cx", rlx);
-        pegL.setAttribute("cy", rly);
-        pegL.setAttribute("r", "0.16");
-        pegL.setAttribute("fill", "#362215");
-        ladderGroup.appendChild(pegL);
+        // Left Rail Base (Bamboo cylindrical look)
+        const railL = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        railL.setAttribute("x1", p0.x + w * nx);
+        railL.setAttribute("y1", p0.y + w * ny);
+        railL.setAttribute("x2", p1.x + w * nx);
+        railL.setAttribute("y2", p1.y + w * ny);
+        railL.setAttribute("stroke", "url(#woodLadderGrad)");
+        railL.setAttribute("stroke-width", railStroke.toFixed(3));
+        railL.setAttribute("stroke-linecap", "round");
+        ladderGroup.appendChild(railL);
         
-        const pegR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        pegR.setAttribute("cx", rrx);
-        pegR.setAttribute("cy", rry);
-        pegR.setAttribute("r", "0.16");
-        pegR.setAttribute("fill", "#362215");
-        ladderGroup.appendChild(pegR);
+        // Left Rail Highlight (Rounded sheen)
+        const railLHighlight = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        railLHighlight.setAttribute("x1", p0.x + w * nx);
+        railLHighlight.setAttribute("y1", p0.y + w * ny);
+        railLHighlight.setAttribute("x2", p1.x + w * nx);
+        railLHighlight.setAttribute("y2", p1.y + w * ny);
+        railLHighlight.setAttribute("stroke", "#f5e6cc");
+        railLHighlight.setAttribute("stroke-width", highlightStroke.toFixed(3));
+        railLHighlight.setAttribute("opacity", "0.45");
+        railLHighlight.setAttribute("stroke-linecap", "round");
+        ladderGroup.appendChild(railLHighlight);
+        
+        // Right Rail Base
+        const railR = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        railR.setAttribute("x1", p0.x - w * nx);
+        railR.setAttribute("y1", p0.y - w * ny);
+        railR.setAttribute("x2", p1.x - w * nx);
+        railR.setAttribute("y2", p1.y - w * ny);
+        railR.setAttribute("stroke", "url(#woodLadderGrad)");
+        railR.setAttribute("stroke-width", railStroke.toFixed(3));
+        railR.setAttribute("stroke-linecap", "round");
+        ladderGroup.appendChild(railR);
+        
+        // Right Rail Highlight
+        const railRHighlight = document.createElementNS("http://www.w3.org/2000/svg", "line");
+        railRHighlight.setAttribute("x1", p0.x - w * nx);
+        railRHighlight.setAttribute("y1", p0.y - w * ny);
+        railRHighlight.setAttribute("x2", p1.x - w * nx);
+        railRHighlight.setAttribute("y2", p1.y - w * ny);
+        railRHighlight.setAttribute("stroke", "#f5e6cc");
+        railRHighlight.setAttribute("stroke-width", highlightStroke.toFixed(3));
+        railRHighlight.setAttribute("opacity", "0.45");
+        railRHighlight.setAttribute("stroke-linecap", "round");
+        ladderGroup.appendChild(railRHighlight);
+        
+        // Add natural bamboo nodes/joints along the rails
+        const numKnots = Math.max(2, Math.floor(dist / 7.5));
+        for (let k = 1; k <= numKnots; k++) {
+          const t = k / (numKnots + 1);
+          
+          // Left rail knot
+          const lkx = p0.x + w * nx + t * dx;
+          const lky = p0.y + w * ny + t * dy;
+          const knotL = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          knotL.setAttribute("x1", lkx - 0.5 * nx);
+          knotL.setAttribute("y1", lky - 0.5 * ny);
+          knotL.setAttribute("x2", lkx + 0.5 * nx);
+          knotL.setAttribute("y2", lky + 0.5 * ny);
+          knotL.setAttribute("stroke", "#4a301e");
+          knotL.setAttribute("stroke-width", "0.20");
+          knotL.setAttribute("stroke-linecap", "round");
+          ladderGroup.appendChild(knotL);
+          
+          // Right rail knot
+          const rkx = p0.x - w * nx + t * dx;
+          const rky = p0.y - w * ny + t * dy;
+          const knotR = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          knotR.setAttribute("x1", rkx - 0.5 * nx);
+          knotR.setAttribute("y1", rky - 0.5 * ny);
+          knotR.setAttribute("x2", rkx + 0.5 * nx);
+          knotR.setAttribute("y2", rky + 0.5 * ny);
+          knotR.setAttribute("stroke", "#4a301e");
+          knotR.setAttribute("stroke-width", "0.20");
+          knotR.setAttribute("stroke-linecap", "round");
+          ladderGroup.appendChild(knotR);
+        }
+        
+        // Rungs (Crossbars protruding slightly with pegged joints)
+        const numRungs = Math.max(3, Math.floor(dist / 5.5));
+        for (let i = 1; i < numRungs; i++) {
+          const t = i / numRungs;
+          
+          const rlx = p0.x + w * nx + t * dx;
+          const rly = p0.y + w * ny + t * dy;
+          const rrx = p0.x - w * nx + t * dx;
+          const rry = p0.y - w * ny + t * dy;
+          
+          // Rung base (protruding 0.3 units past the rails)
+          const rung = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          rung.setAttribute("x1", rlx + 0.3 * nx);
+          rung.setAttribute("y1", rly + 0.3 * ny);
+          rung.setAttribute("x2", rrx - 0.3 * nx);
+          rung.setAttribute("y2", rry - 0.3 * ny);
+          rung.setAttribute("stroke", "url(#woodLadderGrad)");
+          rung.setAttribute("stroke-width", "0.55");
+          rung.setAttribute("stroke-linecap", "round");
+          ladderGroup.appendChild(rung);
+          
+          // Rung Highlight
+          const rungHighlight = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          rungHighlight.setAttribute("x1", rlx + 0.3 * nx);
+          rungHighlight.setAttribute("y1", rly + 0.3 * ny);
+          rungHighlight.setAttribute("x2", rrx - 0.3 * nx);
+          rungHighlight.setAttribute("y2", rry - 0.3 * ny);
+          rungHighlight.setAttribute("stroke", "#f5e6cc");
+          rungHighlight.setAttribute("stroke-width", "0.18");
+          rungHighlight.setAttribute("opacity", "0.4");
+          rungHighlight.setAttribute("stroke-linecap", "round");
+          ladderGroup.appendChild(rungHighlight);
+          
+          // Peg/Tying joints (holes/pegs on both intersections)
+          const pegL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          pegL.setAttribute("cx", rlx);
+          pegL.setAttribute("cy", rly);
+          pegL.setAttribute("r", "0.16");
+          pegL.setAttribute("fill", "#362215");
+          ladderGroup.appendChild(pegL);
+          
+          const pegR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          pegR.setAttribute("cx", rrx);
+          pegR.setAttribute("cy", rry);
+          pegR.setAttribute("r", "0.16");
+          pegR.setAttribute("fill", "#362215");
+          ladderGroup.appendChild(pegR);
+        }
       }
       
       laddersGroup.appendChild(ladderGroup);
     }
 
     if (isFirstDraw) {
-      // Helper function for snake body tapering width profiles (thinner neck, plump body, pointed tail)
-      const getWidthAtT = (t) => {
-        if (t < 0.15) {
-          const u = t / 0.15;
-          return 1.8 + 0.6 * Math.sin(u * Math.PI / 2);
-        } else if (t < 0.7) {
-          const u = (t - 0.15) / 0.55;
-          return 2.4 - 0.4 * u;
-        } else {
-          const u = (t - 0.7) / 0.3;
-          return 2.0 * Math.pow(1 - u, 1.5) + 0.1;
+      if (this.snakeResetTimeouts) {
+        Object.values(this.snakeResetTimeouts).forEach(tid => clearTimeout(tid));
+        this.snakeResetTimeouts = {};
+      }
+      this.snakeAnimations = [];
+      this.octopusAnimations = [];
+      snakesGroup.innerHTML = '';
+      
+      if (this.currentSkin === 'sea') {
+        // Draw Jelly Octopuses
+        if (this.octopuses) {
+          this.octopuses.forEach((oct, octIdx) => {
+            const pHead = this.getCellCoordinates(oct.head);
+            const tentacleAnims = [];
+            
+            // Draw tentacles first
+            oct.tentacles.forEach((tTail, tIdx) => {
+              const pTail = this.getCellCoordinates(tTail);
+              const dx = pTail.x - pHead.x;
+              const dy = pTail.y - pHead.y;
+              const dist = Math.sqrt(dx * dx + dy * dy);
+              const nx = -dy / dist;
+              const ny = dx / dist;
+              
+              // Wave control points
+              const waveAmp = Math.min(8, Math.max(3, dist * 0.15));
+              const cx1 = pHead.x + 0.33 * dx + waveAmp * nx;
+              const cy1 = pHead.y + 0.33 * dy + waveAmp * ny;
+              const cx2 = pHead.x + 0.66 * dx - waveAmp * nx;
+              const cy2 = pHead.y + 0.66 * dy - waveAmp * ny;
+              
+              const tentaclePath = `M ${pHead.x} ${pHead.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${pTail.x} ${pTail.y}`;
+              
+              // Draw tentacle shadow
+              const tShadow = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              tShadow.setAttribute("d", tentaclePath);
+              tShadow.setAttribute("fill", "none");
+              tShadow.setAttribute("stroke", "rgba(0, 0, 0, 0.4)");
+              tShadow.setAttribute("stroke-width", "3.0");
+              tShadow.setAttribute("stroke-linecap", "round");
+              tShadow.setAttribute("filter", "url(#ropeShadow)");
+              snakesGroup.appendChild(tShadow);
+              
+              // Draw tentacle outer glow
+              const tOuter = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              tOuter.setAttribute("d", tentaclePath);
+              tOuter.setAttribute("fill", "none");
+              tOuter.setAttribute("stroke", "rgba(255, 0, 127, 0.3)");
+              tOuter.setAttribute("stroke-width", "2.8");
+              tOuter.setAttribute("stroke-linecap", "round");
+              snakesGroup.appendChild(tOuter);
+
+              // Draw tentacle inner core
+              const tInner = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              tInner.setAttribute("d", tentaclePath);
+              tInner.setAttribute("fill", "none");
+              tInner.setAttribute("stroke", "rgba(0, 242, 254, 0.5)");
+              tInner.setAttribute("stroke-width", "1.8");
+              tInner.setAttribute("stroke-linecap", "round");
+              snakesGroup.appendChild(tInner);
+              
+              // Draw tentacle highlight
+              const tHighlight = document.createElementNS("http://www.w3.org/2000/svg", "path");
+              tHighlight.setAttribute("d", tentaclePath);
+              tHighlight.setAttribute("fill", "none");
+              tHighlight.setAttribute("stroke", "rgba(255, 255, 255, 0.65)");
+              tHighlight.setAttribute("stroke-width", "0.5");
+              tHighlight.setAttribute("stroke-linecap", "round");
+              snakesGroup.appendChild(tHighlight);
+              
+              // Draw suction cups along the tentacle
+              const numCups = Math.max(3, Math.floor(dist / 6.0));
+              for (let s = 1; s <= numCups; s++) {
+                const tPercent = s / (numCups + 1);
+                const pt = this.getBezierPoint(tPercent, pHead, { x: cx1, y: cy1 }, { x: cx2, y: cy2 }, pTail);
+                
+                const cup = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+                cup.setAttribute("cx", pt.x + 0.45 * nx);
+                cup.setAttribute("cy", pt.y + 0.45 * ny);
+                cup.setAttribute("r", "0.38");
+                cup.setAttribute("fill", "rgba(255, 255, 255, 0.75)");
+                cup.setAttribute("stroke", "rgba(0, 242, 254, 0.85)");
+                cup.setAttribute("stroke-width", "0.15");
+                snakesGroup.appendChild(cup);
+              }
+              
+              tentacleAnims.push({
+                tail: tTail,
+                p0: pHead,
+                p1: pTail,
+                cx1, cy1, cx2, cy2
+              });
+            });
+            
+            this.octopusAnimations.push({
+              head: oct.head,
+              tentacles: tentacleAnims
+            });
+            
+            // Draw Octopus head/body
+            const body = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+            body.setAttribute("cx", pHead.x);
+            body.setAttribute("cy", pHead.y - 0.4);
+            body.setAttribute("rx", "2.1");
+            body.setAttribute("ry", "1.7");
+            body.setAttribute("fill", "url(#octopusGrad)");
+            body.setAttribute("filter", "url(#octopusGlow)");
+            body.setAttribute("class", "svg-octopus-body");
+            snakesGroup.appendChild(body);
+            
+            // Draw large eyes
+            const eyeL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            eyeL.setAttribute("cx", pHead.x - 0.6);
+            eyeL.setAttribute("cy", pHead.y - 0.3);
+            eyeL.setAttribute("r", "0.38");
+            eyeL.setAttribute("fill", "white");
+            eyeL.setAttribute("class", "svg-octopus-eye");
+            snakesGroup.appendChild(eyeL);
+            
+            const eyeR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            eyeR.setAttribute("cx", pHead.x + 0.6);
+            eyeR.setAttribute("cy", pHead.y - 0.3);
+            eyeR.setAttribute("r", "0.38");
+            eyeR.setAttribute("fill", "white");
+            eyeR.setAttribute("class", "svg-octopus-eye");
+            snakesGroup.appendChild(eyeR);
+            
+            // Pupils
+            const pupilL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            pupilL.setAttribute("cx", pHead.x - 0.6);
+            pupilL.setAttribute("cy", pHead.y - 0.3);
+            pupilL.setAttribute("r", "0.22");
+            pupilL.setAttribute("fill", "#023047");
+            pupilL.setAttribute("class", "svg-octopus-eye");
+            snakesGroup.appendChild(pupilL);
+            
+            const pupilR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            pupilR.setAttribute("cx", pHead.x + 0.6);
+            pupilR.setAttribute("cy", pHead.y - 0.3);
+            pupilR.setAttribute("r", "0.22");
+            pupilR.setAttribute("fill", "#023047");
+            pupilR.setAttribute("class", "svg-octopus-eye");
+            snakesGroup.appendChild(pupilR);
+            
+            // Specular glint
+            const glintL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            glintL.setAttribute("cx", pHead.x - 0.72);
+            glintL.setAttribute("cy", pHead.y - 0.38);
+            glintL.setAttribute("r", "0.08");
+            glintL.setAttribute("fill", "white");
+            glintL.setAttribute("class", "svg-octopus-eye");
+            snakesGroup.appendChild(glintL);
+            
+            const glintR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+            glintR.setAttribute("cx", pHead.x + 0.48);
+            glintR.setAttribute("cy", pHead.y - 0.38);
+            glintR.setAttribute("r", "0.08");
+            glintR.setAttribute("fill", "white");
+            glintR.setAttribute("class", "svg-octopus-eye");
+            snakesGroup.appendChild(glintR);
+          });
         }
-      };
+      } else {
+        // Draw Default Cyber Snakes
+        const getWidthAtT = (t) => {
+          if (t < 0.15) {
+            const u = t / 0.15;
+            return 1.8 + 0.6 * Math.sin(u * Math.PI / 2);
+          } else if (t < 0.7) {
+            const u = (t - 0.15) / 0.55;
+            return 2.4 - 0.4 * u;
+          } else {
+            const u = (t - 0.7) / 0.3;
+            return 2.0 * Math.pow(1 - u, 1.5) + 0.1;
+          }
+        };
 
-      // Draw Snakes (Curved wavy body with scaly overlays, python head, and flickering tongue)
-      let snakeIdx = 0;
-      for (const [startStr, endStr] of Object.entries(GameConfig.snakes)) {
-        snakeIdx++;
-        const start = parseInt(startStr);
-        const end = parseInt(endStr);
-        
-        const p0 = this.getCellCoordinates(start); // Head (Higher tile)
-        const p1 = this.getCellCoordinates(end);   // Tail (Lower tile)
-        
-        const dx = p1.x - p0.x;
-        const dy = p1.y - p0.y;
-        const dist = Math.sqrt(dx * dx + dy * dy);
-        
-        const nx = -dy / dist;
-        const ny = dx / dist;
-        
-        // Control points to create wavy slither S-curve
-        const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
-        const cx1 = p0.x + 0.33 * dx + waveAmp * nx;
-        const cy1 = p0.y + 0.33 * dy + waveAmp * ny;
-        const cx2 = p0.x + 0.66 * dx - waveAmp * nx;
-        const cy2 = p0.y + 0.66 * dy - waveAmp * ny;
-        
-        const pathData = `M ${p0.x} ${p0.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x} ${p1.y}`;
-        const c1 = { x: cx1, y: cy1 };
-        const c2 = { x: cx2, y: cy2 };
-
-        const shadowLines = [];
-        const maskLines = [];
-
-        // 1. Drop Shadow Group (tapered shadow using overlapping line segments)
-        const shadowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        shadowGroup.setAttribute("filter", "url(#snakeShadow)");
-        
-        const numSegments = 40;
-        for (let i = 0; i < numSegments; i++) {
-          const tA = i / numSegments;
-          const tB = (i + 1) / numSegments;
-          const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
-          const ptB_pt = this.getBezierPoint(tB, p0, c1, c2, p1);
-          const tMid = (tA + tB) / 2;
-          const w = getWidthAtT(tMid);
+        let snakeIdx = 0;
+        for (const [startStr, endStr] of Object.entries(GameConfig.snakes)) {
+          snakeIdx++;
+          const start = parseInt(startStr);
+          const end = parseInt(endStr);
           
-          const sLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          sLine.setAttribute("x1", ptA.x);
-          sLine.setAttribute("y1", ptA.y);
-          sLine.setAttribute("x2", ptB_pt.x);
-          sLine.setAttribute("y2", ptB_pt.y);
-          sLine.setAttribute("stroke", "#000000");
-          sLine.setAttribute("stroke-width", w + 0.4);
-          sLine.setAttribute("stroke-linecap", "round");
-          shadowGroup.appendChild(sLine);
-          shadowLines.push(sLine);
-        }
-        snakesGroup.appendChild(shadowGroup);
-
-        // Create unique mask for tapering the body textures
-        const maskId = `snake-mask-${start}`;
-        const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
-        mask.setAttribute("id", maskId);
-        
-        for (let i = 0; i < numSegments; i++) {
-          const tA = i / numSegments;
-          const tB = (i + 1) / numSegments;
-          const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
-          const ptB_pt = this.getBezierPoint(tB, p0, c1, c2, p1);
-          const tMid = (tA + tB) / 2;
-          const w = getWidthAtT(tMid);
+          const p0 = this.getCellCoordinates(start);
+          const p1 = this.getCellCoordinates(end);
           
-          const mLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
-          mLine.setAttribute("x1", ptA.x);
-          mLine.setAttribute("y1", ptA.y);
-          mLine.setAttribute("x2", ptB_pt.x);
-          mLine.setAttribute("y2", ptB_pt.y);
-          mLine.setAttribute("stroke", "#ffffff");
-          mLine.setAttribute("stroke-width", w);
-          mLine.setAttribute("stroke-linecap", "round");
-          mask.appendChild(mLine);
-          maskLines.push(mLine);
+          const dx = p1.x - p0.x;
+          const dy = p1.y - p0.y;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          
+          const nx = -dy / dist;
+          const ny = dx / dist;
+          
+          const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
+          const cx1 = p0.x + 0.33 * dx + waveAmp * nx;
+          const cy1 = p0.y + 0.33 * dy + waveAmp * ny;
+          const cx2 = p0.x + 0.66 * dx - waveAmp * nx;
+          const cy2 = p0.y + 0.66 * dy - waveAmp * ny;
+          
+          const pathData = `M ${p0.x} ${p0.y} C ${cx1} ${cy1}, ${cx2} ${cy2}, ${p1.x} ${p1.y}`;
+          const c1 = { x: cx1, y: cy1 };
+          const c2 = { x: cx2, y: cy2 };
+
+          const shadowLines = [];
+          const maskLines = [];
+
+          const shadowGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          shadowGroup.setAttribute("filter", "url(#snakeShadow)");
+          
+          const numSegments = 40;
+          for (let i = 0; i < numSegments; i++) {
+            const tA = i / numSegments;
+            const tB = (i + 1) / numSegments;
+            const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
+            const ptB_pt = this.getBezierPoint(tB, p0, c1, c2, p1);
+            const tMid = (tA + tB) / 2;
+            const w = getWidthAtT(tMid);
+            
+            const sLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            sLine.setAttribute("x1", ptA.x);
+            sLine.setAttribute("y1", ptA.y);
+            sLine.setAttribute("x2", ptB_pt.x);
+            sLine.setAttribute("y2", ptB_pt.y);
+            sLine.setAttribute("stroke", "#000000");
+            sLine.setAttribute("stroke-width", w + 0.4);
+            sLine.setAttribute("stroke-linecap", "round");
+            shadowGroup.appendChild(sLine);
+            shadowLines.push(sLine);
+          }
+          snakesGroup.appendChild(shadowGroup);
+
+          const maskId = `snake-mask-${start}`;
+          const mask = document.createElementNS("http://www.w3.org/2000/svg", "mask");
+          mask.setAttribute("id", maskId);
+          
+          for (let i = 0; i < numSegments; i++) {
+            const tA = i / numSegments;
+            const tB = (i + 1) / numSegments;
+            const ptA = this.getBezierPoint(tA, p0, c1, c2, p1);
+            const ptB_pt = this.getBezierPoint(tB, p0, c1, c2, p1);
+            const tMid = (tA + tB) / 2;
+            const w = getWidthAtT(tMid);
+            
+            const mLine = document.createElementNS("http://www.w3.org/2000/svg", "line");
+            mLine.setAttribute("x1", ptA.x);
+            mLine.setAttribute("y1", ptA.y);
+            mLine.setAttribute("x2", ptB_pt.x);
+            mLine.setAttribute("y2", ptB_pt.y);
+            mLine.setAttribute("stroke", "#ffffff");
+            mLine.setAttribute("stroke-width", w);
+            mLine.setAttribute("stroke-linecap", "round");
+            mask.appendChild(mLine);
+            maskLines.push(mLine);
+          }
+          defs.appendChild(mask);
+
+          const bodyGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          bodyGroup.setAttribute("mask", `url(#${maskId})`);
+
+          const bodyPaths = [];
+
+          const body = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          body.setAttribute("d", pathData);
+          body.setAttribute("class", "svg-snake-body");
+          body.setAttribute("stroke", "url(#realSnakeGrad)");
+          body.setAttribute("stroke-width", "3.2");
+          bodyGroup.appendChild(body);
+          bodyPaths.push(body);
+
+          const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          underbelly.setAttribute("d", pathData);
+          underbelly.setAttribute("fill", "none");
+          underbelly.setAttribute("stroke", "#d8f0c2");
+          underbelly.setAttribute("stroke-width", "2.2");
+          underbelly.setAttribute("stroke-dasharray", "8 5");
+          underbelly.setAttribute("opacity", "0.35");
+          bodyGroup.appendChild(underbelly);
+          bodyPaths.push(underbelly);
+
+          const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          bands.setAttribute("d", pathData);
+          bands.setAttribute("fill", "none");
+          bands.setAttribute("stroke", "#09220c");
+          bands.setAttribute("stroke-width", "3.2");
+          bands.setAttribute("stroke-dasharray", "1.5 3.0");
+          bodyGroup.appendChild(bands);
+          bodyPaths.push(bands);
+
+          const scales = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          scales.setAttribute("d", pathData);
+          scales.setAttribute("class", "svg-snake-scales");
+          scales.setAttribute("stroke", "rgba(255, 255, 255, 0.28)");
+          scales.setAttribute("stroke-width", "2.6");
+          scales.setAttribute("stroke-dasharray", "0.3 0.9");
+          bodyGroup.appendChild(scales);
+          bodyPaths.push(scales);
+
+          const spine = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          spine.setAttribute("d", pathData);
+          spine.setAttribute("fill", "none");
+          spine.setAttribute("stroke", "rgba(255, 255, 255, 0.22)");
+          spine.setAttribute("stroke-width", "0.5");
+          bodyGroup.appendChild(spine);
+          bodyPaths.push(spine);
+
+          snakesGroup.appendChild(bodyGroup);
+
+          const hdx = cx1 - p0.x;
+          const hdy = cy1 - p0.y;
+          const hdist = Math.sqrt(hdx * hdx + hdy * hdy);
+          const bx_dir = hdx / hdist;
+          const by_dir = hdy / hdist;
+          
+          const fx = -bx_dir;
+          const fy = -by_dir;
+          
+          const jx = -by_dir;
+          const jy = bx_dir;
+
+          const noseX = p0.x + 1.8 * fx;
+          const noseY = p0.y + 1.8 * fy;
+          
+          const leftJawX = p0.x + 0.4 * bx_dir + 1.25 * jx;
+          const leftJawY = p0.y + 0.4 * by_dir + 1.25 * jy;
+          
+          const rightJawX = p0.x + 0.4 * bx_dir - 1.25 * jx;
+          const rightJawY = p0.y + 0.4 * by_dir - 1.25 * jy;
+          
+          const neckX = p0.x + 1.2 * bx_dir;
+          const neckY = p0.y + 1.2 * by_dir;
+
+          const angleRad = Math.atan2(fy, fx);
+          const angleDeg = angleRad * (180 / Math.PI);
+
+          const head = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          head.setAttribute("points", `${noseX},${noseY} ${leftJawX},${leftJawY} ${neckX},${neckY} ${rightJawX},${rightJawY}`);
+          head.setAttribute("class", "svg-snake-head-viper");
+          snakesGroup.appendChild(head);
+
+          const tx = p0.x + 1.6 * fx;
+          const ty = p0.y + 1.6 * fy;
+          
+          const sx = p0.x + 3.1 * fx;
+          const sy = p0.y + 3.1 * fy;
+          
+          const ltx = sx + 0.9 * fx + 0.65 * jx;
+          const lty = sy + 0.9 * fy + 0.65 * jy;
+          
+          const rtx = sx + 0.9 * fx - 0.65 * jx;
+          const rty = sy + 0.9 * fy - 0.65 * jy;
+
+          const tongue = document.createElementNS("http://www.w3.org/2000/svg", "path");
+          tongue.setAttribute("d", `M ${tx} ${ty} L ${sx} ${sy} L ${ltx} ${lty} M ${sx} ${sy} L ${rtx} ${rty}`);
+          tongue.setAttribute("class", "svg-snake-tongue");
+          const delay = (Math.random() * 2.0).toFixed(2);
+          tongue.setAttribute("style", `transform-origin: ${tx}% ${ty}%; animation-delay: -${delay}s;`);
+          snakesGroup.appendChild(tongue);
+
+          const ex1 = p0.x + 0.85 * fx + 0.58 * jx;
+          const ey1 = p0.y + 0.85 * fy + 0.58 * jy;
+          const ex2 = p0.x + 0.85 * fx - 0.58 * jx;
+          const ey2 = p0.y + 0.85 * fy - 0.58 * jy;
+
+          const detailsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+          detailsGroup.setAttribute("id", `head-details-${start}`);
+
+          const leftPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          const lp1x = p0.x - 0.9 * fx + 0.6 * jx;
+          const lp1y = p0.y - 0.9 * fy + 0.6 * jy;
+          const lp2x = p0.x - 0.3 * fx + 1.05 * jx;
+          const lp2y = p0.y - 0.3 * fy + 1.05 * jy;
+          const lp3x = p0.x + 0.8 * fx + 0.4 * jx;
+          const lp3y = p0.y + 0.8 * fy + 0.4 * jy;
+          const lp4x = p0.x + 0.1 * fx + 0.2 * jx;
+          const lp4y = p0.y + 0.1 * fy + 0.2 * jy;
+          leftPatch.setAttribute("points", `${lp1x},${lp1y} ${lp2x},${lp2y} ${lp3x},${lp3y} ${lp4x},${lp4y}`);
+          leftPatch.setAttribute("fill", "#8fd696");
+          leftPatch.setAttribute("stroke", "#1b4f1f");
+          leftPatch.setAttribute("stroke-width", "0.1");
+          detailsGroup.appendChild(leftPatch);
+
+          const rightPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          const rp1x = p0.x - 0.9 * fx - 0.6 * jx;
+          const rp1y = p0.y - 0.9 * fy - 0.6 * jy;
+          const rp2x = p0.x - 0.3 * fx - 1.05 * jx;
+          const rp2y = p0.y - 0.3 * fy - 1.05 * jy;
+          const rp3x = p0.x + 0.8 * fx - 0.4 * jx;
+          const rp3y = p0.y + 0.8 * fy - 0.4 * jy;
+          const rp4x = p0.x + 0.1 * fx - 0.2 * jx;
+          const rp4y = p0.y + 0.1 * fy - 0.2 * jy;
+          rightPatch.setAttribute("points", `${rp1x},${rp1y} ${rp2x},${rp2y} ${rp3x},${rp3y} ${rp4x},${rp4y}`);
+          rightPatch.setAttribute("fill", "#8fd696");
+          rightPatch.setAttribute("stroke", "#1b4f1f");
+          rightPatch.setAttribute("stroke-width", "0.1");
+          detailsGroup.appendChild(rightPatch);
+
+          const spearhead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
+          const sp1x = p0.x - 1.15 * fx;
+          const sp1y = p0.y - 1.15 * fy;
+          const sp2x = p0.x - 0.4 * fx + 0.18 * jx;
+          const sp2y = p0.y - 0.4 * fy + 0.18 * jy;
+          const sp3x = p0.x + 1.4 * fx;
+          const sp3y = p0.y + 1.4 * fy;
+          const sp4x = p0.x - 0.4 * fx - 0.18 * jx;
+          const sp4y = p0.y - 0.4 * fy - 0.18 * jy;
+          spearhead.setAttribute("points", `${sp1x},${sp1y} ${sp2x},${sp2y} ${sp3x},${sp3y} ${sp4x},${sp4y}`);
+          spearhead.setAttribute("fill", "#123c15");
+          spearhead.setAttribute("stroke", "#08210b");
+          spearhead.setAttribute("stroke-width", "0.08");
+          detailsGroup.appendChild(spearhead);
+
+          const leftPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          leftPostOcular.setAttribute("x1", ex1);
+          leftPostOcular.setAttribute("y1", ey1);
+          leftPostOcular.setAttribute("x2", leftJawX);
+          leftPostOcular.setAttribute("y2", leftJawY);
+          leftPostOcular.setAttribute("stroke", "#123c15");
+          leftPostOcular.setAttribute("stroke-width", "0.18");
+          leftPostOcular.setAttribute("stroke-linecap", "round");
+          detailsGroup.appendChild(leftPostOcular);
+
+          const rightPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
+          rightPostOcular.setAttribute("x1", ex2);
+          rightPostOcular.setAttribute("y1", ey2);
+          rightPostOcular.setAttribute("x2", rightJawX);
+          rightPostOcular.setAttribute("y2", rightJawY);
+          rightPostOcular.setAttribute("stroke", "#123c15");
+          rightPostOcular.setAttribute("stroke-width", "0.18");
+          rightPostOcular.setAttribute("stroke-linecap", "round");
+          detailsGroup.appendChild(rightPostOcular);
+
+          const spot1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          spot1.setAttribute("cx", p0.x + 0.3 * fx);
+          spot1.setAttribute("cy", p0.y + 0.3 * fy);
+          spot1.setAttribute("r", "0.55");
+          spot1.setAttribute("fill", "#08210b");
+          detailsGroup.appendChild(spot1);
+
+          const spot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          spot2.setAttribute("cx", p0.x + 0.6 * bx_dir);
+          spot2.setAttribute("cy", p0.y + 0.6 * by_dir);
+          spot2.setAttribute("r", "0.45");
+          spot2.setAttribute("fill", "#08210b");
+          detailsGroup.appendChild(spot2);
+
+          const eye1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          eye1.setAttribute("cx", ex1);
+          eye1.setAttribute("cy", ey1);
+          eye1.setAttribute("r", "0.38");
+          eye1.setAttribute("fill", "#f39c12");
+          eye1.setAttribute("stroke", "#08210b");
+          eye1.setAttribute("stroke-width", "0.08");
+          detailsGroup.appendChild(eye1);
+
+          const pupil1 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+          pupil1.setAttribute("cx", ex1);
+          pupil1.setAttribute("cy", ey1);
+          pupil1.setAttribute("rx", "0.06");
+          pupil1.setAttribute("ry", "0.22");
+          pupil1.setAttribute("fill", "black");
+          pupil1.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex1}, ${ey1})`);
+          detailsGroup.appendChild(pupil1);
+
+          const glint1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          glint1.setAttribute("cx", ex1 + 0.12 * fx + 0.08 * jx);
+          glint1.setAttribute("cy", ey1 + 0.12 * fy + 0.08 * jy);
+          glint1.setAttribute("r", "0.08");
+          glint1.setAttribute("fill", "white");
+          detailsGroup.appendChild(glint1);
+          
+          const eye2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          eye2.setAttribute("cx", ex2);
+          eye2.setAttribute("cy", ey2);
+          eye2.setAttribute("r", "0.38");
+          eye2.setAttribute("fill", "#f39c12");
+          eye2.setAttribute("stroke", "#08210b");
+          eye2.setAttribute("stroke-width", "0.08");
+          detailsGroup.appendChild(eye2);
+
+          const pupil2 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+          pupil2.setAttribute("cx", ex2);
+          pupil2.setAttribute("cy", ey2);
+          pupil2.setAttribute("rx", "0.06");
+          pupil2.setAttribute("ry", "0.22");
+          pupil2.setAttribute("fill", "black");
+          pupil2.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex2}, ${ey2})`);
+          detailsGroup.appendChild(pupil2);
+
+          const glint2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          glint2.setAttribute("cx", ex2 + 0.12 * fx - 0.08 * jx);
+          glint2.setAttribute("cy", ey2 + 0.12 * fy - 0.08 * jy);
+          glint2.setAttribute("r", "0.08");
+          glint2.setAttribute("fill", "white");
+          detailsGroup.appendChild(glint2);
+
+          snakesGroup.appendChild(detailsGroup);
+
+          this.snakeAnimations.push({
+            snakeIdx,
+            start,
+            end,
+            defaultEnd: this.defaultSnakes[start] || end,
+            p0,
+            p1,
+            cx1,
+            cy1,
+            cx2,
+            cy2,
+            nx,
+            ny,
+            bodyPaths,
+            shadowLines,
+            maskLines
+          });
         }
-        defs.appendChild(mask);
-
-        // 2. Snake Body Group (masked for tapered look)
-        const bodyGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        bodyGroup.setAttribute("mask", `url(#${maskId})`);
-
-        const bodyPaths = [];
-
-        // Snake Body base path (Thick gradient base)
-        const body = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        body.setAttribute("d", pathData);
-        body.setAttribute("class", "svg-snake-body");
-        body.setAttribute("stroke", "url(#realSnakeGrad)");
-        body.setAttribute("stroke-width", "3.2");
-        bodyGroup.appendChild(body);
-        bodyPaths.push(body);
-
-        // Mottled Underbelly Layer (cream highlighting on sides)
-        const underbelly = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        underbelly.setAttribute("d", pathData);
-        underbelly.setAttribute("fill", "none");
-        underbelly.setAttribute("stroke", "#d8f0c2");
-        underbelly.setAttribute("stroke-width", "2.2");
-        underbelly.setAttribute("stroke-dasharray", "8 5");
-        underbelly.setAttribute("opacity", "0.35");
-        bodyGroup.appendChild(underbelly);
-        bodyPaths.push(underbelly);
-
-        // Dark Transverse Bands (Dark brown stripes crossing the body)
-        const bands = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        bands.setAttribute("d", pathData);
-        bands.setAttribute("fill", "none");
-        bands.setAttribute("stroke", "#09220c");
-        bands.setAttribute("stroke-width", "3.2");
-        bands.setAttribute("stroke-dasharray", "1.5 3.0");
-        bodyGroup.appendChild(bands);
-        bodyPaths.push(bands);
-
-        // Snake Scales Overlay (Diamond texture specular highlights)
-        const scales = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        scales.setAttribute("d", pathData);
-        scales.setAttribute("class", "svg-snake-scales");
-        scales.setAttribute("stroke", "rgba(255, 255, 255, 0.28)");
-        scales.setAttribute("stroke-width", "2.6");
-        scales.setAttribute("stroke-dasharray", "0.3 0.9");
-        bodyGroup.appendChild(scales);
-        bodyPaths.push(scales);
-
-        // Specular Spinal Highlight (3D cylinder sheen)
-        const spine = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        spine.setAttribute("d", pathData);
-        spine.setAttribute("fill", "none");
-        spine.setAttribute("stroke", "rgba(255, 255, 255, 0.22)");
-        spine.setAttribute("stroke-width", "0.5");
-        bodyGroup.appendChild(spine);
-        bodyPaths.push(spine);
-
-        snakesGroup.appendChild(bodyGroup);
-
-        // --- Python Head Math & Construction ---
-        // Direction vector pointing from head center towards body
-        const hdx = cx1 - p0.x;
-        const hdy = cy1 - p0.y;
-        const hdist = Math.sqrt(hdx * hdx + hdy * hdy);
-        const bx_dir = hdx / hdist;
-        const by_dir = hdy / hdist;
-        
-        // Direction head is facing (outward nose direction)
-        const fx = -bx_dir;
-        const fy = -by_dir;
-        
-        // Perpendicular normal vector (jaw spread)
-        const jx = -by_dir;
-        const jy = bx_dir;
-
-        // Coordinate vertices for triangular head
-        const noseX = p0.x + 1.8 * fx;
-        const noseY = p0.y + 1.8 * fy;
-        
-        const leftJawX = p0.x + 0.4 * bx_dir + 1.25 * jx;
-        const leftJawY = p0.y + 0.4 * by_dir + 1.25 * jy;
-        
-        const rightJawX = p0.x + 0.4 * bx_dir - 1.25 * jx;
-        const rightJawY = p0.y + 0.4 * by_dir - 1.25 * jy;
-        
-        const neckX = p0.x + 1.2 * bx_dir;
-        const neckY = p0.y + 1.2 * by_dir;
-
-        // Angle of head rotation in degrees
-        const angleRad = Math.atan2(fy, fx);
-        const angleDeg = angleRad * (180 / Math.PI);
-
-        // 7. Draw Python Head Base
-        const head = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        head.setAttribute("points", `${noseX},${noseY} ${leftJawX},${leftJawY} ${neckX},${neckY} ${rightJawX},${rightJawY}`);
-        head.setAttribute("class", "svg-snake-head-viper");
-        snakesGroup.appendChild(head);
-
-        // --- Forked Tongue Math ---
-        const tx = p0.x + 1.6 * fx; // Tongue base (at nose)
-        const ty = p0.y + 1.6 * fy;
-        
-        const sx = p0.x + 3.1 * fx; // Split point
-        const sy = p0.y + 3.1 * fy;
-        
-        const ltx = sx + 0.9 * fx + 0.65 * jx; // Left tip
-        const lty = sy + 0.9 * fy + 0.65 * jy;
-        
-        const rtx = sx + 0.9 * fx - 0.65 * jx; // Right tip
-        const rty = sy + 0.9 * fy - 0.65 * jy;
-
-        // 8. Draw Forked Tongue with CSS Origin flicker animation (randomized delay to avoid simultaneous flickering)
-        const tongue = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        tongue.setAttribute("d", `M ${tx} ${ty} L ${sx} ${sy} L ${ltx} ${lty} M ${sx} ${sy} L ${rtx} ${rty}`);
-        tongue.setAttribute("class", "svg-snake-tongue");
-        const delay = (Math.random() * 2.0).toFixed(2);
-        tongue.setAttribute("style", `transform-origin: ${tx}% ${ty}%; animation-delay: -${delay}s;`);
-        snakesGroup.appendChild(tongue);
-
-        // Eye positions
-        const ex1 = p0.x + 0.85 * fx + 0.58 * jx;
-        const ey1 = p0.y + 0.85 * fy + 0.58 * jy;
-        const ex2 = p0.x + 0.85 * fx - 0.58 * jx;
-        const ey2 = p0.y + 0.85 * fy - 0.58 * jy;
-
-        // Group for all python head markings and eyes
-        const detailsGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-        detailsGroup.setAttribute("id", `head-details-${start}`);
-
-        // Symmetrical golden-tan cheek/wing patches
-        const leftPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        const lp1x = p0.x - 0.9 * fx + 0.6 * jx;
-        const lp1y = p0.y - 0.9 * fy + 0.6 * jy;
-        const lp2x = p0.x - 0.3 * fx + 1.05 * jx;
-        const lp2y = p0.y - 0.3 * fy + 1.05 * jy;
-        const lp3x = p0.x + 0.8 * fx + 0.4 * jx;
-        const lp3y = p0.y + 0.8 * fy + 0.4 * jy;
-        const lp4x = p0.x + 0.1 * fx + 0.2 * jx;
-        const lp4y = p0.y + 0.1 * fy + 0.2 * jy;
-        leftPatch.setAttribute("points", `${lp1x},${lp1y} ${lp2x},${lp2y} ${lp3x},${lp3y} ${lp4x},${lp4y}`);
-        leftPatch.setAttribute("fill", "#8fd696");
-        leftPatch.setAttribute("stroke", "#1b4f1f");
-        leftPatch.setAttribute("stroke-width", "0.1");
-        detailsGroup.appendChild(leftPatch);
-
-        const rightPatch = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        const rp1x = p0.x - 0.9 * fx - 0.6 * jx;
-        const rp1y = p0.y - 0.9 * fy - 0.6 * jy;
-        const rp2x = p0.x - 0.3 * fx - 1.05 * jx;
-        const rp2y = p0.y - 0.3 * fy - 1.05 * jy;
-        const rp3x = p0.x + 0.8 * fx - 0.4 * jx;
-        const rp3y = p0.y + 0.8 * fy - 0.4 * jy;
-        const rp4x = p0.x + 0.1 * fx - 0.2 * jx;
-        const rp4y = p0.y + 0.1 * fy - 0.2 * jy;
-        rightPatch.setAttribute("points", `${rp1x},${rp1y} ${rp2x},${rp2y} ${rp3x},${rp3y} ${rp4x},${rp4y}`);
-        rightPatch.setAttribute("fill", "#8fd696");
-        rightPatch.setAttribute("stroke", "#1b4f1f");
-        rightPatch.setAttribute("stroke-width", "0.1");
-        detailsGroup.appendChild(rightPatch);
-
-        // Central dark spearhead stripe
-        const spearhead = document.createElementNS("http://www.w3.org/2000/svg", "polygon");
-        const sp1x = p0.x - 1.15 * fx;
-        const sp1y = p0.y - 1.15 * fy;
-        const sp2x = p0.x - 0.4 * fx + 0.18 * jx;
-        const sp2y = p0.y - 0.4 * fy + 0.18 * jy;
-        const sp3x = p0.x + 1.4 * fx;
-        const sp3y = p0.y + 1.4 * fy;
-        const sp4x = p0.x - 0.4 * fx - 0.18 * jx;
-        const sp4y = p0.y - 0.4 * fy - 0.18 * jy;
-        spearhead.setAttribute("points", `${sp1x},${sp1y} ${sp2x},${sp2y} ${sp3x},${sp3y} ${sp4x},${sp4y}`);
-        spearhead.setAttribute("fill", "#123c15");
-        spearhead.setAttribute("stroke", "#08210b");
-        spearhead.setAttribute("stroke-width", "0.08");
-        detailsGroup.appendChild(spearhead);
-
-        // Post-ocular dark stripe (Eye to jaw corner)
-        const leftPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        leftPostOcular.setAttribute("x1", ex1);
-        leftPostOcular.setAttribute("y1", ey1);
-        leftPostOcular.setAttribute("x2", leftJawX);
-        leftPostOcular.setAttribute("y2", leftJawY);
-        leftPostOcular.setAttribute("stroke", "#123c15");
-        leftPostOcular.setAttribute("stroke-width", "0.18");
-        leftPostOcular.setAttribute("stroke-linecap", "round");
-        detailsGroup.appendChild(leftPostOcular);
-
-        const rightPostOcular = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        rightPostOcular.setAttribute("x1", ex2);
-        rightPostOcular.setAttribute("y1", ey2);
-        rightPostOcular.setAttribute("x2", rightJawX);
-        rightPostOcular.setAttribute("y2", rightJawY);
-        rightPostOcular.setAttribute("stroke", "#123c15");
-        rightPostOcular.setAttribute("stroke-width", "0.18");
-        rightPostOcular.setAttribute("stroke-linecap", "round");
-        detailsGroup.appendChild(rightPostOcular);
-
-        // Mottled spots on head edges
-        const spot1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        spot1.setAttribute("cx", p0.x + 0.3 * fx);
-        spot1.setAttribute("cy", p0.y + 0.3 * fy);
-        spot1.setAttribute("r", "0.55");
-        spot1.setAttribute("fill", "#08210b");
-        detailsGroup.appendChild(spot1);
-
-        const spot2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        spot2.setAttribute("cx", p0.x + 0.6 * bx_dir);
-        spot2.setAttribute("cy", p0.y + 0.6 * by_dir);
-        spot2.setAttribute("r", "0.45");
-        spot2.setAttribute("fill", "#08210b");
-        detailsGroup.appendChild(spot2);
-
-        // Left Eye
-        const eye1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        eye1.setAttribute("cx", ex1);
-        eye1.setAttribute("cy", ey1);
-        eye1.setAttribute("r", "0.38");
-        eye1.setAttribute("fill", "#f39c12");
-        eye1.setAttribute("stroke", "#08210b");
-        eye1.setAttribute("stroke-width", "0.08");
-        detailsGroup.appendChild(eye1);
-
-        const pupil1 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-        pupil1.setAttribute("cx", ex1);
-        pupil1.setAttribute("cy", ey1);
-        pupil1.setAttribute("rx", "0.06");
-        pupil1.setAttribute("ry", "0.22");
-        pupil1.setAttribute("fill", "black");
-        pupil1.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex1}, ${ey1})`);
-        detailsGroup.appendChild(pupil1);
-
-        const glint1 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        glint1.setAttribute("cx", ex1 + 0.12 * fx + 0.08 * jx);
-        glint1.setAttribute("cy", ey1 + 0.12 * fy + 0.08 * jy);
-        glint1.setAttribute("r", "0.08");
-        glint1.setAttribute("fill", "white");
-        detailsGroup.appendChild(glint1);
-        
-        // Right Eye
-        const eye2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        eye2.setAttribute("cx", ex2);
-        eye2.setAttribute("cy", ey2);
-        eye2.setAttribute("r", "0.38");
-        eye2.setAttribute("fill", "#f39c12");
-        eye2.setAttribute("stroke", "#08210b");
-        eye2.setAttribute("stroke-width", "0.08");
-        detailsGroup.appendChild(eye2);
-
-        const pupil2 = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
-        pupil2.setAttribute("cx", ex2);
-        pupil2.setAttribute("cy", ey2);
-        pupil2.setAttribute("rx", "0.06");
-        pupil2.setAttribute("ry", "0.22");
-        pupil2.setAttribute("fill", "black");
-        pupil2.setAttribute("transform", `rotate(${angleDeg + 90}, ${ex2}, ${ey2})`);
-        detailsGroup.appendChild(pupil2);
-
-        const glint2 = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-        glint2.setAttribute("cx", ex2 + 0.12 * fx - 0.08 * jx);
-        glint2.setAttribute("cy", ey2 + 0.12 * fy - 0.08 * jy);
-        glint2.setAttribute("r", "0.08");
-        glint2.setAttribute("fill", "white");
-        detailsGroup.appendChild(glint2);
-
-        snakesGroup.appendChild(detailsGroup);
-
-        // Save animation references
-        this.snakeAnimations.push({
-          snakeIdx,
-          start,
-          end,
-          defaultEnd: this.defaultSnakes[start] || end,
-          p0,
-          p1,
-          cx1,
-          cy1,
-          cx2,
-          cy2,
-          nx,
-          ny,
-          bodyPaths,
-          shadowLines,
-          maskLines
-        });
       }
     }
   }
@@ -1710,12 +1959,18 @@ class UIController {
           
           if (!escaped) {
             const startPos = snakeOrLadder.start;
-            const possibleCells = [];
-            for (let i = 1; i < startPos; i++) {
-              if (!GameConfig.snakes[i]) possibleCells.push(i);
+            if (this.currentSkin === 'sea') {
+              const oct = this.octopuses ? this.octopuses.find(o => o.head === startPos) : null;
+              const tentacles = oct ? oct.tentacles : [1];
+              randomTail = tentacles[Math.floor(Math.random() * tentacles.length)];
+            } else {
+              const possibleCells = [];
+              for (let i = 1; i < startPos; i++) {
+                if (!GameConfig.snakes[i]) possibleCells.push(i);
+              }
+              if (possibleCells.length === 0) possibleCells.push(1);
+              randomTail = possibleCells[Math.floor(Math.random() * possibleCells.length)];
             }
-            if (possibleCells.length === 0) possibleCells.push(1);
-            randomTail = possibleCells[Math.floor(Math.random() * possibleCells.length)];
           }
         }
         
@@ -1725,107 +1980,159 @@ class UIController {
           // Let game engine resolve state with this custom tail
           this.game.resolveSnakeRescue(escaped, randomTail);
           
-          // Find the corresponding snake animation object to morph the tail coordinates
-          const anim = this.snakeAnimations.find(a => a.start === startPos);
-          
-          this.sound.playSnakeBite();
-          this.showToast(`Bitten! ${player.name} sliding down to a randomized cell (${randomTail})! 🐍`, 'snake');
-          
-          if (charEl) charEl.classList.add('walking');
-          
-          if (anim) {
-            // Get coordinates of the new random tail cell
-            const p1_target = this.getCellCoordinates(randomTail);
+          if (this.currentSkin === 'sea') {
+            const octAnim = this.octopusAnimations.find(o => o.head === startPos);
+            const tentacleAnim = octAnim ? octAnim.tentacles.find(t => t.tail === randomTail) : null;
             
-            // Animating loop for morphing the snake tail and sliding the player slowly
-            const duration = 2500; // 2.5 seconds (very slow and suspenseful)
-            const startTime = performance.now();
-            const p1_start = { x: anim.p1.x, y: anim.p1.y };
-            const p0_coords = anim.p0;
+            this.sound.playSnakeBite();
+            this.showToast(`Oh no! Slid down the octopus tentacle to cell ${randomTail}! 🐙`, 'snake');
             
-            // Set the final target in the anim object for subsequent turns/draws
-            anim.end = randomTail;
+            if (charEl) charEl.classList.add('walking');
             
-            await new Promise((resolve) => {
-              const animateSnakeTail = (now) => {
-                const elapsed = now - startTime;
-                const progress = Math.min(elapsed / duration, 1);
-                
-                // Smooth easing
-                const ease = progress < 0.5 
-                  ? 4 * progress * progress * progress 
-                  : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+            if (tentacleAnim) {
+              const duration = 2500; // 2.5 seconds slow slide
+              const startTime = performance.now();
+              
+              await new Promise((resolve) => {
+                const animateOctopusSlide = (now) => {
+                  const elapsed = now - startTime;
+                  const progress = Math.min(elapsed / duration, 1);
                   
-                // Interpolate
-                const currentP1 = {
-                  x: p1_start.x + (p1_target.x - p1_start.x) * ease,
-                  y: p1_start.y + (p1_target.y - p1_start.y) * ease
+                  // Smooth easing
+                  const ease = progress < 0.5 
+                    ? 4 * progress * progress * progress 
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                    
+                  // Interpolate along bezier curve
+                  const currentPt = this.getBezierPoint(ease, tentacleAnim.p0, { x: tentacleAnim.cx1, y: tentacleAnim.cy1 }, { x: tentacleAnim.cx2, y: tentacleAnim.cy2 }, tentacleAnim.p1);
+                  
+                  if (token) {
+                    token.style.transition = 'none';
+                    token.style.left = `${currentPt.x}%`;
+                    token.style.top = `${currentPt.y - 2.0}%`;
+                  }
+                  
+                  if (progress < 1) {
+                    requestAnimationFrame(animateOctopusSlide);
+                  } else {
+                    resolve();
+                  }
                 };
-                
-                const dx = currentP1.x - p0_coords.x;
-                const dy = currentP1.y - p0_coords.y;
-                const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
-                
-                const nx = -dy / dist;
-                const ny = dx / dist;
-                
-                const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
-                const cx1 = p0_coords.x + 0.33 * dx + waveAmp * nx;
-                const cy1 = p0_coords.y + 0.33 * dy + waveAmp * ny;
-                const cx2 = p0_coords.x + 0.66 * dx - waveAmp * nx;
-                const cy2 = p0_coords.y + 0.66 * dy - waveAmp * ny;
-                
-                // Update properties in anim object
-                anim.p1 = currentP1;
-                anim.cx1 = cx1;
-                anim.cy1 = cy1;
-                anim.cx2 = cx2;
-                anim.cy2 = cy2;
-                anim.nx = nx;
-                anim.ny = ny;
-                
-                // Visually move player token along with the tail tip
-                if (token) {
-                  token.style.transition = 'none';
-                  token.style.left = `${currentP1.x}%`;
-                  token.style.top = `${currentP1.y - 2.0}%`;
-                }
-                
-                if (progress < 1) {
-                  requestAnimationFrame(animateSnakeTail);
-                } else {
-                  resolve();
-                }
-              };
-              requestAnimationFrame(animateSnakeTail);
-            });
-            
-            // Set final positions and update UI overlays/overlaps
-            player.position = randomTail;
-            this.updateTokensUI(true);
-            await this.wait(400);
-
-            // Clear any existing reset timeout for this snake
-            if (this.snakeResetTimeouts[startPos]) {
-              clearTimeout(this.snakeResetTimeouts[startPos]);
-              delete this.snakeResetTimeouts[startPos];
+                requestAnimationFrame(animateOctopusSlide);
+              });
+              
+              player.position = randomTail;
+              this.updateTokensUI(true);
+              await this.wait(400);
+            } else {
+              player.position = randomTail;
+              this.updateTokensUI(true);
+              await this.wait(1500);
             }
-            
-            // Only host or local play schedules the 60-second timer to morph the snake back
-            if (!this.isOnlineMode || this.onlineRoomType === 'host') {
-              this.snakeResetTimeouts[startPos] = setTimeout(() => {
-                this.morphSnakeBack(startPos);
-                delete this.snakeResetTimeouts[startPos];
-              }, 60000);
-            }
+            if (charEl) charEl.classList.remove('walking');
           } else {
-            // Fallback
-            player.position = randomTail;
-            this.updateTokensUI(true);
-            await this.wait(1500);
+            // Find the corresponding snake animation object to morph the tail coordinates
+            const anim = this.snakeAnimations.find(a => a.start === startPos);
+            
+            this.sound.playSnakeBite();
+            this.showToast(`Bitten! ${player.name} sliding down to a randomized cell (${randomTail})! 🐍`, 'snake');
+            
+            if (charEl) charEl.classList.add('walking');
+            
+            if (anim) {
+              // Get coordinates of the new random tail cell
+              const p1_target = this.getCellCoordinates(randomTail);
+              
+              // Animating loop for morphing the snake tail and sliding the player slowly
+              const duration = 2500; // 2.5 seconds (very slow and suspenseful)
+              const startTime = performance.now();
+              const p1_start = { x: anim.p1.x, y: anim.p1.y };
+              const p0_coords = anim.p0;
+              
+              // Set the final target in the anim object for subsequent turns/draws
+              anim.end = randomTail;
+              
+              await new Promise((resolve) => {
+                const animateSnakeTail = (now) => {
+                  const elapsed = now - startTime;
+                  const progress = Math.min(elapsed / duration, 1);
+                  
+                  // Smooth easing
+                  const ease = progress < 0.5 
+                    ? 4 * progress * progress * progress 
+                    : 1 - Math.pow(-2 * progress + 2, 3) / 2;
+                    
+                  // Interpolate
+                  const currentP1 = {
+                    x: p1_start.x + (p1_target.x - p1_start.x) * ease,
+                    y: p1_start.y + (p1_target.y - p1_start.y) * ease
+                  };
+                  
+                  const dx = currentP1.x - p0_coords.x;
+                  const dy = currentP1.y - p0_coords.y;
+                  const dist = Math.sqrt(dx * dx + dy * dy) || 0.1;
+                  
+                  const nx = -dy / dist;
+                  const ny = dx / dist;
+                  
+                  const waveAmp = Math.min(10, Math.max(4, dist * 0.18));
+                  const cx1 = p0_coords.x + 0.33 * dx + waveAmp * nx;
+                  const cy1 = p0_coords.y + 0.33 * dy + waveAmp * ny;
+                  const cx2 = p0_coords.x + 0.66 * dx - waveAmp * nx;
+                  const cy2 = p0_coords.y + 0.66 * dy - waveAmp * ny;
+                  
+                  // Update properties in anim object
+                  anim.p1 = currentP1;
+                  anim.cx1 = cx1;
+                  anim.cy1 = cy1;
+                  anim.cx2 = cx2;
+                  anim.cy2 = cy2;
+                  anim.nx = nx;
+                  anim.ny = ny;
+                  
+                  // Visually move player token along with the tail tip
+                  if (token) {
+                    token.style.transition = 'none';
+                    token.style.left = `${currentP1.x}%`;
+                    token.style.top = `${currentP1.y - 2.0}%`;
+                  }
+                  
+                  if (progress < 1) {
+                    requestAnimationFrame(animateSnakeTail);
+                  } else {
+                    resolve();
+                  }
+                };
+                requestAnimationFrame(animateSnakeTail);
+              });
+              
+              // Set final positions and update UI overlays/overlaps
+              player.position = randomTail;
+              this.updateTokensUI(true);
+              await this.wait(400);
+
+              // Clear any existing reset timeout for this snake
+              if (this.snakeResetTimeouts[startPos]) {
+                clearTimeout(this.snakeResetTimeouts[startPos]);
+                delete this.snakeResetTimeouts[startPos];
+              }
+              
+              // Only host or local play schedules the 60-second timer to morph the snake back
+              if (!this.isOnlineMode || this.onlineRoomType === 'host') {
+                this.snakeResetTimeouts[startPos] = setTimeout(() => {
+                  this.morphSnakeBack(startPos);
+                  delete this.snakeResetTimeouts[startPos];
+                }, 60000);
+              }
+            } else {
+              // Fallback
+              player.position = randomTail;
+              this.updateTokensUI(true);
+              await this.wait(1500);
+            }
+            
+            if (charEl) charEl.classList.remove('walking');
           }
-          
-          if (charEl) charEl.classList.remove('walking');
         } else {
           // If escaped, resolve in engine normally (no movement)
           this.game.resolveSnakeRescue(escaped);
@@ -1910,6 +2217,115 @@ class UIController {
     this.showToast(`The snake at ${startPos} has returned to its default nest! 🐍`, 'info');
   }
 
+  setSkin(skinName, broadcast = true) {
+    this.currentSkin = skinName;
+    
+    // Toggle body class
+    if (skinName === 'sea') {
+      document.body.classList.add('skin-sea');
+      
+      // Select the active card in the modal UI
+      const skinSeaCard = document.getElementById('skin-sea-card');
+      const skinDefaultCard = document.getElementById('skin-default-card');
+      if (skinSeaCard) skinSeaCard.classList.add('active');
+      if (skinDefaultCard) skinDefaultCard.classList.remove('active');
+      
+      // Generate Sea Skin 3 octopuses with 3 tentacles each
+      // Fixed head locations: 92, 74, 47
+      const octopusHeads = [92, 74, 47];
+      this.octopuses = octopusHeads.map(head => {
+        const tentacles = [];
+        const used = new Set([1, 100, ...octopusHeads]);
+        
+        // Also avoid ladder starting/ending points if possible
+        for (const [lStart, lEnd] of Object.entries(GameConfig.ladders)) {
+          used.add(parseInt(lStart));
+          used.add(parseInt(lEnd));
+        }
+        
+        while (tentacles.length < 3) {
+          // Generate random cell below the head
+          const t = Math.floor(Math.random() * (head - 2)) + 2; // [2, head - 1]
+          if (!used.has(t) && !tentacles.includes(t)) {
+            tentacles.push(t);
+          }
+        }
+        // Sort tentacles descending for clean presentation
+        tentacles.sort((a, b) => b - a);
+        return { head, tentacles };
+      });
+      
+      // Set GameConfig.snakes to match octopus heads
+      GameConfig.snakes = {};
+      this.octopuses.forEach(oct => {
+        // Set the first tentacle as placeholder
+        GameConfig.snakes[oct.head] = oct.tentacles[0];
+      });
+      
+      this.showToast("Applied Deep Sea Skin 🐙 (Knotted ropes & jelly octopuses)", "info");
+    } else {
+      document.body.classList.remove('skin-sea');
+      
+      const skinDefaultCard = document.getElementById('skin-default-card');
+      const skinSeaCard = document.getElementById('skin-sea-card');
+      if (skinDefaultCard) skinDefaultCard.classList.add('active');
+      if (skinSeaCard) skinSeaCard.classList.remove('active');
+      
+      // Restore default snakes
+      GameConfig.snakes = { ...this.defaultSnakes };
+      this.octopuses = null;
+      
+      this.showToast("Applied Cyber Snakes Skin 🐍 (Bamboo ladders & retro cyberpunk)", "info");
+    }
+    
+    // Broadcast skin changes in online multiplayer
+    if (broadcast && this.isOnlineMode && this.conn && this.conn.open) {
+      this.conn.send({
+        type: 'SKIN_CHANGE',
+        skin: this.currentSkin,
+        octopuses: this.octopuses
+      });
+    }
+    
+    // Redraw board
+    this.drawSnakesAndLadders(true);
+  }
+
+  setSkinSync(skinName, syncedOctopuses) {
+    this.currentSkin = skinName;
+    
+    if (skinName === 'sea') {
+      document.body.classList.add('skin-sea');
+      
+      const skinSeaCard = document.getElementById('skin-sea-card');
+      const skinDefaultCard = document.getElementById('skin-default-card');
+      if (skinSeaCard) skinSeaCard.classList.add('active');
+      if (skinDefaultCard) skinDefaultCard.classList.remove('active');
+      
+      this.octopuses = syncedOctopuses;
+      GameConfig.snakes = {};
+      if (this.octopuses) {
+        this.octopuses.forEach(oct => {
+          GameConfig.snakes[oct.head] = oct.tentacles[0];
+        });
+      }
+      this.showToast("Opponent synced Deep Sea Skin 🐙", "info");
+    } else {
+      document.body.classList.remove('skin-sea');
+      
+      const skinDefaultCard = document.getElementById('skin-default-card');
+      const skinSeaCard = document.getElementById('skin-sea-card');
+      if (skinDefaultCard) skinDefaultCard.classList.add('active');
+      if (skinSeaCard) skinSeaCard.classList.remove('active');
+      
+      GameConfig.snakes = { ...this.defaultSnakes };
+      this.octopuses = null;
+      this.showToast("Opponent synced Cyber Snakes Skin 🐍", "info");
+    }
+    
+    this.drawSnakesAndLadders(true);
+  }
+
   segmentsIntersect(a, b, c, d) {
     const ccw = (p1, p2, p3) => {
       return (p3.y - p1.y) * (p2.x - p1.x) > (p2.y - p1.y) * (p3.x - p1.x);
@@ -1960,15 +2376,17 @@ class UIController {
             
             if (end >= 100 || prohibited.has(end) || usedTiles.has(end)) continue;
             
-            // 1. Enforce 40-75 degrees angle from ground
+            // 1. Enforce zig-zag angle rules (40-80 degrees or 120-150 degrees)
             const p0 = this.getCellCoordinates(start);
             const p1 = this.getCellCoordinates(end);
             const dx = p1.x - p0.x;
             const dy = p0.y - p1.y;
-            const angleRad = Math.atan2(dy, Math.abs(dx));
-            const angleDeg = angleRad * (180 / Math.PI);
+            const angleRad = Math.atan2(dy, dx);
+            let angleDeg = angleRad * (180 / Math.PI);
+            if (angleDeg < 0) angleDeg += 360;
             
-            if (angleDeg < 40 || angleDeg > 75) continue;
+            const isValidAngle = (angleDeg >= 40 && angleDeg <= 80) || (angleDeg >= 120 && angleDeg <= 150);
+            if (!isValidAngle) continue;
             
             // 2. Prevent overlapping / intersecting with existing ladders
             let intersects = false;
@@ -2278,6 +2696,10 @@ class UIController {
           this.game.addPlayer(p.name, p.color, p.avatar, false);
         });
         
+        if (data.skin) {
+          this.setSkinSync(data.skin, data.octopuses);
+        }
+        
         this.game.startGame();
         this.showToast("Match Started!", "info");
         break;
@@ -2319,6 +2741,10 @@ class UIController {
         this.game.reset();
         break;
         
+      case 'SKIN_CHANGE':
+        this.setSkinSync(data.skin, data.octopuses);
+        break;
+
       case 'CHANGE_COLOR':
         // Opponent changed player color mid-game
         this.changePlayerColor(data.playerIndex, data.color);
