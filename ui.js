@@ -850,7 +850,7 @@ class UIController {
     const nx = -dy / dist;
     const ny = dx / dist;
     
-    const numSteps = Math.max(15, Math.floor(dist / 1.2));
+    const numSteps = Math.max(25, Math.floor(dist * 1.5));
     let pathD = "";
     
     for (let i = 0; i <= numSteps; i++) {
@@ -858,7 +858,7 @@ class UIController {
       const bx = p0.x + t * dx;
       const by = p0.y + t * dy;
       
-      const wave = Math.sin(t * Math.PI * 6.5) * 0.45 + Math.sin(t * Math.PI * 2.0) * 0.25;
+      const wave = Math.sin(t * Math.PI * 2.5) * 2.5;
       const damp = Math.sin(t * Math.PI);
       
       const px = bx + (wave * damp + offset) * nx;
@@ -994,41 +994,59 @@ class UIController {
         ladderGroup.setAttribute("filter", "url(#ropeShadow)");
         
         const pathD = this.getWigglyRopePath(p0, p1, 0);
-        const pathHighlightD = this.getWigglyRopePath(p0, p1, 0.08);
 
-        // 1. Core Rope Line
+        // 1. Core backing line to make sure there are no gaps
         const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
         baseRope.setAttribute("d", pathD);
-        baseRope.setAttribute("stroke", "#b89772");
-        baseRope.setAttribute("stroke-width", "1.2");
+        baseRope.setAttribute("stroke", "#4a301e"); // dark brown core backing
+        baseRope.setAttribute("stroke-width", "2.2");
         baseRope.setAttribute("fill", "none");
         baseRope.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(baseRope);
         
-        // 2. Woven Strand overlay
-        const strandRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        strandRope.setAttribute("d", pathD);
-        strandRope.setAttribute("stroke", "#5c4028");
-        strandRope.setAttribute("stroke-width", "1.2");
-        strandRope.setAttribute("stroke-dasharray", "1.5 2.0");
-        strandRope.setAttribute("fill", "none");
-        strandRope.setAttribute("stroke-linecap", "round");
-        ladderGroup.appendChild(strandRope);
+        // 2. High-density chain of overlapping rotated ellipses to create a gorgeous twisted texture
+        const numEllipses = Math.floor(dist * 3.2);
+        for (let i = 0; i <= numEllipses; i++) {
+          const t = i / numEllipses;
+          
+          const wave = Math.sin(t * Math.PI * 2.5) * 2.5;
+          const damp = Math.sin(t * Math.PI);
+          const px = p0.x + t * dx + wave * damp * nx;
+          const py = p0.y + t * dy + wave * damp * ny;
+          
+          // Estimate path tangent angle
+          const tNext = Math.min(1.0, t + 0.005);
+          const waveNext = Math.sin(tNext * Math.PI * 2.5) * 2.5;
+          const dampNext = Math.sin(tNext * Math.PI);
+          const pxNext = p0.x + tNext * dx + waveNext * dampNext * nx;
+          const pyNext = p0.y + tNext * dy + waveNext * dampNext * ny;
+          
+          const angle = Math.atan2(pyNext - py, pxNext - px) * 180 / Math.PI;
+          
+          // Alternate strand colors to represent twisted golden/yellow rope fibers
+          let fill;
+          if (i % 3 === 0) fill = "#e5a93c";       // medium golden brown
+          else if (i % 3 === 1) fill = "#f4c430";  // bright golden saffron
+          else fill = "#fff3a8";                   // light gold highlight
+          
+          const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
+          ellipse.setAttribute("cx", px);
+          ellipse.setAttribute("cy", py);
+          ellipse.setAttribute("rx", "1.15");
+          ellipse.setAttribute("ry", "0.62");
+          ellipse.setAttribute("fill", fill);
+          ellipse.setAttribute("stroke", "#4a301e"); // dark brown groove
+          ellipse.setAttribute("stroke-width", "0.14");
+          ellipse.setAttribute("transform", `rotate(${angle + 35}, ${px}, ${py})`);
+          
+          ladderGroup.appendChild(ellipse);
+        }
         
-        // 3. Highlight line
-        const highlightRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
-        highlightRope.setAttribute("d", pathHighlightD);
-        highlightRope.setAttribute("stroke", "#ffeedd");
-        highlightRope.setAttribute("stroke-width", "0.26");
-        highlightRope.setAttribute("fill", "none");
-        highlightRope.setAttribute("opacity", "0.5");
-        ladderGroup.appendChild(highlightRope);
-        
-        // 4. Knots along the rope
-        const numKnots = Math.max(2, Math.floor(dist / 8.5));
+        // 3. Knots along the rope
+        const numKnots = Math.max(2, Math.floor(dist / 9.0));
         for (let k = 0; k <= numKnots; k++) {
           const t = k / numKnots;
-          const wave = Math.sin(t * Math.PI * 6.5) * 0.45 + Math.sin(t * Math.PI * 2.0) * 0.25;
+          const wave = Math.sin(t * Math.PI * 2.5) * 2.5;
           const damp = Math.sin(t * Math.PI);
           const kx = p0.x + t * dx + wave * damp * nx;
           const ky = p0.y + t * dy + wave * damp * ny;
@@ -1036,11 +1054,21 @@ class UIController {
           const knotCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           knotCircle.setAttribute("cx", kx);
           knotCircle.setAttribute("cy", ky);
-          knotCircle.setAttribute("r", "0.75");
-          knotCircle.setAttribute("fill", "#5c4028");
-          knotCircle.setAttribute("stroke", "#b89772");
-          knotCircle.setAttribute("stroke-width", "0.18");
+          knotCircle.setAttribute("r", "1.3"); // slightly larger to wrap thick rope
+          knotCircle.setAttribute("fill", "#b89772");
+          knotCircle.setAttribute("stroke", "#5c4028");
+          knotCircle.setAttribute("stroke-width", "0.22");
+          
+          const knotWrap = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+          knotWrap.setAttribute("cx", kx);
+          knotWrap.setAttribute("cy", ky);
+          knotWrap.setAttribute("r", "0.85");
+          knotWrap.setAttribute("fill", "none");
+          knotWrap.setAttribute("stroke", "#4a301e");
+          knotWrap.setAttribute("stroke-width", "0.22");
+          
           ladderGroup.appendChild(knotCircle);
+          ladderGroup.appendChild(knotWrap);
         }
       } else {
         // Draw default cyberpunk bamboo ladders
@@ -2375,30 +2403,12 @@ class UIController {
       if (skinSeaCard) skinSeaCard.classList.add('active');
       if (skinDefaultCard) skinDefaultCard.classList.remove('active');
       
-      // Generate Sea Skin 3 octopuses with 3 tentacles each
-      // Fixed head locations: 92, 74, 47
-      const octopusHeads = [92, 74, 47];
-      this.octopuses = octopusHeads.map(head => {
-        const tentacles = [];
-        const used = new Set([1, 100, ...octopusHeads]);
-        
-        // Also avoid ladder starting/ending points if possible
-        for (const [lStart, lEnd] of Object.entries(GameConfig.ladders)) {
-          used.add(parseInt(lStart));
-          used.add(parseInt(lEnd));
-        }
-        
-        while (tentacles.length < 3) {
-          // Generate random cell below the head
-          const t = Math.floor(Math.random() * (head - 2)) + 2; // [2, head - 1]
-          if (!used.has(t) && !tentacles.includes(t)) {
-            tentacles.push(t);
-          }
-        }
-        // Sort tentacles descending for clean presentation
-        tentacles.sort((a, b) => b - a);
-        return { head, tentacles };
-      });
+      // Define specific octopus configurations as requested by user
+      this.octopuses = [
+        { head: 40, tentacles: [27, 19, 5] },
+        { head: 53, tentacles: [34, 22, 15] },
+        { head: 97, tentacles: [79, 66, 59] }
+      ];
       
       // Set GameConfig.snakes to match octopus heads
       GameConfig.snakes = {};
