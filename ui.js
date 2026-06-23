@@ -1031,14 +1031,14 @@ class UIController {
         // 1. Core backing line to make sure there are no gaps
         const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
         baseRope.setAttribute("d", pathD);
-        baseRope.setAttribute("stroke", "#3c2412"); // dark brown core backing
-        baseRope.setAttribute("stroke-width", "2.2");
+        baseRope.setAttribute("stroke", "#2a1a0d"); // dark brown core backing (thick)
+        baseRope.setAttribute("stroke-width", "3.2");
         baseRope.setAttribute("fill", "none");
         baseRope.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(baseRope);
         
-        // 2. High-density chain of overlapping rotated ellipses to create a gorgeous twisted texture
-        const numEllipses = Math.floor(dist * 3.2);
+        // 2. Chunky chain of overlapping rotated ovals to create a thick twisted texture with wider spacing
+        const numEllipses = Math.floor(dist * 1.3);
         for (let i = 0; i <= numEllipses; i++) {
           const t = i / numEllipses;
           
@@ -1056,20 +1056,20 @@ class UIController {
           
           const angle = Math.atan2(pyNext - py, pxNext - px) * 180 / Math.PI;
           
-          // Alternate strand colors to represent twisted golden/yellow rope fibers (toned down)
+          // Alternate strand colors to represent rustic twisted hemp fibers (sandy beige tones)
           let fill;
-          if (i % 3 === 0) fill = "#b1884e";       // medium natural hemp brown
-          else if (i % 3 === 1) fill = "#9f7b44";  // muted tan/olive brown
-          else fill = "#cbac82";                   // light soft tan highlight
+          if (i % 3 === 0) fill = "#8a6e54";       // rustic hemp brown
+          else if (i % 3 === 1) fill = "#9d8065";  // sandy hemp tan
+          else fill = "#ba9e83";                   // light sisal beige
           
           const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
           ellipse.setAttribute("cx", px);
           ellipse.setAttribute("cy", py);
-          ellipse.setAttribute("rx", "1.15");
-          ellipse.setAttribute("ry", "0.62");
+          ellipse.setAttribute("rx", "1.6");       // Thicker strand slice
+          ellipse.setAttribute("ry", "0.9");       // Wider spacing slice
           ellipse.setAttribute("fill", fill);
-          ellipse.setAttribute("stroke", "#3c2412"); // dark brown groove (toned down)
-          ellipse.setAttribute("stroke-width", "0.14");
+          ellipse.setAttribute("stroke", "#2a1a0d"); // dark brown groove outlines
+          ellipse.setAttribute("stroke-width", "0.18");
           ellipse.setAttribute("transform", `rotate(${angle + 35}, ${px}, ${py})`);
           
           ladderGroup.appendChild(ellipse);
@@ -1087,17 +1087,17 @@ class UIController {
           const knotCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           knotCircle.setAttribute("cx", kx);
           knotCircle.setAttribute("cy", ky);
-          knotCircle.setAttribute("r", "1.3"); // slightly larger to wrap thick rope
-          knotCircle.setAttribute("fill", "#9f7b44"); // muted tan/olive brown
-          knotCircle.setAttribute("stroke", "#3c2412"); // dark brown groove
+          knotCircle.setAttribute("r", "1.8"); // scaled up to wrap thick rope
+          knotCircle.setAttribute("fill", "#9d8065");
+          knotCircle.setAttribute("stroke", "#2a1a0d");
           knotCircle.setAttribute("stroke-width", "0.22");
           
           const knotWrap = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           knotWrap.setAttribute("cx", kx);
           knotWrap.setAttribute("cy", ky);
-          knotWrap.setAttribute("r", "0.85");
+          knotWrap.setAttribute("r", "1.1");
           knotWrap.setAttribute("fill", "none");
-          knotWrap.setAttribute("stroke", "#3c2412");
+          knotWrap.setAttribute("stroke", "#2a1a0d");
           knotWrap.setAttribute("stroke-width", "0.22");
           
           ladderGroup.appendChild(knotCircle);
