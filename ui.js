@@ -180,6 +180,8 @@ class UIController {
     }
     const animate = () => {
       this.updateSnakeWiggle();
+      this.updateOctopusWiggle();
+      this.updateBubbles();
       this.snakeAnimationId = requestAnimationFrame(animate);
     };
     this.snakeAnimationId = requestAnimationFrame(animate);
@@ -244,6 +246,105 @@ class UIController {
           mLine.setAttribute("y2", ptB.y);
         }
       }
+    }
+  }
+
+  updateOctopusWiggle() {
+    if (this.currentSkin !== 'sea' || !this.octopusAnimations || this.octopusAnimations.length === 0) return;
+    
+    const time = Date.now() / 320;
+    
+    for (const octAnim of this.octopusAnimations) {
+      const octIdx = octAnim.octIdx;
+      for (const tentacle of octAnim.tentacles) {
+        const {
+          p0, p1, cx1, cy1, cx2, cy2, nx, ny,
+          paths, cups, tIdx
+        } = tentacle;
+        
+        const phaseShift = octIdx * 2.0 + tIdx * 1.5;
+        const wOffset = Math.sin(time + phaseShift) * 1.3;
+        
+        const p1_anim = {
+          x: p1.x + wOffset * nx,
+          y: p1.y + wOffset * ny
+        };
+        const cx2_anim = {
+          x: cx2 + wOffset * 0.45 * nx,
+          y: cy2 + wOffset * 0.45 * ny
+        };
+        
+        // Store current animated positions for slide-down interpolation
+        tentacle.p1_current = p1_anim;
+        tentacle.c2_current = cx2_anim;
+        
+        const newPathData = `M ${p0.x} ${p0.y} C ${cx1} ${cy1}, ${cx2_anim.x} ${cx2_anim.y}, ${p1_anim.x} ${p1_anim.y}`;
+        
+        for (const path of paths) {
+          path.setAttribute("d", newPathData);
+        }
+        
+        const c1 = { x: cx1, y: cy1 };
+        const c2 = cx2_anim;
+        for (const cup of cups) {
+          const pt = this.getBezierPoint(cup.tPercent, p0, c1, c2, p1_anim);
+          cup.element.setAttribute("cx", pt.x + 0.45 * cup.nx);
+          cup.element.setAttribute("cy", pt.y + 0.45 * cup.ny);
+        }
+      }
+    }
+  }
+
+  updateBubbles() {
+    if (this.currentSkin !== 'sea') {
+      if (this.bubbles) {
+        this.bubbles.forEach(b => b.remove());
+        this.bubbles = [];
+      }
+      return;
+    }
+    
+    if (!this.bubbles) {
+      this.bubbles = [];
+    }
+    
+    // Clean up finished bubbles
+    this.bubbles = this.bubbles.filter(bubble => {
+      const parent = bubble.parentNode;
+      if (!parent) return false;
+      
+      const rect = bubble.getBoundingClientRect();
+      const parentRect = parent.getBoundingClientRect();
+      if (rect.bottom < parentRect.top) {
+        bubble.remove();
+        return false;
+      }
+      return true;
+    });
+    
+    // Spawn bubbles (strictly limit to 2 or 3 bubbles active at a time)
+    if (this.bubbles.length < 3 && Math.random() < 0.02) {
+      const bubble = document.createElement('div');
+      bubble.className = 'ocean-bubble';
+      
+      const size = 10 + Math.random() * 15;
+      bubble.style.width = `${size}px`;
+      bubble.style.height = `${size}px`;
+      
+      const left = Math.random() * 95;
+      bubble.style.left = `${left}%`;
+      bubble.style.bottom = `-30px`;
+      
+      const duration = 5000 + Math.random() * 4000;
+      bubble.style.transition = `bottom ${duration}ms linear, left 2s ease-in-out infinite alternate`;
+      
+      this.dom.boardWrapper.appendChild(bubble);
+      this.bubbles.push(bubble);
+      
+      setTimeout(() => {
+        bubble.style.bottom = '110%';
+        bubble.style.left = `${left + (Math.random() * 10 - 5)}%`;
+      }, 50);
     }
   }
 
@@ -742,6 +843,36 @@ class UIController {
     return { x, y };
   }
 
+  getWigglyRopePath(p0, p1, offset = 0) {
+    const dx = p1.x - p0.x;
+    const dy = p1.y - p0.y;
+    const dist = Math.sqrt(dx * dx + dy * dy) || 1.0;
+    const nx = -dy / dist;
+    const ny = dx / dist;
+    
+    const numSteps = Math.max(15, Math.floor(dist / 1.2));
+    let pathD = "";
+    
+    for (let i = 0; i <= numSteps; i++) {
+      const t = i / numSteps;
+      const bx = p0.x + t * dx;
+      const by = p0.y + t * dy;
+      
+      const wave = Math.sin(t * Math.PI * 6.5) * 0.45 + Math.sin(t * Math.PI * 2.0) * 0.25;
+      const damp = Math.sin(t * Math.PI);
+      
+      const px = bx + (wave * damp + offset) * nx;
+      const py = by + (wave * damp + offset) * ny;
+      
+      if (i === 0) {
+        pathD += `M ${px.toFixed(2)} ${py.toFixed(2)}`;
+      } else {
+        pathD += ` L ${px.toFixed(2)} ${py.toFixed(2)}`;
+      }
+    }
+    return pathD;
+  }
+
   drawSnakesAndLadders(forceRedrawSnakes = false) {
     let defs = this.dom.boardSvg.querySelector('defs');
     let laddersGroup = document.getElementById('ladders-group');
@@ -862,54 +993,53 @@ class UIController {
         // Draw ropes
         ladderGroup.setAttribute("filter", "url(#ropeShadow)");
         
+        const pathD = this.getWigglyRopePath(p0, p1, 0);
+        const pathHighlightD = this.getWigglyRopePath(p0, p1, 0.08);
+
         // 1. Core Rope Line
-        const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        baseRope.setAttribute("x1", p0.x);
-        baseRope.setAttribute("y1", p0.y);
-        baseRope.setAttribute("x2", p1.x);
-        baseRope.setAttribute("y2", p1.y);
+        const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        baseRope.setAttribute("d", pathD);
         baseRope.setAttribute("stroke", "#b89772");
-        baseRope.setAttribute("stroke-width", "0.95");
+        baseRope.setAttribute("stroke-width", "1.2");
+        baseRope.setAttribute("fill", "none");
         baseRope.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(baseRope);
         
         // 2. Woven Strand overlay
-        const strandRope = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        strandRope.setAttribute("x1", p0.x);
-        strandRope.setAttribute("y1", p0.y);
-        strandRope.setAttribute("x2", p1.x);
-        strandRope.setAttribute("y2", p1.y);
+        const strandRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        strandRope.setAttribute("d", pathD);
         strandRope.setAttribute("stroke", "#5c4028");
-        strandRope.setAttribute("stroke-width", "0.95");
-        strandRope.setAttribute("stroke-dasharray", "1.6 1.6");
+        strandRope.setAttribute("stroke-width", "1.2");
+        strandRope.setAttribute("stroke-dasharray", "1.5 2.0");
+        strandRope.setAttribute("fill", "none");
         strandRope.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(strandRope);
         
         // 3. Highlight line
-        const highlightRope = document.createElementNS("http://www.w3.org/2000/svg", "line");
-        highlightRope.setAttribute("x1", p0.x + 0.1 * nx);
-        highlightRope.setAttribute("y1", p0.y + 0.1 * ny);
-        highlightRope.setAttribute("x2", p1.x + 0.1 * nx);
-        highlightRope.setAttribute("y2", p1.y + 0.1 * ny);
+        const highlightRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
+        highlightRope.setAttribute("d", pathHighlightD);
         highlightRope.setAttribute("stroke", "#ffeedd");
-        highlightRope.setAttribute("stroke-width", "0.22");
-        highlightRope.setAttribute("opacity", "0.45");
+        highlightRope.setAttribute("stroke-width", "0.26");
+        highlightRope.setAttribute("fill", "none");
+        highlightRope.setAttribute("opacity", "0.5");
         ladderGroup.appendChild(highlightRope);
         
         // 4. Knots along the rope
         const numKnots = Math.max(2, Math.floor(dist / 8.5));
         for (let k = 0; k <= numKnots; k++) {
           const t = k / numKnots;
-          const kx = p0.x + t * dx;
-          const ky = p0.y + t * dy;
+          const wave = Math.sin(t * Math.PI * 6.5) * 0.45 + Math.sin(t * Math.PI * 2.0) * 0.25;
+          const damp = Math.sin(t * Math.PI);
+          const kx = p0.x + t * dx + wave * damp * nx;
+          const ky = p0.y + t * dy + wave * damp * ny;
           
           const knotCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           knotCircle.setAttribute("cx", kx);
           knotCircle.setAttribute("cy", ky);
-          knotCircle.setAttribute("r", "0.65");
+          knotCircle.setAttribute("r", "0.75");
           knotCircle.setAttribute("fill", "#5c4028");
           knotCircle.setAttribute("stroke", "#b89772");
-          knotCircle.setAttribute("stroke-width", "0.16");
+          knotCircle.setAttribute("stroke-width", "0.18");
           ladderGroup.appendChild(knotCircle);
         }
       } else {
@@ -1126,6 +1256,7 @@ class UIController {
               snakesGroup.appendChild(tHighlight);
               
               // Draw suction cups along the tentacle
+              const cups = [];
               const numCups = Math.max(3, Math.floor(dist / 6.0));
               for (let s = 1; s <= numCups; s++) {
                 const tPercent = s / (numCups + 1);
@@ -1139,79 +1270,91 @@ class UIController {
                 cup.setAttribute("stroke", "rgba(0, 242, 254, 0.85)");
                 cup.setAttribute("stroke-width", "0.15");
                 snakesGroup.appendChild(cup);
+
+                cups.push({
+                  element: cup,
+                  tPercent: tPercent,
+                  nx: nx,
+                  ny: ny
+                });
               }
               
               tentacleAnims.push({
                 tail: tTail,
                 p0: pHead,
                 p1: pTail,
-                cx1, cy1, cx2, cy2
+                cx1, cy1, cx2, cy2,
+                nx, ny,
+                paths: [tShadow, tOuter, tInner, tHighlight],
+                cups: cups,
+                tIdx: tIdx
               });
             });
             
             this.octopusAnimations.push({
               head: oct.head,
-              tentacles: tentacleAnims
+              tentacles: tentacleAnims,
+              octIdx: octIdx
             });
             
-            // Draw Octopus head/body
+            // Draw Octopus head/body (Scaled up by 20%)
             const body = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
             body.setAttribute("cx", pHead.x);
             body.setAttribute("cy", pHead.y - 0.4);
-            body.setAttribute("rx", "2.1");
-            body.setAttribute("ry", "1.7");
+            body.setAttribute("rx", "2.52");
+            body.setAttribute("ry", "2.04");
             body.setAttribute("fill", "url(#octopusGrad)");
             body.setAttribute("filter", "url(#octopusGlow)");
             body.setAttribute("class", "svg-octopus-body");
             snakesGroup.appendChild(body);
             
-            // Draw large eyes
+            // Draw large eyes (Scaled up by 20%)
             const eyeL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            eyeL.setAttribute("cx", pHead.x - 0.6);
-            eyeL.setAttribute("cy", pHead.y - 0.3);
-            eyeL.setAttribute("r", "0.38");
+            eyeL.setAttribute("cx", pHead.x - 0.72);
+            eyeL.setAttribute("cy", pHead.y - 0.36);
+            eyeL.setAttribute("r", "0.46");
             eyeL.setAttribute("fill", "white");
             eyeL.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(eyeL);
             
             const eyeR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            eyeR.setAttribute("cx", pHead.x + 0.6);
-            eyeR.setAttribute("cy", pHead.y - 0.3);
-            eyeR.setAttribute("r", "0.38");
+            eyeR.setAttribute("cx", pHead.x + 0.72);
+            eyeR.setAttribute("cy", pHead.y - 0.36);
+            eyeR.setAttribute("r", "0.46");
             eyeR.setAttribute("fill", "white");
             eyeR.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(eyeR);
             
-            // Pupils
+            // Pupils (Scaled up by 20%)
             const pupilL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            pupilL.setAttribute("cx", pHead.x - 0.6);
-            pupilL.setAttribute("cy", pHead.y - 0.3);
-            pupilL.setAttribute("r", "0.22");
+            pupilL.setAttribute("cx", pHead.x - 0.72);
+            pupilL.setAttribute("cy", pHead.y - 0.36);
+            pupilL.setAttribute("r", "0.26");
             pupilL.setAttribute("fill", "#023047");
             pupilL.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(pupilL);
             
             const pupilR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            pupilR.setAttribute("cx", pHead.x + 0.6);
-            pupilR.setAttribute("cy", pHead.y - 0.3);
-            pupilR.setAttribute("r", "0.22");
+            pupilR.setAttribute("cx", pHead.x + 0.72);
+            pupilR.setAttribute("cy", pHead.y - 0.36);
+            pupilR.setAttribute("r", "0.26");
             pupilR.setAttribute("fill", "#023047");
             pupilR.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(pupilR);
             
-            // Specular glint
+            // Specular glint (Scaled up by 20%)
             const glintL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            glintL.setAttribute("cx", pHead.x - 0.72);
-            glintL.setAttribute("cy", pHead.y - 0.38);
-            glintL.setAttribute("r", "0.08");
+            glintL.setAttribute("cx", pHead.x - 0.86);
+            glintL.setAttribute("cy", pHead.y - 0.46);
+            glintL.setAttribute("r", "0.1");
             glintL.setAttribute("fill", "white");
             glintL.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(glintL);
             
             const glintR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            glintR.setAttribute("cx", pHead.x + 0.48);
-            glintR.setAttribute("cy", pHead.y - 0.38);
-            glintR.setAttribute("r", "0.08");
+            glintR.setAttribute("cx", pHead.x + 0.58);
+            glintR.setAttribute("cy", pHead.y - 0.46);
+            glintR.setAttribute("r", "0.1");
             glintR.setAttribute("fill", "white");
             glintR.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(glintR);
@@ -2003,8 +2146,10 @@ class UIController {
                     ? 4 * progress * progress * progress 
                     : 1 - Math.pow(-2 * progress + 2, 3) / 2;
                     
-                  // Interpolate along bezier curve
-                  const currentPt = this.getBezierPoint(ease, tentacleAnim.p0, { x: tentacleAnim.cx1, y: tentacleAnim.cy1 }, { x: tentacleAnim.cx2, y: tentacleAnim.cy2 }, tentacleAnim.p1);
+                  // Interpolate along bezier curve (dynamic wiggle support)
+                  const p1_cur = tentacleAnim.p1_current || tentacleAnim.p1;
+                  const c2_cur = tentacleAnim.c2_current || { x: tentacleAnim.cx2, y: tentacleAnim.cy2 };
+                  const currentPt = this.getBezierPoint(ease, tentacleAnim.p0, { x: tentacleAnim.cx1, y: tentacleAnim.cy1 }, c2_cur, p1_cur);
                   
                   if (token) {
                     token.style.transition = 'none';
