@@ -296,9 +296,12 @@ class UIController {
   }
 
   updateBubbles() {
-    if (this.currentSkin !== 'sea') {
+    const bubblesGroup = document.getElementById('bubbles-group');
+    if (this.currentSkin !== 'sea' || !bubblesGroup) {
       if (this.bubbles) {
-        this.bubbles.forEach(b => b.remove());
+        this.bubbles.forEach(b => {
+          if (b.element) b.element.remove();
+        });
         this.bubbles = [];
       }
       return;
@@ -308,43 +311,64 @@ class UIController {
       this.bubbles = [];
     }
     
-    // Clean up finished bubbles
+    const time = Date.now() / 450;
+    
+    // Update existing bubbles
     this.bubbles = this.bubbles.filter(bubble => {
-      const parent = bubble.parentNode;
-      if (!parent) return false;
+      // Rise very slowly
+      bubble.y -= bubble.speed;
       
-      const rect = bubble.getBoundingClientRect();
-      const parentRect = parent.getBoundingClientRect();
-      if (rect.bottom < parentRect.top) {
-        bubble.remove();
+      // Wobble left-and-right (like a real wobbly bubble in water)
+      const wobble = Math.sin(time + bubble.phase) * bubble.amp;
+      const x = bubble.x_base + wobble;
+      
+      // Update attributes
+      bubble.element.setAttribute('cx', x.toFixed(2));
+      bubble.element.setAttribute('cy', bubble.y.toFixed(2));
+      
+      // Fade out as it rises (starts at y=100 with full opacity, y=0 with 0 opacity)
+      const opacity = Math.max(0, Math.min(0.28, 0.28 * (bubble.y / 100)));
+      bubble.element.setAttribute('opacity', opacity.toFixed(3));
+      
+      // Remove if it goes past the top
+      if (bubble.y < -5) {
+        bubble.element.remove();
         return false;
       }
       return true;
     });
     
     // Spawn bubbles (strictly limit to 2 or 3 bubbles active at a time)
-    if (this.bubbles.length < 3 && Math.random() < 0.02) {
-      const bubble = document.createElement('div');
-      bubble.className = 'ocean-bubble';
+    if (this.bubbles.length < 3 && Math.random() < 0.015) {
+      const bubbleCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       
-      const size = 10 + Math.random() * 15;
-      bubble.style.width = `${size}px`;
-      bubble.style.height = `${size}px`;
+      const r = 0.8 + Math.random() * 1.0;
+      const x_base = 5 + Math.random() * 90;
+      const y = 98 + Math.random() * 4;
       
-      const left = Math.random() * 95;
-      bubble.style.left = `${left}%`;
-      bubble.style.bottom = `-30px`;
+      const speed = 0.06 + Math.random() * 0.06;
+      const phase = Math.random() * Math.PI * 2;
+      const amp = 0.8 + Math.random() * 1.2;
       
-      const duration = 5000 + Math.random() * 4000;
-      bubble.style.transition = `bottom ${duration}ms linear, left 2s ease-in-out infinite alternate`;
+      bubbleCircle.setAttribute('cx', x_base);
+      bubbleCircle.setAttribute('cy', y);
+      bubbleCircle.setAttribute('r', r);
+      bubbleCircle.setAttribute('fill', 'url(#bubbleGrad)');
+      bubbleCircle.setAttribute('stroke', 'rgba(255, 255, 255, 0.55)');
+      bubbleCircle.setAttribute('stroke-width', '0.12');
+      bubbleCircle.setAttribute('opacity', '0.28');
       
-      this.dom.boardWrapper.appendChild(bubble);
-      this.bubbles.push(bubble);
+      bubblesGroup.appendChild(bubbleCircle);
       
-      setTimeout(() => {
-        bubble.style.bottom = '110%';
-        bubble.style.left = `${left + (Math.random() * 10 - 5)}%`;
-      }, 50);
+      this.bubbles.push({
+        element: bubbleCircle,
+        x_base,
+        y,
+        r,
+        speed,
+        phase,
+        amp
+      });
     }
   }
 
@@ -945,6 +969,11 @@ class UIController {
         <filter id="snakeShadow" x="-30%" y="-30%" width="160%" height="160%">
           <feDropShadow dx="0.5" dy="1.0" stdDeviation="0.9" flood-color="#000000" flood-opacity="0.65"/>
         </filter>
+        <radialGradient id="bubbleGrad" cx="30%" cy="30%" r="70%">
+          <stop offset="0%" stop-color="rgba(255, 255, 255, 0.85)" />
+          <stop offset="40%" stop-color="rgba(0, 242, 254, 0.2)" />
+          <stop offset="100%" stop-color="rgba(0, 242, 254, 0.05)" />
+        </radialGradient>
       `;
       this.dom.boardSvg.appendChild(defs);
       
@@ -955,6 +984,10 @@ class UIController {
       snakesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
       snakesGroup.setAttribute("id", "snakes-group");
       this.dom.boardSvg.appendChild(snakesGroup);
+      
+      const bubblesGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+      bubblesGroup.setAttribute("id", "bubbles-group");
+      this.dom.boardSvg.appendChild(bubblesGroup);
     }
     
     // Clear and draw Ladders inside laddersGroup
@@ -998,7 +1031,7 @@ class UIController {
         // 1. Core backing line to make sure there are no gaps
         const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
         baseRope.setAttribute("d", pathD);
-        baseRope.setAttribute("stroke", "#4a301e"); // dark brown core backing
+        baseRope.setAttribute("stroke", "#3c2412"); // dark brown core backing
         baseRope.setAttribute("stroke-width", "2.2");
         baseRope.setAttribute("fill", "none");
         baseRope.setAttribute("stroke-linecap", "round");
@@ -1023,11 +1056,11 @@ class UIController {
           
           const angle = Math.atan2(pyNext - py, pxNext - px) * 180 / Math.PI;
           
-          // Alternate strand colors to represent twisted golden/yellow rope fibers
+          // Alternate strand colors to represent twisted golden/yellow rope fibers (toned down)
           let fill;
-          if (i % 3 === 0) fill = "#e5a93c";       // medium golden brown
-          else if (i % 3 === 1) fill = "#f4c430";  // bright golden saffron
-          else fill = "#fff3a8";                   // light gold highlight
+          if (i % 3 === 0) fill = "#b1884e";       // medium natural hemp brown
+          else if (i % 3 === 1) fill = "#9f7b44";  // muted tan/olive brown
+          else fill = "#cbac82";                   // light soft tan highlight
           
           const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
           ellipse.setAttribute("cx", px);
@@ -1035,7 +1068,7 @@ class UIController {
           ellipse.setAttribute("rx", "1.15");
           ellipse.setAttribute("ry", "0.62");
           ellipse.setAttribute("fill", fill);
-          ellipse.setAttribute("stroke", "#4a301e"); // dark brown groove
+          ellipse.setAttribute("stroke", "#3c2412"); // dark brown groove (toned down)
           ellipse.setAttribute("stroke-width", "0.14");
           ellipse.setAttribute("transform", `rotate(${angle + 35}, ${px}, ${py})`);
           
@@ -1055,8 +1088,8 @@ class UIController {
           knotCircle.setAttribute("cx", kx);
           knotCircle.setAttribute("cy", ky);
           knotCircle.setAttribute("r", "1.3"); // slightly larger to wrap thick rope
-          knotCircle.setAttribute("fill", "#b89772");
-          knotCircle.setAttribute("stroke", "#5c4028");
+          knotCircle.setAttribute("fill", "#9f7b44"); // muted tan/olive brown
+          knotCircle.setAttribute("stroke", "#3c2412"); // dark brown groove
           knotCircle.setAttribute("stroke-width", "0.22");
           
           const knotWrap = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -1064,7 +1097,7 @@ class UIController {
           knotWrap.setAttribute("cy", ky);
           knotWrap.setAttribute("r", "0.85");
           knotWrap.setAttribute("fill", "none");
-          knotWrap.setAttribute("stroke", "#4a301e");
+          knotWrap.setAttribute("stroke", "#3c2412");
           knotWrap.setAttribute("stroke-width", "0.22");
           
           ladderGroup.appendChild(knotCircle);
@@ -1219,6 +1252,7 @@ class UIController {
       }
       this.snakeAnimations = [];
       this.octopusAnimations = [];
+      this.bubbles = [];
       snakesGroup.innerHTML = '';
       
       if (this.currentSkin === 'sea') {
@@ -1325,64 +1359,64 @@ class UIController {
               octIdx: octIdx
             });
             
-            // Draw Octopus head/body (Scaled up by 20%)
+            // Draw Octopus head/body (Scaled up by another 20%)
             const body = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
             body.setAttribute("cx", pHead.x);
             body.setAttribute("cy", pHead.y - 0.4);
-            body.setAttribute("rx", "2.52");
-            body.setAttribute("ry", "2.04");
+            body.setAttribute("rx", "3.02");
+            body.setAttribute("ry", "2.45");
             body.setAttribute("fill", "url(#octopusGrad)");
             body.setAttribute("filter", "url(#octopusGlow)");
             body.setAttribute("class", "svg-octopus-body");
             snakesGroup.appendChild(body);
             
-            // Draw large eyes (Scaled up by 20%)
+            // Draw large eyes (Scaled up by another 20%)
             const eyeL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            eyeL.setAttribute("cx", pHead.x - 0.72);
-            eyeL.setAttribute("cy", pHead.y - 0.36);
-            eyeL.setAttribute("r", "0.46");
+            eyeL.setAttribute("cx", pHead.x - 0.86);
+            eyeL.setAttribute("cy", pHead.y - 0.43);
+            eyeL.setAttribute("r", "0.55");
             eyeL.setAttribute("fill", "white");
             eyeL.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(eyeL);
             
             const eyeR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            eyeR.setAttribute("cx", pHead.x + 0.72);
-            eyeR.setAttribute("cy", pHead.y - 0.36);
-            eyeR.setAttribute("r", "0.46");
+            eyeR.setAttribute("cx", pHead.x + 0.86);
+            eyeR.setAttribute("cy", pHead.y - 0.43);
+            eyeR.setAttribute("r", "0.55");
             eyeR.setAttribute("fill", "white");
             eyeR.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(eyeR);
             
-            // Pupils (Scaled up by 20%)
+            // Pupils (Scaled up by another 20%)
             const pupilL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            pupilL.setAttribute("cx", pHead.x - 0.72);
-            pupilL.setAttribute("cy", pHead.y - 0.36);
-            pupilL.setAttribute("r", "0.26");
+            pupilL.setAttribute("cx", pHead.x - 0.86);
+            pupilL.setAttribute("cy", pHead.y - 0.43);
+            pupilL.setAttribute("r", "0.31");
             pupilL.setAttribute("fill", "#023047");
             pupilL.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(pupilL);
             
             const pupilR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            pupilR.setAttribute("cx", pHead.x + 0.72);
-            pupilR.setAttribute("cy", pHead.y - 0.36);
-            pupilR.setAttribute("r", "0.26");
+            pupilR.setAttribute("cx", pHead.x + 0.86);
+            pupilR.setAttribute("cy", pHead.y - 0.43);
+            pupilR.setAttribute("r", "0.31");
             pupilR.setAttribute("fill", "#023047");
             pupilR.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(pupilR);
             
-            // Specular glint (Scaled up by 20%)
+            // Specular glint (Scaled up by another 20%)
             const glintL = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            glintL.setAttribute("cx", pHead.x - 0.86);
-            glintL.setAttribute("cy", pHead.y - 0.46);
-            glintL.setAttribute("r", "0.1");
+            glintL.setAttribute("cx", pHead.x - 1.03);
+            glintL.setAttribute("cy", pHead.y - 0.55);
+            glintL.setAttribute("r", "0.12");
             glintL.setAttribute("fill", "white");
             glintL.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(glintL);
             
             const glintR = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-            glintR.setAttribute("cx", pHead.x + 0.58);
-            glintR.setAttribute("cy", pHead.y - 0.46);
-            glintR.setAttribute("r", "0.1");
+            glintR.setAttribute("cx", pHead.x + 0.70);
+            glintR.setAttribute("cy", pHead.y - 0.55);
+            glintR.setAttribute("r", "0.12");
             glintR.setAttribute("fill", "white");
             glintR.setAttribute("class", "svg-octopus-eye");
             snakesGroup.appendChild(glintR);
@@ -2406,7 +2440,7 @@ class UIController {
       // Define specific octopus configurations as requested by user
       this.octopuses = [
         { head: 40, tentacles: [27, 19, 5] },
-        { head: 53, tentacles: [34, 22, 15] },
+        { head: 51, tentacles: [34, 22, 15] },
         { head: 97, tentacles: [79, 66, 59] }
       ];
       
@@ -2442,7 +2476,8 @@ class UIController {
       });
     }
     
-    // Redraw board
+    // Redraw board and update timer title/desc text instantly
+    this.updateShiftTimerUI();
     this.drawSnakesAndLadders(true);
   }
 
@@ -2478,6 +2513,7 @@ class UIController {
       this.showToast("Opponent synced Cyber Snakes Skin 🐍", "info");
     }
     
+    this.updateShiftTimerUI();
     this.drawSnakesAndLadders(true);
   }
 
@@ -2620,20 +2656,28 @@ class UIController {
   updateShiftTimerUI() {
     const timerValEl = document.getElementById('shift-timer-val');
     const timerDescEl = document.getElementById('shift-timer-desc');
+    const timerTitleEl = document.getElementById('shift-timer-title');
     if (!timerValEl) return;
     
     timerValEl.innerText = `${this.laddersShiftTimeRemaining}s`;
     
+    const noun = this.currentSkin === 'sea' ? 'ropes' : 'stairways';
+    const title = this.currentSkin === 'sea' ? 'Ropes Relocation' : 'Stairway Relocation';
+    
+    if (timerTitleEl) {
+      timerTitleEl.innerText = title;
+    }
+    
     if (this.laddersShiftTimeRemaining <= 10) {
       timerValEl.classList.add('danger');
       if (timerDescEl) {
-        timerDescEl.innerText = "stairways relocating soon! ⚠️";
+        timerDescEl.innerText = `${noun} relocating soon! ⚠️`;
         timerDescEl.style.color = "#ff3366";
       }
     } else {
       timerValEl.classList.remove('danger');
       if (timerDescEl) {
-        timerDescEl.innerText = "until stairways relocate...";
+        timerDescEl.innerText = `until ${noun} relocate...`;
         timerDescEl.style.color = "var(--text-secondary)";
       }
     }
