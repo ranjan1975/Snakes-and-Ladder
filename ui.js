@@ -2532,43 +2532,57 @@ class UIController {
     const numLadders = 8;
     
     // Spacing thresholds for even distribution
-    const distanceThresholds = [20, 16, 12, 8, 0];
+    const distanceThresholds = [12, 8, 4, 0];
     
     for (const threshold of distanceThresholds) {
-      for (let tryCount = 0; tryCount < 40; tryCount++) {
+      for (let tryCount = 0; tryCount < 100; tryCount++) {
         let newLadders = {};
         let usedTiles = new Set();
         let list = [];
         let failed = false;
         
+        // Define the exact row spans and directions required
+        let configs = [
+          { span: 8, dir: Math.random() < 0.5 }, // 8-row can be left or right
+          { span: 3, dir: true },
+          { span: 3, dir: true },
+          { span: 3, dir: false },
+          { span: 3, dir: false },
+          { span: 2, dir: true },
+          { span: 2, dir: false },
+          { span: 4, dir: Math.random() < 0.5 }
+        ];
+        
+        // Shuffle the configurations to randomize which ladder is generated first
+        for (let i = configs.length - 1; i > 0; i--) {
+          const j = Math.floor(Math.random() * (i + 1));
+          [configs[i], configs[j]] = [configs[j], configs[i]];
+        }
+        
         for (let i = 0; i < numLadders; i++) {
+          const targetSpan = configs[i].span;
+          const targetRight = configs[i].dir;
           let start = 0;
           let end = 0;
           let ladderAttempts = 0;
           let success = false;
           
-          // Determine target length range for this ladder index
-          let minLen = 8;
-          let maxLen = 24;
-          if (i === 0) {
-            minLen = 75; maxLen = 85; // spans ~80 cells
-          } else if (i === 1) {
-            minLen = 45; maxLen = 55; // spans ~50 cells
-          } else if (i === 2) {
-            minLen = 25; maxLen = 35; // spans ~30 cells
-          }
-          
-          while (ladderAttempts < 300) {
+          while (ladderAttempts < 500) {
             ladderAttempts++;
-            start = Math.floor(Math.random() * 90) + 2; // [2, 91]
+            // startRow must be in [0, 9 - targetSpan]
+            const startRow = Math.floor(Math.random() * (10 - targetSpan));
+            const startCol = Math.floor(Math.random() * 10);
+            start = startRow * 10 + startCol + 1;
+            
             if (prohibited.has(start) || usedTiles.has(start)) continue;
             
-            const len = Math.floor(Math.random() * (maxLen - minLen + 1)) + minLen;
-            end = start + len;
+            const endRow = startRow + targetSpan;
+            const endCol = Math.floor(Math.random() * 10);
+            end = endRow * 10 + endCol + 1;
             
             if (end >= 100 || prohibited.has(end) || usedTiles.has(end)) continue;
             
-            // 1. Enforce zig-zag angle rules (40-80 degrees or 120-150 degrees)
+            // 1. Enforce angle and direction rules
             const p0 = this.getCellCoordinates(start);
             const p1 = this.getCellCoordinates(end);
             const dx = p1.x - p0.x;
@@ -2576,6 +2590,9 @@ class UIController {
             const angleRad = Math.atan2(dy, dx);
             let angleDeg = angleRad * (180 / Math.PI);
             if (angleDeg < 0) angleDeg += 360;
+            
+            const isRight = (dx > 0);
+            if (isRight !== targetRight) continue;
             
             const isValidAngle = (angleDeg >= 40 && angleDeg <= 80) || (angleDeg >= 120 && angleDeg <= 150);
             if (!isValidAngle) continue;
@@ -2590,8 +2607,8 @@ class UIController {
             }
             if (intersects) continue;
             
-            // 3. Spacing threshold (even distribution) - skip spacing check for the giant span-80 ladder as it crosses almost the whole board
-            if (i > 0) {
+            // 3. Spacing threshold (skip check for the 8-row ladder)
+            if (targetSpan !== 8) {
               const mid = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
               let tooClose = false;
               for (const existing of list) {
