@@ -327,7 +327,7 @@ class UIController {
       bubble.element.setAttribute('cy', bubble.y.toFixed(2));
       
       // Fade out as it rises (starts at y=100 with full opacity, y=0 with 0 opacity)
-      const opacity = Math.max(0, Math.min(0.28, 0.28 * (bubble.y / 100)));
+      const opacity = Math.max(0, Math.min(0.75, 0.75 * (bubble.y / 100)));
       bubble.element.setAttribute('opacity', opacity.toFixed(3));
       
       // Remove if it goes past the top
@@ -342,7 +342,7 @@ class UIController {
     if (this.bubbles.length < 3 && Math.random() < 0.015) {
       const bubbleCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       
-      const r = 0.8 + Math.random() * 1.0;
+      const r = 1.3 + Math.random() * 1.5;
       const x_base = 5 + Math.random() * 90;
       const y = 98 + Math.random() * 4;
       
@@ -354,9 +354,9 @@ class UIController {
       bubbleCircle.setAttribute('cy', y);
       bubbleCircle.setAttribute('r', r);
       bubbleCircle.setAttribute('fill', 'url(#bubbleGrad)');
-      bubbleCircle.setAttribute('stroke', 'rgba(255, 255, 255, 0.55)');
-      bubbleCircle.setAttribute('stroke-width', '0.12');
-      bubbleCircle.setAttribute('opacity', '0.28');
+      bubbleCircle.setAttribute('stroke', 'rgba(255, 255, 255, 0.85)');
+      bubbleCircle.setAttribute('stroke-width', '0.25');
+      bubbleCircle.setAttribute('opacity', '0.75');
       
       bubblesGroup.appendChild(bubbleCircle);
       
@@ -970,9 +970,10 @@ class UIController {
           <feDropShadow dx="0.5" dy="1.0" stdDeviation="0.9" flood-color="#000000" flood-opacity="0.65"/>
         </filter>
         <radialGradient id="bubbleGrad" cx="30%" cy="30%" r="70%">
-          <stop offset="0%" stop-color="rgba(255, 255, 255, 0.85)" />
-          <stop offset="40%" stop-color="rgba(0, 242, 254, 0.2)" />
-          <stop offset="100%" stop-color="rgba(0, 242, 254, 0.05)" />
+          <stop offset="0%" stop-color="rgba(255, 255, 255, 0.98)" />
+          <stop offset="35%" stop-color="rgba(0, 242, 254, 0.65)" />
+          <stop offset="70%" stop-color="rgba(0, 180, 216, 0.35)" />
+          <stop offset="100%" stop-color="rgba(0, 180, 216, 0.05)" />
         </radialGradient>
       `;
       this.dom.boardSvg.appendChild(defs);
@@ -1031,13 +1032,13 @@ class UIController {
         // 1. Core backing line to make sure there are no gaps
         const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
         baseRope.setAttribute("d", pathD);
-        baseRope.setAttribute("stroke", "#2a1a0d"); // dark brown core backing (thick)
-        baseRope.setAttribute("stroke-width", "3.2");
+        baseRope.setAttribute("stroke", "#16100c"); // dark brown core backing (thinner)
+        baseRope.setAttribute("stroke-width", "1.8");
         baseRope.setAttribute("fill", "none");
         baseRope.setAttribute("stroke-linecap", "round");
         ladderGroup.appendChild(baseRope);
         
-        // 2. Chunky chain of overlapping rotated ovals to create a thick twisted texture with wider spacing
+        // 2. Chunky chain of overlapping rotated ovals to create a thin twisted texture with wider spacing
         const numEllipses = Math.floor(dist * 1.3);
         for (let i = 0; i <= numEllipses; i++) {
           const t = i / numEllipses;
@@ -1056,20 +1057,20 @@ class UIController {
           
           const angle = Math.atan2(pyNext - py, pxNext - px) * 180 / Math.PI;
           
-          // Alternate strand colors to represent rustic twisted hemp fibers (sandy beige tones)
+          // Alternate strand colors to represent dark, weathered, wet hemp fibers (dark brown-gray tones)
           let fill;
-          if (i % 3 === 0) fill = "#8a6e54";       // rustic hemp brown
-          else if (i % 3 === 1) fill = "#9d8065";  // sandy hemp tan
-          else fill = "#ba9e83";                   // light sisal beige
+          if (i % 3 === 0) fill = "#2c221a";       // dark wet wood/hemp
+          else if (i % 3 === 1) fill = "#382d24";  // medium dark wet hemp
+          else fill = "#44372e";                   // muted brown-gray
           
           const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
           ellipse.setAttribute("cx", px);
           ellipse.setAttribute("cy", py);
-          ellipse.setAttribute("rx", "1.6");       // Thicker strand slice
-          ellipse.setAttribute("ry", "0.9");       // Wider spacing slice
+          ellipse.setAttribute("rx", "0.9");       // Thinner strand slice
+          ellipse.setAttribute("ry", "0.55");      // Spacing slice
           ellipse.setAttribute("fill", fill);
-          ellipse.setAttribute("stroke", "#2a1a0d"); // dark brown groove outlines
-          ellipse.setAttribute("stroke-width", "0.18");
+          ellipse.setAttribute("stroke", "#16100c"); // dark brown groove outlines
+          ellipse.setAttribute("stroke-width", "0.12");
           ellipse.setAttribute("transform", `rotate(${angle + 35}, ${px}, ${py})`);
           
           ladderGroup.appendChild(ellipse);
@@ -1087,18 +1088,18 @@ class UIController {
           const knotCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           knotCircle.setAttribute("cx", kx);
           knotCircle.setAttribute("cy", ky);
-          knotCircle.setAttribute("r", "1.8"); // scaled up to wrap thick rope
-          knotCircle.setAttribute("fill", "#9d8065");
-          knotCircle.setAttribute("stroke", "#2a1a0d");
-          knotCircle.setAttribute("stroke-width", "0.22");
+          knotCircle.setAttribute("r", "1.1"); // scaled down for thin rope
+          knotCircle.setAttribute("fill", "#382d24");
+          knotCircle.setAttribute("stroke", "#16100c");
+          knotCircle.setAttribute("stroke-width", "0.15");
           
           const knotWrap = document.createElementNS("http://www.w3.org/2000/svg", "circle");
           knotWrap.setAttribute("cx", kx);
           knotWrap.setAttribute("cy", ky);
-          knotWrap.setAttribute("r", "1.1");
+          knotWrap.setAttribute("r", "0.6");
           knotWrap.setAttribute("fill", "none");
-          knotWrap.setAttribute("stroke", "#2a1a0d");
-          knotWrap.setAttribute("stroke-width", "0.22");
+          knotWrap.setAttribute("stroke", "#16100c");
+          knotWrap.setAttribute("stroke-width", "0.15");
           
           ladderGroup.appendChild(knotCircle);
           ladderGroup.appendChild(knotWrap);
