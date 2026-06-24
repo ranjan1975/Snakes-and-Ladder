@@ -2441,7 +2441,7 @@ class UIController {
       // Define specific octopus configurations as requested by user
       this.octopuses = [
         { head: 40, tentacles: [27, 19, 5] },
-        { head: 51, tentacles: [34, 22, 15] },
+        { head: 51, tentacles: [34, 47, 15] },
         { head: 97, tentacles: [79, 66, 59] }
       ];
       
