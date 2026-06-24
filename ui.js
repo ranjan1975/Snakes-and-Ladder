@@ -2531,8 +2531,19 @@ class UIController {
     const prohibited = new Set([1, 100, ...snakeHeads, ...snakeTails]);
     const numLadders = 8;
     
-    // Spacing thresholds for even distribution
-    const distanceThresholds = [12, 8, 4, 0];
+    // Spacing thresholds (point-to-segment distance in SVG coordinate units)
+    const distanceThresholds = [7.5, 5.5, 4.0, 0.0];
+    
+    const pointToSegmentDist = (p, v, w) => {
+      const l2 = (v.x - w.x) ** 2 + (v.y - w.y) ** 2;
+      if (l2 === 0) return Math.sqrt((p.x - v.x) ** 2 + (p.y - v.y) ** 2);
+      let t = ((p.x - v.x) * (w.x - v.x) + (p.y - v.y) * (w.y - v.y)) / l2;
+      t = Math.max(0, Math.min(1, t));
+      return Math.sqrt(
+        (p.x - (v.x + t * (w.x - v.x))) ** 2 +
+        (p.y - (v.y + t * (w.y - v.y))) ** 2
+      );
+    };
     
     for (const threshold of distanceThresholds) {
       for (let tryCount = 0; tryCount < 100; tryCount++) {
@@ -2607,15 +2618,15 @@ class UIController {
             }
             if (intersects) continue;
             
-            // 3. Spacing threshold (skip check for the 8-row ladder)
-            if (targetSpan !== 8) {
-              const mid = { x: (p0.x + p1.x) / 2, y: (p0.y + p1.y) / 2 };
+            // 3. Strict point-to-segment distance check to prevent visual overlap
+            if (threshold > 0) {
               let tooClose = false;
               for (const existing of list) {
-                const mx = mid.x - existing.mid.x;
-                const my = mid.y - existing.mid.y;
-                const mdist = Math.sqrt(mx * mx + my * my);
-                if (mdist < threshold) {
+                const d0 = pointToSegmentDist(p0, existing.p0, existing.p1);
+                const d1 = pointToSegmentDist(p1, existing.p0, existing.p1);
+                const d2 = pointToSegmentDist(existing.p0, p0, p1);
+                const d3 = pointToSegmentDist(existing.p1, p0, p1);
+                if (d0 < threshold || d1 < threshold || d2 < threshold || d3 < threshold) {
                   tooClose = true;
                   break;
                 }
