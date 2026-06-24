@@ -1089,7 +1089,7 @@ class UIController {
           knotCircle.setAttribute("cx", kx);
           knotCircle.setAttribute("cy", ky);
           knotCircle.setAttribute("r", "1.1"); // scaled down for thin rope
-          knotCircle.setAttribute("fill", "#382d24");
+          knotCircle.setAttribute("fill", "#7c6a59"); // brighter sandy-hemp tan highlight
           knotCircle.setAttribute("stroke", "#16100c");
           knotCircle.setAttribute("stroke-width", "0.15");
           
