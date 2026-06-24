@@ -1056,19 +1056,21 @@ input:checked + .slider:before {
   
   .hud-column {
     display: grid;
-    grid-template-columns: 1.2fr 1fr;
-    gap: 8px;
+    grid-template-columns: 1fr 1fr;
+    gap: 6px;
     width: 100%;
   }
 
   .turn-and-timer-wrapper {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+    grid-column: 1 !important;
+    grid-row: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 4px !important;
   }
 
   .turn-card {
-    padding: 6px !important;
+    padding: 4px !important;
     height: auto !important;
     display: flex;
     flex-direction: column;
@@ -1077,7 +1079,7 @@ input:checked + .slider:before {
   }
 
   .shift-timer-card {
-    padding: 6px !important;
+    padding: 4px !important;
     height: auto !important;
     display: flex;
     flex-direction: column;
@@ -1087,13 +1089,64 @@ input:checked + .slider:before {
   }
 
   .dice-card {
-    padding: 10px;
-    height: 110px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 4px;
+    grid-column: 2 !important;
+    grid-row: 1 !important;
+    padding: 6px !important;
+    height: auto !important;
+    min-height: 95px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    justify-content: center !important;
+    align-items: center !important;
+    gap: 2px !important;
+  }
+
+  .roster-card {
+    grid-column: span 2 !important;
+    grid-row: 2 !important;
+    margin-top: 0 !important;
+    padding: 6px 8px !important;
+  }
+
+  .roster-card h3 {
+    margin: 0 0 4px 0 !important;
+    font-size: 0.75rem !important;
+    text-align: center !important;
+  }
+
+  #hud-players-list {
+    display: flex !important;
+    flex-direction: row !important;
+    flex-wrap: wrap !important;
+    gap: 4px !important;
+    justify-content: center !important;
+  }
+
+  .hud-player-row {
+    flex: 1 1 calc(50% - 4px) !important;
+    padding: 4px 6px !important;
+    font-size: 0.75rem !important;
+    border-left-width: 2px !important;
+    border-radius: 4px !important;
+  }
+
+  .hud-player-info {
+    gap: 4px !important;
+  }
+
+  .hud-player-avatar-circle {
+    width: 16px !important;
+    height: 16px !important;
+    font-size: 0.65rem !important;
+  }
+
+  .hud-player-name {
+    font-size: 0.7rem !important;
+  }
+
+  .hud-player-position {
+    font-size: 0.65rem !important;
+    padding: 1px 4px !important;
   }
 
   .hud-card-title, .dice-card h3 {
@@ -1106,55 +1159,70 @@ input:checked + .slider:before {
   }
 
   .timer-icon {
-    font-size: 1rem;
+    font-size: 0.85rem;
   }
 
   .timer-val {
-    font-size: 1.1rem;
+    font-size: 0.95rem;
   }
 
   .shift-timer-desc {
-    font-size: 0.6rem;
+    font-size: 0.55rem;
   }
 
   .turn-player-indicator {
     margin: 0;
     padding: 0;
     background: transparent;
-    gap: 6px;
+    gap: 4px;
   }
 
   .turn-avatar {
-    width: 32px;
-    height: 32px;
-    font-size: 1.4rem;
+    width: 22px;
+    height: 22px;
+    font-size: 1.1rem;
   }
 
   .turn-name {
-    font-size: 0.9rem;
+    font-size: 0.75rem;
   }
 
   .turn-status {
-    font-size: 0.65rem;
+    font-size: 0.55rem;
   }
 
   .dice-container {
-    height: 50px;
-    margin: 0;
+    height: 38px;
+    margin: 2px 0;
   }
 
   .dice-scene {
-    transform: scale(0.65);
+    transform: scale(0.55);
   }
 
   #roll-btn {
-    width: 100%;
-    padding: 6px 0;
-    font-size: 0.8rem;
+    width: 100% !important;
+    max-width: 130px !important;
+    padding: 4px 0 !important;
+    font-size: 0.75rem !important;
+    margin: 0 auto !important;
+  }
+
+  .dice-turn-indicator {
+    padding: 2px 6px !important;
+    margin-top: 2px !important;
+    margin-bottom: 4px !important;
+    font-size: 0.7rem !important;
+    gap: 4px !important;
+  }
+
+  .turn-pointer-arrow {
+    font-size: 0.85rem !important;
   }
 
   .history-card {
-    grid-column: span 2;
+    grid-column: span 2 !important;
+    grid-row: 3 !important;
     max-height: 120px;
     min-height: 80px;
     padding: 10px;

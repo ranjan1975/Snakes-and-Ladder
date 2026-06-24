@@ -1,14 +1,14 @@
 # 🌌 Cyber-Neon Snakes & Ladders & Neural Classifier Lab
 
 Welcome to the **Snakes and Ladder** repository! This project houses two interactive, premium, glassmorphic web applications built with pure vanilla technologies:
-1. **Cyber Snakes & Ladders** — A futuristic 3D neon edition of the classic board game.
+1. **Snakes & Ladders: Shifting Worlds** — A futuristic 3D neon and deep sea edition of the classic board game.
 2. **Cyber Neural Classifier Lab** — An interactive visualizer demonstrating neural network backpropagation in real-time.
 
 Both apps feature vibrant cyber aesthetics, smooth CSS/SVG micro-animations, and synthesized audio experiences via the Web Audio API.
 
 ---
 
-## 🎮 1. Cyber Snakes & Ladders
+## 🎮 1. Snakes & Ladders: Shifting Worlds
 
 A high-fidelity, interactive multiplayer board game.
 
