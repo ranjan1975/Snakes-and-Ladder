@@ -1032,7 +1032,7 @@ class UIController {
         // 1. Core backing line to make sure there are no gaps
         const baseRope = document.createElementNS("http://www.w3.org/2000/svg", "path");
         baseRope.setAttribute("d", pathD);
-        baseRope.setAttribute("stroke", "#16100c"); // dark brown core backing (thinner)
+        baseRope.setAttribute("stroke", "#281f18"); // core backing (15% brighter)
         baseRope.setAttribute("stroke-width", "1.8");
         baseRope.setAttribute("fill", "none");
         baseRope.setAttribute("stroke-linecap", "round");
@@ -1057,19 +1057,19 @@ class UIController {
           
           const angle = Math.atan2(pyNext - py, pxNext - px) * 180 / Math.PI;
           
-          // Alternate strand colors to represent dark, weathered, wet hemp fibers (dark brown-gray tones)
+          // Alternate strand colors to represent weathered hemp fibers (15% brighter brown-gray tones)
           let fill;
-          if (i % 3 === 0) fill = "#2c221a";       // dark wet wood/hemp
-          else if (i % 3 === 1) fill = "#382d24";  // medium dark wet hemp
-          else fill = "#44372e";                   // muted brown-gray
+          if (i % 3 === 0) fill = "#45382e";       // wet coir/hemp
+          else if (i % 3 === 1) fill = "#54463b";  // medium weathered hemp
+          else fill = "#635448";                   // lighter coir brown
           
           const ellipse = document.createElementNS("http://www.w3.org/2000/svg", "ellipse");
           ellipse.setAttribute("cx", px);
           ellipse.setAttribute("cy", py);
-          ellipse.setAttribute("rx", "0.9");       // Thinner strand slice
+          ellipse.setAttribute("rx", "0.9");       // Thicker strand slice
           ellipse.setAttribute("ry", "0.55");      // Spacing slice
           ellipse.setAttribute("fill", fill);
-          ellipse.setAttribute("stroke", "#16100c"); // dark brown groove outlines
+          ellipse.setAttribute("stroke", "#281f18"); // groove outlines (15% brighter)
           ellipse.setAttribute("stroke-width", "0.12");
           ellipse.setAttribute("transform", `rotate(${angle + 35}, ${px}, ${py})`);
           
@@ -1089,8 +1089,8 @@ class UIController {
           knotCircle.setAttribute("cx", kx);
           knotCircle.setAttribute("cy", ky);
           knotCircle.setAttribute("r", "1.1"); // scaled down for thin rope
-          knotCircle.setAttribute("fill", "#7c6a59"); // brighter sandy-hemp tan highlight
-          knotCircle.setAttribute("stroke", "#16100c");
+          knotCircle.setAttribute("fill", "#988471"); // brighter sandy-hemp tan highlight (15% brighter)
+          knotCircle.setAttribute("stroke", "#281f18");
           knotCircle.setAttribute("stroke-width", "0.15");
           
           const knotWrap = document.createElementNS("http://www.w3.org/2000/svg", "circle");
@@ -1098,7 +1098,7 @@ class UIController {
           knotWrap.setAttribute("cy", ky);
           knotWrap.setAttribute("r", "0.6");
           knotWrap.setAttribute("fill", "none");
-          knotWrap.setAttribute("stroke", "#16100c");
+          knotWrap.setAttribute("stroke", "#281f18");
           knotWrap.setAttribute("stroke-width", "0.15");
           
           ladderGroup.appendChild(knotCircle);
