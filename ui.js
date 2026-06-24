@@ -339,16 +339,16 @@ class UIController {
     });
     
     // Spawn bubbles (strictly limit to 2 or 3 bubbles active at a time)
-    if (this.bubbles.length < 3 && Math.random() < 0.015) {
+    if (this.bubbles.length < 3 && Math.random() < 0.08) {
       const bubbleCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
       
-      const r = 1.3 + Math.random() * 1.5;
+      const r = 0.7 + Math.random() * 2.3; // High size variance (0.7 to 3.0 radius)
       const x_base = 5 + Math.random() * 90;
       const y = 98 + Math.random() * 4;
       
-      const speed = 0.06 + Math.random() * 0.06;
+      const speed = 0.2 + Math.random() * 0.45; // Faster rising speed
       const phase = Math.random() * Math.PI * 2;
-      const amp = 0.8 + Math.random() * 1.2;
+      const amp = 0.6 + Math.random() * 1.4; // Varied wobble width
       
       bubbleCircle.setAttribute('cx', x_base);
       bubbleCircle.setAttribute('cy', y);
